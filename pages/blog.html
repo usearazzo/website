@@ -1,0 +1,133 @@
+---
+layout: base
+title: Blog - Tutorials, Engineering, and Vision
+description: Hands-on tutorials, looks inside how we build the toolkit, and our take on where API workflow automation is heading, all around Arazzo and OpenAPI.
+permalink: /blog/
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "UseArazzo Blog",
+  "description": {{ page.description | jsonify }},
+  "url": "{{ '/blog/' | absolute_url }}",
+  "publisher": { "@id": "{{ '/' | absolute_url }}" },
+  "blogPost": [
+    {% for post in site.posts %}{
+      "@type": "TechArticle",
+      "headline": {{ post.title | jsonify }},
+      "description": {{ post.description | jsonify }},
+      "url": "{{ post.url | absolute_url }}",
+      "image": "{{ post.image.path | absolute_url }}",
+      "datePublished": "{{ post.date | date_to_xmlschema }}",
+      "author": { "@type": "Person", "name": {{ post.author | jsonify }}, "url": "{{ post.author_url }}" }
+    }{% unless forloop.last %},
+    {% endunless %}{% endfor %}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "{{ '/blog/' | absolute_url }}" }
+  ]
+}
+</script>
+
+<main class="flex-1">
+  <div class="container mx-auto px-4 max-w-6xl py-12">
+    <header class="mb-10">
+      <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Blog</h1>
+      <p class="text-xl text-gray-600 max-w-3xl">
+        <strong>Hands-on tutorials</strong>, looks inside <strong>how we build the toolkit</strong>, and our take on <strong>where API workflow automation is heading</strong>, all around Arazzo and OpenAPI.
+      </p>
+      <p class="mt-6">
+        <a href="{{ '/feed.xml' | relative_url }}" class="rss-cta font-semibold text-sm py-2 px-4 rounded inline-flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20 5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"/>
+          </svg>
+          Subscribe via RSS
+        </a>
+      </p>
+    </header>
+
+    {% assign latest = site.posts.first %}
+    {% if latest %}
+    <!-- Featured latest article -->
+    <section class="mb-14">
+      <article class="product-card !p-0 overflow-hidden lg:grid lg:grid-cols-2">
+        <a href="{{ latest.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
+          <img src="{{ latest.image.path | relative_url }}" width="{{ latest.image.width }}" height="{{ latest.image.height }}" alt="" class="w-full h-full object-cover object-left">
+        </a>
+        <div class="p-8 flex flex-col justify-center">
+          <p class="text-sm text-gray-500 mb-3">
+            <time datetime="{{ latest.date | date_to_xmlschema }}">{{ latest.date | date: "%-d %B %Y" }}</time>
+            <span class="mx-1" aria-hidden="true">&middot;</span>
+            {% assign words = latest.content | strip_html | number_of_words %}{{ words | divided_by: 200 | at_least: 1 }} minute read
+          </p>
+          <h2 class="text-2xl font-bold text-primary-dark mb-3">
+            <a href="{{ latest.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ latest.title | escape }}</a>
+          </h2>
+          <p class="text-gray-600 mb-6">{{ latest.description | default: latest.excerpt | strip_html | truncate: 220 }}</p>
+          <a href="{{ latest.url | relative_url }}" class="product-card-link">
+            Read article
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    {% assign rest = site.posts | slice: 1, 9999 %}
+    {% assign posts_by_year = rest | group_by_exp: "post", "post.date | date: '%Y'" %}
+    {% for year in posts_by_year %}
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-6">{{ year.name }}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for post in year.items %}
+        <article class="product-card !p-0 overflow-hidden flex flex-col">
+          <a href="{{ post.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ post.image.path | relative_url }}" width="{{ post.image.width }}" height="{{ post.image.height }}" alt="" class="w-full h-40 object-cover object-left">
+          </a>
+          <div class="p-6 flex flex-col flex-1">
+            <p class="text-sm text-gray-500 mb-3">
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%-d %B %Y" }}</time>
+              <span class="mx-1" aria-hidden="true">&middot;</span>
+              {% assign words = post.content | strip_html | number_of_words %}{{ words | divided_by: 200 | at_least: 1 }} minute read
+            </p>
+            <h3 class="product-card-title text-xl">
+              <a href="{{ post.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ post.title | escape }}</a>
+            </h3>
+            <p class="product-card-description flex-1">{{ post.description | default: post.excerpt | strip_html | truncate: 160 }}</p>
+            <a href="{{ post.url | relative_url }}" class="product-card-link">
+              Read article
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+    {% else %}
+    <!-- Empty state: no posts yet -->
+    <section class="text-center py-16 border-2 border-dashed border-gray-200 rounded-lg">
+      <p class="text-2xl font-bold text-primary-dark mb-3">Nothing here yet</p>
+      <p class="text-gray-600 max-w-xl mx-auto mb-8">We're writing our first posts. Subscribe via RSS or watch the repository to hear when they're up.</p>
+      <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="product-card-link inline-flex">
+        Watch arazzo-toolkit on GitHub
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </section>
+    {% endif %}
+  </div>
+</main>

@@ -1,0 +1,89 @@
+---
+layout: none
+---
+# UseArazzo
+
+> A JavaScript/TypeScript toolkit for Arazzo, the OpenAPI Initiative's specification for multi-step API workflows. Validate documents, run workflows against live APIs, and read the trace of each step.
+
+## What it does
+
+1. Validate the document against the Arazzo specification.
+2. Run the workflow against live APIs.
+3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
+
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. No package has been published to npm yet, and APIs may change without notice. Everything is built in the open in the arazzo-toolkit monorepo.
+
+## Compatibility
+
+| Document | Versions | Validate | Run |
+| Workflow Document: Arazzo | 1.0.0, 1.0.1 | yes | yes |
+| Workflow Document: Arazzo | 1.1.0 | no | partial |
+| Source Description: OpenAPI | 2.0, 3.0.x, 3.1.x | yes | yes |
+| Source Description: Arazzo | 1.0.0, 1.0.1 | yes | no |
+| Source Description: AsyncAPI | any | no | no |
+
+## Products
+
+### CLI
+- One command-line interface across the toolchain: validate and run workflows on your machine and in CI
+- Not yet published to npm, in development
+- Planned commands: `validate` (wraps @usearazzo/validator), `run` (wraps @usearazzo/runner)
+- Docs: {{ site.url }}{{ site.baseurl }}/cli/
+
+### Validator
+- Semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
+- Opt-in JSON Schema (AJV) validation
+- Supports Arazzo 1.0.0 and 1.0.1
+- Pre-1.0, not yet published to npm, under heavy development
+- Free, open source (Apache 2.0)
+- Docs: {{ site.url }}{{ site.baseurl }}/validator/
+
+### Runner
+- Executes Arazzo workflows against live APIs described by OpenAPI source descriptions
+- Step-by-step execution: criteria evaluation, output mapping, failure actions, retries, sub-workflows
+- Pre-1.0, private, not yet published to npm, under heavy development (as is every package in the toolkit)
+- Supports Arazzo 1.0.0/1.0.1 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
+- Free, open source (Apache 2.0)
+- Docs: {{ site.url }}{{ site.baseurl }}/runner/
+
+### Lower-level packages
+- @usearazzo/parser: parses Arazzo documents into SpecLynx ApiDOM data model
+- @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
+- Not yet published to npm, free, open source (Apache 2.0)
+
+## Why UseArazzo
+
+- Deterministic execution: a workflow that ran yesterday runs the same today
+- The standard is the product: Arazzo implemented exactly as specified, with fixes contributed back to the specification instead of private extensions only our tools can read
+- Portable artifacts: plain Arazzo documents in your repository, API workflows keep working even without the toolkit
+
+## On the roadmap
+
+None of these are built yet. They are planned, not shipping:
+
+- Language Service: LSP-compatible library bringing Arazzo intelligence to any editor or tool (validation, completion, hover, go-to-definition, find references)
+- Editor: browser-based editor for authoring and validating Arazzo workflows with real-time feedback
+- VS Code Extension: Arazzo authoring inside VS Code, with real-time validation, semantic linting, autocompletion, live preview
+- GitHub Actions: violations annotated on the diff, run trace rendered into the job summary, check status driven by step outcomes
+- Agent Skills: task-shaped skills teaching agents to author, validate, fix, and debug Arazzo workflows
+- MCP Server: generic Model Context Protocol server exposing validation and execution over any Arazzo document
+- MCP Compiler: compiles a specific workflow into a dedicated MCP server, one typed tool per workflow
+- Arazzo Transformers: explicit, versioned transformations for reshaping data between steps, declared as ordinary API calls
+
+## Built on SpecLynx
+
+UseArazzo is built end to end on SpecLynx (https://github.com/speclynx): the semantic parsing core, reference resolution, and standards discipline behind years of Swagger/OpenAPI tooling.
+
+## Blog
+
+- Hands-on tutorials, looks inside how the toolkit is built, and where API workflow automation is heading
+- Index: {{ site.url }}{{ site.baseurl }}/blog/
+- RSS feed: {{ site.url }}{{ site.baseurl }}/feed.xml
+
+## Links
+
+- Website: {{ site.url }}{{ site.baseurl }}/
+- GitHub: https://github.com/usearazzo
+- Toolkit source: https://github.com/usearazzo/arazzo-toolkit
+- Discussions: https://github.com/orgs/usearazzo/discussions
+- Contact: {{ site.email }}

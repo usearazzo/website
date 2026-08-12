@@ -1,0 +1,8 @@
+UseArazzo Website
+Copyright 2026 UseArazzo
+UseArazzo Website is licensed under Apache 2.0 license.
+Copy of the Apache 2.0 license can be found in `LICENSE` file.
+
+This website credits SpecLynx (https://github.com/speclynx) as the foundation UseArazzo's
+toolkit is built on — the semantic parsing core, reference resolution, and standards discipline
+behind the packages this site documents. No SpecLynx code is included in this repository.

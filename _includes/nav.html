@@ -1,0 +1,61 @@
+<nav class="nav-container">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="flex items-center justify-between py-4">
+      <a href="{{ '/' | relative_url }}" class="flex items-center">
+        <img src="{{ '/assets/images/logos/usearazzo-logo.svg' | relative_url }}" alt="UseArazzo" class="w-[50px] h-[50px] mr-3">
+        <span class="text-xl font-bold text-primary-dark">UseArazzo</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="nav-links hidden md:flex items-center space-x-1">
+        <div class="dropdown">
+          <button class="nav-link flex items-center">
+            Products
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            <a href="{{ '/cli/' | relative_url }}" class="dropdown-item">CLI</a>
+            <a href="{{ '/runner/' | relative_url }}" class="dropdown-item">Runner</a>
+            <a href="{{ '/validator/' | relative_url }}" class="dropdown-item">Validator</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="nav-link flex items-center">
+            Open Source
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            <span class="dropdown-label">Repository</span>
+            <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="dropdown-item">arazzo-toolkit</a>
+            <span class="dropdown-label">Community</span>
+            <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="dropdown-item">Discussions</a>
+          </div>
+        </div>
+        <a href="{{ '/blog/' | relative_url }}" class="nav-link">Blog</a>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button class="hamburger md:hidden" onclick="toggleMobileMenu()" aria-label="Open menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu md:hidden pb-4">
+      <a href="{{ '/cli/' | relative_url }}" class="block py-2 nav-link">CLI</a>
+      <a href="{{ '/runner/' | relative_url }}" class="block py-2 nav-link">Runner</a>
+      <a href="{{ '/validator/' | relative_url }}" class="block py-2 nav-link">Validator</a>
+      <a href="{{ '/blog/' | relative_url }}" class="block py-2 nav-link">Blog</a>
+      <span class="block py-2 text-gray-500 text-xs uppercase mt-2">Repository</span>
+      <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="block py-2 nav-link pl-4">arazzo-toolkit</a>
+      <span class="block py-2 text-gray-500 text-xs uppercase mt-2">Community</span>
+      <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="block py-2 nav-link pl-4">Discussions</a>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,53 @@
+# Site settings
+title: UseArazzo
+email: info@usearazzo.com
+tagline: The Foundational Operating System for Arazzo API Workflows
+description: >-
+  UseArazzo is a JavaScript/TypeScript toolkit for Arazzo, the OpenAPI Initiative's specification
+  for multi-step API workflows. Validate documents, run workflows against live APIs, and read the
+  trace of each step.
+keywords: UseArazzo, Arazzo, Arazzo Specification, OpenAPI, API workflows, workflow automation, CLI, Runner, Validator, API tooling
+baseurl: ""
+url: "https://usearazzo.com"
+github_username: usearazzo
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+collections:
+  posts:
+    output: true
+    permalink: /blog/:title/
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: "Vladimír Gorej"
+      author_url: "https://vladimirgorej.com/"
+      author_link: "/about/#vladimir-gorej"
+
+# Exclude from processing
+exclude:
+  - CLAUDE.md
+  - README.md
+  - LICENSE
+  - NOTICE
+  - .gitignore
+  - .idea
+  - Gemfile
+  - Gemfile.lock
+  - vendor

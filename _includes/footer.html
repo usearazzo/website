@@ -1,0 +1,74 @@
+<footer class="py-10 text-gray-400 text-sm footer-background-color">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <!-- Main footer grid -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
+      <!-- Logo & tagline -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="/" class="flex items-center mb-2">
+          <img src="{{ '/assets/images/logos/usearazzo-logo-light-ui.svg' | relative_url }}" alt="UseArazzo" class="w-8 h-8 mr-2 opacity-90">
+          <span class="text-lg font-bold text-white">UseArazzo</span>
+        </a>
+        <p class="text-gray-400 text-sm mb-4">{{ site.tagline }}</p>
+      </div>
+
+      <!-- Products -->
+      <div>
+        <p class="text-white font-semibold mb-4">Products</p>
+        <ul class="space-y-2">
+          <li><a href="{{ '/cli/' | relative_url }}" class="hover:text-white transition-colors">CLI</a></li>
+          <li><a href="{{ '/runner/' | relative_url }}" class="hover:text-white transition-colors">Runner</a></li>
+          <li><a href="{{ '/validator/' | relative_url }}" class="hover:text-white transition-colors">Validator</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div>
+        <p class="text-white font-semibold mb-4">Resources</p>
+        <ul class="space-y-2">
+          <li><a href="{{ '/blog/' | relative_url }}" class="hover:text-white transition-colors">Blog</a></li>
+          <li><a href="{{ '/feed.xml' | relative_url }}" class="hover:text-white transition-colors">RSS Feed</a></li>
+          <li><a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Source Code</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect -->
+      <div>
+        <p class="text-white font-semibold mb-4">Connect</p>
+        <ul class="space-y-2">
+          <li><a href="{{ '/about/' | relative_url }}" class="hover:text-white transition-colors">About Us</a></li>
+          <li><a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Discussions</a></li>
+          <li><a href="mailto:info@usearazzo.com" class="hover:text-white transition-colors">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <p class="text-white font-semibold mb-4">Legal</p>
+        <ul class="space-y-2">
+          <li><a href="{{ '/privacy/' | relative_url }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
+          <li><a href="{{ '/terms/' | relative_url }}" class="hover:text-white transition-colors">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-gray-400">&copy; {{ 'now' | date: "%Y" }} UseArazzo. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/usearazzo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.83 9.504.471.085.678-.231.678-.519 0-.256-.009-.96-.014-1.881-2.782.603-3.371-1.341-3.371-1.341-.454-1.151-1.11-1.459-1.11-1.459-.908-.621.069-.608.069-.608 1.006.07 1.532 1.03 1.532 1.03.89 1.529 2.341 1.089 2.91.831.091-.645.35-.916.635-1.127-2.22-.253-4.555-1.114-4.555-4.945 0-1.091.39-1.984 1.029-2.682-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025.799-.224 1.649-.336 2.5-.341.85.005 1.7.117 2.5.341 1.909-1.295 2.747-1.025 2.747-1.025.546 1.378.202 2.397.098 2.65.64.698 1.029 1.591 1.029 2.682 0 3.84-2.339 4.686-4.566 4.935.359.308.675.918.675 1.85 0 1.341-.012 2.427-.012 2.75 0 .289.206.608.683.503C20.146 20.198 23 16.443 23 12.017 23 6.484 18.522 2 13 2h-1z" clip-rule="evenodd"/>
+          </svg>
+        </a>
+        <a href="mailto:info@usearazzo.com" class="text-gray-400 hover:text-white transition-colors" aria-label="Email">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.62 5.29a3 3 0 0 1-3.56 0Z"/>
+            <path d="M22.5 6.42a3 3 0 0 0-3-3H4.5a3 3 0 0 0-3 3l8.62 5.29a3 3 0 0 0 3.56 0L22.5 6.42Z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="{{ '/assets/js/main.js' | relative_url }}"></script>

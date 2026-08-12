@@ -1,0 +1,35 @@
+---
+layout: none
+permalink: /site.webmanifest
+---
+{
+  "name": "UseArazzo",
+  "short_name": "UseArazzo",
+  "description": "A JavaScript/TypeScript toolkit for Arazzo, the OpenAPI Initiative's specification for multi-step API workflows.",
+  "lang": "en",
+  "id": "/",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#17210D",
+  "icons": [
+    {
+      "src": "{{ '/assets/images/favicons/favicon-512x512.png' | relative_url }}",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "{{ '/assets/images/logos/usearazzo-logo.svg' | relative_url }}",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "{{ '/assets/images/favicons/favicon-512x512-maskable.png' | relative_url }}",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
