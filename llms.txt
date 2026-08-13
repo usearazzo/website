@@ -28,6 +28,8 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - One command-line interface across the toolchain: validate and run workflows on your machine and in CI
 - Not yet published to npm, in development
 - Planned commands: `validate` (wraps @usearazzo/validator), `run` (wraps @usearazzo/runner)
+- Under consideration, not built or decided: `init`, which would read a workflow and write an editable config file covering its inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
+- No cli package exists in the monorepo yet; the page is a design sketch, and feedback on it is welcome in Discussions
 - Docs: {{ site.url }}{{ site.baseurl }}/cli/
 
 ### Validator
@@ -40,14 +42,18 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 ### Runner
 - Executes Arazzo workflows against live APIs described by OpenAPI source descriptions
-- Step-by-step execution: criteria evaluation, output mapping, failure actions, retries, sub-workflows
-- Pre-1.0, private, not yet published to npm, under heavy development (as is every package in the toolkit)
+- Step-by-step execution: criteria evaluation, output mapping, failure actions, retries, sub-workflows, dependsOn prerequisites, cancellation via AbortSignal
+- Pluggable HTTP transport (a function from the built request to a WHATWG Response; global fetch by default)
+- Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
+- Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
+- Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
+- Pre-1.0, not yet published to npm, under heavy development in the open (as is every package in the toolkit)
 - Supports Arazzo 1.0.0/1.0.1 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 - Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
 ### Lower-level packages
-- @usearazzo/parser: parses Arazzo documents into SpecLynx ApiDOM data model
+- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model
 - @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
 - Not yet published to npm, free, open source (Apache 2.0)
 

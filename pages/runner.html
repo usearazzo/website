@@ -52,14 +52,15 @@ permalink: /runner/
         <a href="#operation-executor" class="block text-gray-500 hover:text-primary-light text-xs">OpenAPIOperationExecutor</a>
       </div>
       <a href="#control-flow" class="block text-gray-600 hover:text-primary-light">Control Flow</a>
+      <a href="#inheritance" class="block text-gray-600 hover:text-primary-light">What Steps Inherit</a>
       <a href="#not-yet-supported" class="block text-gray-600 hover:text-primary-light">Not Yet Supported</a>
-      <a href="#built-with" class="block text-gray-600 hover:text-primary-light">Built With</a>
+      <a href="#toolkit" class="block text-gray-600 hover:text-primary-light">Rest of the Toolkit</a>
       <a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>
     </nav>
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 max-w-4xl px-6 py-12">
+  <main class="flex-1 min-w-0 max-w-4xl px-6 py-12">
     <!-- Overview -->
     <section id="overview" class="mb-16">
       <div class="flex items-center gap-3 mb-4">
@@ -69,12 +70,12 @@ permalink: /runner/
       <p class="text-xl text-gray-600 mb-6">Executes Arazzo workflows step by step against live APIs, and hands back a full run trace, not just a pass or fail.</p>
 
       <p class="text-gray-700 text-lg mb-6">
-        <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> executes <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo Specification</a> workflows against live APIs described by <a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Specification</a> source descriptions. It builds on SpecLynx ApiDOM data models and reuses the loading, resolution, and normalization primitives shared with the Validator.
+        <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> executes <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo Specification</a> workflows against live APIs described by <a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Specification</a> source descriptions.
       </p>
 
       <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-6">
         <p class="text-gray-700">
-          <strong>Under heavy development.</strong> This package is developed inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo and is not yet published to npm. It will become publicly installable once its API stabilizes; until then, APIs may change without notice.
+          <strong>Under heavy development.</strong> This package is developed inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo and is not yet published to npm. It will become publicly installable once its API stabilizes. Until then, APIs may change without notice and there is nothing to install.
         </p>
       </div>
 
@@ -82,8 +83,8 @@ permalink: /runner/
         <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner" target="_blank" rel="noopener noreferrer" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
           View source on GitHub
         </a>
-        <a href="{{ '/validator/' | relative_url }}" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-          Explore Validator
+        <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
+          Follow Discussions
         </a>
       </div>
 
@@ -101,25 +102,67 @@ permalink: /runner/
         Running an Arazzo workflow is a pipeline of small, single-responsibility building blocks. Each layer reads run state but never mutates it. <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> is the single writer that records outputs and interprets the returned control-flow action. Every layer takes its collaborator rather than building one, so a deterministic stub drops in for tests at any level.
       </p>
 
-      <div class="grid md:grid-cols-2 gap-4 mb-4">
-        <div class="architecture-box architecture-box-highlight">
-          <p class="font-semibold text-primary-dark">DocumentRegistry</p>
-          <p class="text-sm text-gray-600 mt-1">loads &amp; caches documents</p>
-        </div>
-        <div class="architecture-box architecture-box-highlight">
-          <p class="font-semibold text-primary-dark">WorkflowExecutor</p>
-          <p class="text-sm text-gray-600 mt-1">iterates steps &middot; owns state &middot; control flow</p>
-        </div>
-        <div class="architecture-box">
-          <p class="font-semibold text-primary-dark">StepExecutor</p>
-          <p class="text-sm text-gray-600 mt-1">runs one Arazzo step</p>
-        </div>
-        <div class="architecture-box">
-          <p class="font-semibold text-primary-dark">OpenAPIOperationExecutor</p>
-          <p class="text-sm text-gray-600 mt-1">builds request &middot; normalizes response &middot; sends via <code class="bg-gray-100 px-1 rounded">HTTPClient</code></p>
-        </div>
-      </div>
-      <p class="text-gray-600 text-sm">Call order: <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> &rarr; <code class="bg-gray-100 px-1 rounded">StepExecutor</code> &rarr; <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> &rarr; <code class="bg-gray-100 px-1 rounded">HTTPClient</code> (global fetch by default). <code class="bg-gray-100 px-1 rounded">DocumentRegistry</code> supplies documents to all three.</p>
+      <figure class="mb-6">
+        <svg viewBox="0 0 720 470" role="img" aria-labelledby="arch-title arch-desc" class="w-full h-auto max-w-3xl mx-auto">
+          <title id="arch-title">Runner architecture</title>
+          <desc id="arch-desc">WorkflowExecutor calls StepExecutor, which calls OpenAPIOperationExecutor, which sends the built request through HTTPClient. DocumentRegistry supplies loaded documents to all three executors.</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280"/>
+            </marker>
+            <marker id="arrow-dotted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#9CA3AF"/>
+            </marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+
+            <!-- main chain -->
+            <g>
+              <rect x="20" y="20" width="330" height="66" rx="8" fill="#F0F5E7" stroke="#3A6B1F" stroke-width="2"/>
+              <text x="185" y="47" text-anchor="middle" font-size="15" font-weight="700" fill="#17210D">WorkflowExecutor</text>
+              <text x="185" y="68" text-anchor="middle" font-size="12" fill="#4B5563">iterates steps &#183; owns state &#183; control flow</text>
+            </g>
+            <g>
+              <rect x="20" y="140" width="330" height="66" rx="8" fill="#F0F5E7" stroke="#3A6B1F" stroke-width="2"/>
+              <text x="185" y="167" text-anchor="middle" font-size="15" font-weight="700" fill="#17210D">StepExecutor</text>
+              <text x="185" y="188" text-anchor="middle" font-size="12" fill="#4B5563">runs one Arazzo step</text>
+            </g>
+            <g>
+              <rect x="20" y="260" width="330" height="66" rx="8" fill="#F0F5E7" stroke="#3A6B1F" stroke-width="2"/>
+              <text x="185" y="287" text-anchor="middle" font-size="15" font-weight="700" fill="#17210D">OpenAPIOperationExecutor</text>
+              <text x="185" y="308" text-anchor="middle" font-size="12" fill="#4B5563">builds request &#183; normalizes response</text>
+            </g>
+            <g>
+              <rect x="20" y="380" width="330" height="66" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="5 4"/>
+              <text x="185" y="407" text-anchor="middle" font-size="15" font-weight="700" fill="#17210D">HTTPClient</text>
+              <text x="185" y="428" text-anchor="middle" font-size="12" fill="#4B5563">sends it &#183; global fetch by default</text>
+            </g>
+
+            <!-- chain arrows -->
+            <line x1="185" y1="86" x2="185" y2="134" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="197" y="115" font-size="11" fill="#4B5563">execute step</text>
+            <line x1="185" y1="206" x2="185" y2="254" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="197" y="235" font-size="11" fill="#4B5563">execute OpenAPI operation</text>
+            <line x1="185" y1="326" x2="185" y2="374" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="197" y="355" font-size="11" fill="#4B5563">send the built request</text>
+
+            <!-- registry -->
+            <g>
+              <path d="M 470 150 a 70 14 0 0 1 140 0 v 66 a 70 14 0 0 1 -140 0 z" fill="#3A6B1F"/>
+              <ellipse cx="540" cy="150" rx="70" ry="14" fill="#6BA543"/>
+              <text x="540" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">DocumentRegistry</text>
+              <text x="540" y="215" text-anchor="middle" font-size="11" fill="#E5EFD8">loads &#38; caches</text>
+            </g>
+
+            <!-- registry feeds each executor -->
+            <path d="M 470 170 C 410 170 400 60 356 55" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-dotted)"/>
+            <path d="M 470 190 C 420 190 410 175 356 175" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-dotted)"/>
+            <path d="M 470 210 C 410 210 400 288 356 293" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-dotted)"/>
+            <text x="540" y="255" text-anchor="middle" font-size="11" fill="#4B5563">supplies documents to all three</text>
+          </g>
+        </svg>
+      </figure>
+      <p class="text-gray-600 text-sm"><code class="bg-gray-100 px-1 rounded">HTTPClient</code> is drawn dashed because it is the seam you are meant to replace.</p>
 
       <!-- DocumentRegistry -->
       <h3 id="document-registry" class="text-lg font-semibold text-primary-dark mt-10 mb-3">DocumentRegistry</h3>
@@ -170,6 +213,23 @@ console.log(result.outputs);     // workflow $outputs, resolved against final st
 console.log(result.steps);       // trace: each step's id, success, action, attempts, durationMs
 console.log(result.durationMs);  // elapsed time for the whole run</code></pre>
 
+      <p class="text-gray-700 mb-3">The options bag that second argument carries:</p>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm text-left spec-table">
+          <thead>
+            <tr><th>Option</th><th>Meaning</th></tr>
+          </thead>
+          <tbody class="bg-white text-gray-700">
+            <tr><td><code class="bg-gray-100 px-1 rounded">inputs</code></td><td>the workflow's inputs, read through <code class="bg-gray-100 px-1 rounded">$inputs</code></td></tr>
+            <tr><td><code class="bg-gray-100 px-1 rounded">executeOptions</code></td><td>opaque bag forwarded to every step's operation, for example <code class="bg-gray-100 px-1 rounded">server</code> or <code class="bg-gray-100 px-1 rounded">requestInterceptor</code></td></tr>
+            <tr><td><code class="bg-gray-100 px-1 rounded">dependencyInputs</code></td><td>inputs for the workflows run to satisfy <code class="bg-gray-100 px-1 rounded">dependsOn</code>, keyed by workflowId</td></tr>
+            <tr><td><code class="bg-gray-100 px-1 rounded">runDependencies</code></td><td>run those <code class="bg-gray-100 px-1 rounded">dependsOn</code> workflows first (default <code class="bg-gray-100 px-1 rounded">true</code>)</td></tr>
+            <tr><td><code class="bg-gray-100 px-1 rounded">signal</code></td><td>an <code class="bg-gray-100 px-1 rounded">AbortSignal</code> that cancels the run</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-gray-600 text-sm">Run state is created fresh per <code class="bg-gray-100 px-1 rounded">execute</code> call and owned internally, and the result you get back is read-only.</p>
+
       <!-- StepExecutor -->
       <h3 id="step-executor" class="text-lg font-semibold text-primary-dark mt-10 mb-3">StepExecutor</h3>
       <p class="text-gray-700 mb-4">
@@ -201,6 +261,48 @@ const response = await executor.execute(locator, { parameters: { status: 'availa
 
 console.log(response.status, response.body);
 console.log(response.request.url); // the URL as actually sent</code></pre>
+      <h4 id="http-client" class="font-semibold text-primary-dark mt-8 mb-3">Swapping the transport</h4>
+      <p class="text-gray-700 mb-4">The transport is the extension point, and its contract is deliberately small: a function from the built request to a WHATWG <code class="bg-gray-100 px-1 rounded">Response</code>. The default is global <code class="bg-gray-100 px-1 rounded">fetch</code> in one line, exported as <code class="bg-gray-100 px-1 rounded">httpClientFetch</code> so a custom transport can delegate to it rather than reimplement it.</p>
+      <pre class="code-block mb-4"><code class="language-js">import { fetch, Agent } from 'undici';
+import { OpenAPIOperationExecutor } from '@usearazzo/runner';
+
+// any HTTP stack drops in: here undici with a dispatcher global fetch cannot take
+// (connection-pool tuning, a proxy, client certificates)
+const dispatcher = new Agent({ connections: 128, keepAliveTimeout: 60_000 });
+
+const pooledExecutor = new OpenAPIOperationExecutor({
+  httpClient: (request) =&gt; fetch(request.url, { ...request, dispatcher }),
+});
+
+// or serve canned responses in a test: no network, no interception hooks
+const offlineExecutor = new OpenAPIOperationExecutor({
+  httpClient: async () =&gt;
+    new Response('[{"id":1,"status":"available"}]', {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    }),
+});</code></pre>
+      <p class="text-gray-700 mb-3">Whatever you plug in has to hold up three ends of the bargain:</p>
+      <ul class="text-gray-700 space-y-2 mb-6 ml-4">
+        <li>Resolve with a <code class="bg-gray-100 px-1 rounded">Response</code> for <strong>every</strong> HTTP status. A non-2xx is a valid Arazzo outcome for a step's <code class="bg-gray-100 px-1 rounded">successCriteria</code> to judge, never an error.</li>
+        <li>Throw only on genuine transport failure, which the executor wraps as a <code class="bg-gray-100 px-1 rounded">ClientError</code> carrying the original as <code class="bg-gray-100 px-1 rounded">cause</code>.</li>
+        <li>Honor <code class="bg-gray-100 px-1 rounded">request.signal</code> when it is present.</li>
+      </ul>
+      <p class="text-gray-600 text-sm mb-8">Response normalization happens on the executor's side of the seam, so <code class="bg-gray-100 px-1 rounded">$response.body</code> means the same thing no matter which transport is underneath.</p>
+
+      <h4 id="choosing-server" class="font-semibold text-primary-dark mt-8 mb-3">Choosing the server</h4>
+      <p class="text-gray-700 mb-4">By default the request goes to the first server the operation declares, with a relative server resolved against the URL the document itself was loaded from. That covers the common case with no options at all. The <code class="bg-gray-100 px-1 rounded">server</code> option does double duty:</p>
+      <pre class="code-block mb-4"><code class="language-js">// selection: the value matches a declared server, so its variable defaults come
+// along and only the ones you name are overridden
+await executor.execute(locator, {
+  server: 'https://{region}.example.com/{basePath}', // the raw template, as declared
+  serverVariables: { region: 'us' },                   // basePath keeps its declared default
+});
+
+// override: the value matches nothing declared, so it simply is the base URL
+await executor.execute(locator, { server: 'https://staging.internal.test/api' });</code></pre>
+      <p class="text-gray-700 mb-8">There is deliberately no silent fallback. A <code class="bg-gray-100 px-1 rounded">server</code> matching nothing declared is never quietly swapped for the first declared one, so a typo fails loudly at the network rather than succeeding against the wrong host. An override replaces the declared base path along with the host, so include it if the API expects one. Overriding works on Swagger 2.0 as well; selection and <code class="bg-gray-100 px-1 rounded">serverVariables</code> are 3.x only, since 2.0 has no server list and no URL templates.</p>
+
       <p class="text-gray-600 text-sm">Credentials are applied via a <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> that runs after the request is built and before it is sent. Arazzo itself is auth-agnostic, so the runner does not model authentication.</p>
     </section>
 
@@ -240,6 +342,21 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
       <p class="text-gray-700">A run accepts an <code class="bg-gray-100 px-1 rounded">AbortSignal</code>: the signal is observed at every boundary (before each step, before each retry attempt, before entering a sub-workflow) and is forwarded to the transport, so a request in flight is cancelled rather than merely awaited.</p>
     </section>
 
+    <!-- Inheritance -->
+    <section id="inheritance" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">What Steps Inherit</h2>
+      <p class="text-gray-700 mb-6">A workflow can hand its steps two things, and they behave in opposite ways.</p>
+
+      <h3 id="default-actions" class="text-lg font-semibold text-primary-dark mb-3">Default actions replace</h3>
+      <p class="text-gray-700 mb-6">A workflow's <code class="bg-gray-100 px-1 rounded">successActions</code> and <code class="bg-gray-100 px-1 rounded">failureActions</code> apply to every step as a default. A step declaring its own <code class="bg-gray-100 px-1 rounded">onSuccess</code> or <code class="bg-gray-100 px-1 rounded">onFailure</code> overrides the corresponding list wholesale. There is no per-action merge, and the two fall back independently, so a step can override only its failure actions and still inherit the workflow's success actions.</p>
+
+      <h3 id="workflow-parameters" class="text-lg font-semibold text-primary-dark mb-3">Parameters merge</h3>
+      <p class="text-gray-700 mb-4">A workflow's <code class="bg-gray-100 px-1 rounded">parameters</code> also reach every step, but these merge rather than replace. The specification lets a step override an inherited parameter but says it can never remove one, so each step ends up with the union of both lists, its own declaration winning.</p>
+      <p class="text-gray-700 mb-4">A parameter's identity is the <code class="bg-gray-100 px-1 rounded">(name, in)</code> pair, not the name alone. A step declaring a <code class="bg-gray-100 px-1 rounded">trace</code> query parameter overrides an inherited <code class="bg-gray-100 px-1 rounded">trace</code> query parameter, and leaves an inherited <code class="bg-gray-100 px-1 rounded">trace</code> <em>header</em> untouched, because those are two parameters bound for two places. Names are case-sensitive, per the specification.</p>
+      <p class="text-gray-700 mb-4">Inheritance copies the declarations, not resolved values, so a workflow-level <code class="bg-gray-100 px-1 rounded">value</code> holding a runtime expression is evaluated once per step, in that step's own context. A workflow parameter reading <code class="bg-gray-100 px-1 rounded">$steps.login.outputs.token</code> therefore means what it looks like it means: each step sees the state as it entered, not a value frozen when the workflow began.</p>
+      <p class="text-gray-600 text-sm">This is inheritance rather than dispatch, so it happens during normalization. A normalized workflow's steps already carry what they inherit, exactly as a normalized OpenAPI operation already carries the parameters it inherits from its Path Item, and neither executor knows about it.</p>
+    </section>
+
     <!-- Not yet supported -->
     <section id="not-yet-supported" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-4">Not Yet Supported</h2>
@@ -252,8 +369,8 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
     </section>
 
     <!-- Built With -->
-    <section id="built-with" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-6">Built With</h2>
+    <section id="toolkit" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-6">Rest of the Toolkit</h2>
       <div class="grid md:grid-cols-2 gap-6">
         <div class="product-card">
           <h3 class="product-card-title">Validator</h3>
@@ -281,7 +398,7 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
         </div>
       </div>
       <p class="text-gray-500 text-sm mt-6">
-        Reuses the loading, resolution, and normalization primitives shared with <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> and <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a>, and builds on <a href="https://github.com/speclynx/apidom" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">SpecLynx ApiDOM</a> data models.
+        Under the hood, the Runner reuses the loading, resolution, and normalization primitives shared with <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> and <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a>.
       </p>
     </section>
 
@@ -291,11 +408,11 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
       <div class="space-y-6">
         <div>
           <h3 class="font-semibold text-gray-900 mb-2">Can I install the Runner today?</h3>
-          <p class="text-gray-700">Not from npm. <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> is private and under heavy development inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo. It will publish once its API stabilizes.</p>
+          <p class="text-gray-700">Not from npm. <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> is under heavy development in the open, inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo. It will publish once its API stabilizes.</p>
         </div>
         <div>
           <h3 class="font-semibold text-gray-900 mb-2">Does the Runner handle authentication?</h3>
-          <p class="text-gray-700">Not directly. Arazzo itself is auth-agnostic. Credentials are applied by decorating the outgoing request with a <code class="bg-gray-100 px-1 rounded">requestInterceptor</code>, which runs after the request is built and before it's sent.</p>
+          <p class="text-gray-700">Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. It gives you two seams instead. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> decorates the built request after it is assembled and before it is sent, which covers the everyday cases: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport-level concerns such as mTLS client certificates or a proxy belong in a replacement <code class="bg-gray-100 px-1 rounded">httpClient</code>. Interceptor edits land in the request record that <code class="bg-gray-100 px-1 rounded">$request.*</code> and the trace read, whereas transport-level changes are deliberately invisible to it.</p>
         </div>
         <div>
           <h3 class="font-semibold text-gray-900 mb-2">Can I swap the HTTP transport?</h3>
@@ -317,7 +434,7 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
           "name": "Can I install the Runner today?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not from npm. @usearazzo/runner is private and under heavy development inside the arazzo-toolkit monorepo. It will publish once its API stabilizes."
+            "text": "Not from npm. @usearazzo/runner is under heavy development in the open, inside the arazzo-toolkit monorepo. It will publish once its API stabilizes."
           }
         },
         {
@@ -325,7 +442,7 @@ console.log(response.request.url); // the URL as actually sent</code></pre>
           "name": "Does the Runner handle authentication?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not directly. Arazzo itself is auth-agnostic. Credentials are applied by decorating the outgoing request with a requestInterceptor, which runs after the request is built and before it's sent."
+            "text": "Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. It gives you two seams instead. A requestInterceptor decorates the built request after it is assembled and before it is sent, which covers the everyday cases: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport-level concerns such as mTLS client certificates or a proxy belong in a replacement httpClient. Interceptor edits land in the request record that $request.* and the trace read, whereas transport-level changes are deliberately invisible to it."
           }
         },
         {

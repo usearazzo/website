@@ -15,7 +15,9 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
 - **Validator** — `@usearazzo/validator`, **not yet published**, under heavy development. Semantic
   validation and linting for Arazzo documents, LSP-compatible diagnostics, opt-in JSON Schema
   validation.
-- **Runner** — `@usearazzo/runner`, private/unpublished, under heavy development. Executes Arazzo
+- **Runner** — `@usearazzo/runner`, **not yet published**, under heavy development. Its `package.json`
+  carries `"private": true`, which is a publish guard, not secrecy: the source is public in the
+  monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
   workflows against live APIs described by OpenAPI source descriptions, step by step.
 
 **Nothing in the toolkit is on npm.** All five package names 404 on the registry — verify with
@@ -78,15 +80,15 @@ _posts/
 pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
-  cli.html                       # CLI product page — in-development framing, no fake install steps
-  runner.html                    # Runner product page, sidebar nav, architecture + JS API
+  cli.html                       # CLI product page — design sketch only, package does not exist
+  runner.html                    # Runner product page, sidebar nav, inline SVG architecture + JS API
   validator.html                 # Validator product page, sidebar nav, in-development framing + JS API
-  about.html                     # Team, mission, track record, "Built on SpecLynx" credit
+  about.html                     # Mission, team, track record, "Built on SpecLynx" credit
   privacy.html, terms.html       # Legal pages
 assets/
   css/main.css                   # Custom CSS + CSS variables
   js/main.js                     # Mobile menu, lightbox, heading anchors
-  images/                        # Logos, diagrams, screenshots
+  images/                        # Logos (incl. asyncapi-logo.svg), favicons, team/ headshots
 robots.txt                       # Sitemap directive (uses Jekyll variables)
 llms.txt                         # LLM crawler discovery file
 ```
@@ -105,9 +107,9 @@ llms.txt                         # LLM crawler discovery file
   the WCAG formula on paper, before trusting a shade close to the 4.5 line), `--color-accent:
   #94C83D` (brand "leaf", decorative only — never body text), `--color-moss: #6BA543` (secondary
   green for gradients/hover).
-- Favicons were rasterized from `fork.svg` via `google-chrome --headless --screenshot` (no
-  ImageMagick/rsvg-convert/PIL in this environment) — see git history for the exact commands if
-  regenerating. `favicon.ico` is a hand-built PNG-in-ICO container (Python stdlib `struct`).
+- Favicons were rasterized from `fork.svg` via `google-chrome --headless --screenshot` — see git
+  history for the exact commands if regenerating. (Pillow *is* available now, so resizing and
+  cropping can be done in Python; ImageMagick and rsvg-convert are still absent.) `favicon.ico` is a hand-built PNG-in-ICO container (Python stdlib `struct`).
 - No LaunchList/newsletter widget — SpecLynx's site had one, UseArazzo's doesn't.
 
 ## Inline Links in Body Text
@@ -124,7 +126,10 @@ JavaScript in `main.js` auto-generates `#` anchor links on headings with IDs and
 
 ### Schema.org JSON-LD Structured Data
 - **Organization** — sitewide via `_includes/schema-organization.html` (name, logo, email, sameAs). Carries `"@id"` (the site root URL) so other JSON-LD blocks can reference it, e.g. blog posts' `"publisher": { "@id": ... }`
-- **SoftwareApplication** — on each product page (category, license, price, author)
+- **SoftwareApplication** — on `/validator/` and `/runner/` only (category, license, version,
+  author). Deliberately **absent from `/cli/`**: that block asserts a real application with a
+  zero-price `Offer`, and no `@usearazzo/cli` source exists yet, so it would tell crawlers something
+  the visible page denies. Add it when the package does.
 - **BreadcrumbList** — on each product page (Home > Product Name)
 - **Person** — on About page (both co-founders with jobTitle, URLs, sameAs)
 - **FAQPage** — on each product page
@@ -152,15 +157,79 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
   check `arazzo-toolkit/packages/{validator,runner}/README.md` and `package.json` first.
 - Keep the "not yet published" framing on every product page until that package actually resolves
   on the npm registry. `@usearazzo/cli` does not even exist in `arazzo-toolkit/packages/` yet.
-- Keep the Runner page's "pre-1.0 / private" framing until `@usearazzo/runner`'s `package.json`
-  drops `"private": true`.
+- Keep the Runner page's "not yet published" framing until `@usearazzo/runner`'s `package.json`
+  drops `"private": true` and the package resolves on the npm registry.
+- **Package metadata does not belong on product pages.** Node engine floors, transitive dependency
+  versions, and similar install-time detail live in the README and `package.json`, where someone
+  installing will look. A product page introduces a product to someone evaluating it. README parity
+  is not the goal; three additions were reverted for exactly this reason.
+- Product page copy is checked against the package README, but the README is not automatically
+  right. Both the `docs/rules.md` link (a 404) and the "private" framing came from READMEs.
+
+## Writing style
+
+- **No em dashes or en dashes in site copy.** `pages/`, `_includes/`, `_layouts/`, `llms.txt`, and
+  `README.md` were swept clean of all 58 occurrences. Rephrase with a colon, comma, semicolon,
+  parentheses, or a sentence split. Hyphens inside compound words ("command-line", "step-by-step")
+  are fine. Check with `grep -rn "&mdash;\|—\|&ndash;\|–" pages/ _includes/ _layouts/ llms.txt README.md`
+  before calling copy done. This file is internal notes and is exempt.
+- Prefer periods over semicolons when both work; a semicolon joining two loosely related clauses
+  reads as odd.
+- Lead with what the reader can do, not with what is missing. "For now the Validator runs from a
+  checkout" beats "There is nothing to install yet".
+- The upstream org profile README uses em dashes heavily, so strip them when porting from it.
+
+## Product page conventions
+
+The three product pages share a shape. Keep them parallel when editing one.
+
+- **Status badge ladder**: `Published` / `In development` / `Idea`. Everything is currently
+  `In development`; `Idea` marks a single unbuilt command (`init`) inside an otherwise settled page.
+- **Status callout** directly under the intro paragraph (`bg-[#F0F5E7] border-l-4 border-primary-light`),
+  stating plainly what does not exist.
+- **CTA pair**: "View source on GitHub" (primary) and "Follow Discussions" (secondary), both
+  pointing at real destinations, never npm.
+- **"Availability"**, not "Installation", while nothing is installable. An install heading promises
+  a command that does not exist.
+- **"Rest of the Toolkit"** for the sibling-product cards. "Built With" is only correct on `/cli/`,
+  which genuinely will be built with the other two; on `/validator/` and `/runner/` it was backwards.
+  Each of those pages ends with an "Under the hood, X uses ..." line naming the real dependency.
+- **First FAQ answers "can I install this today?"** in the visible HTML and in the `FAQPage` JSON-LD.
+- **SpecLynx is not mentioned on product pages.** It appears only in the About page's "Built on
+  SpecLynx" section (and its `llms.txt` mirror), where it is founder lineage rather than a
+  dependency note. The org's public members are `char0n` and `frantuma`, so "our own API tooling
+  foundation" is accurate.
+- **Never call an unpublished package "private".** `"private": true` in `package.json` is a publish
+  guard; the source is public in the monorepo like everything else.
+
+### Product page layout
+
+`<main class="flex-1 min-w-0 max-w-4xl px-6 py-12">` — the **`min-w-0` is load-bearing**. Flex
+children default to `min-width: auto`, so a wide `<pre>` refuses to shrink and pushes the column
+past the viewport, which `overflow-x: hidden` on `html` then clips instead of scrolling. Without it
+every product page loses the right edge of its prose below roughly 500px, and `.code-block`'s
+`overflow-x: auto` can never fire. Verify at 420px after touching these pages.
+
+### Diagrams
+
+The Runner's architecture diagram is **inline SVG** in `pages/runner.html`, not an image: real text,
+brand palette, `role="img"` with `<title>`/`<desc>`. There is no mermaid runtime on the site, so do
+not paste rendered mermaid screenshots (they also mangle `<br/>` labels into run-on text). The old
+`.architecture-box` / `.architecture-box-highlight` rules in `main.css` are now unused.
 
 ## Important Notes
 
 - No mention of SmartBear or Swagger as company names in ApiDOM-adjacent content beyond what's
   already public (the founders' own Swagger contribution history on the About page is fine — that's
   founder biography, not proprietary company detail).
-- The `baseurl` is `""` (empty) — internal links use `{{ '/path/' | relative_url }}`
-- The `url` is `https://usearazzo.com`
+- **`baseurl` is currently `"/website"` and `url` is `https://usearazzo.github.io`** so the site can
+  be tested on the GitHub Pages project URL. `_config.yml` carries a comment with the exact values
+  to restore (`baseurl: ""`, `url: "https://usearazzo.com"`) before `usearazzo.com` goes live.
+  Reverting the config and repointing DNS have to happen together: with a `CNAME` present, GitHub
+  applies the custom domain as soon as DNS verifies, and every URL would gain a `/website` prefix.
+- Never hardcode a root-relative path. Always `{{ '/path/' | relative_url }}` for `href`/`src`, and
+  `{{ '/path/' | absolute_url }}` inside JSON-LD, which needs absolute URLs. A non-empty `baseurl`
+  is what exposes these; three were found and fixed this way (`/favicon.ico`, the footer logo link,
+  and `site.webmanifest`'s `id`/`start_url`).
 - No confirmed LinkedIn/X/Twitter accounts for UseArazzo — footer/nav only link GitHub + email until
   real accounts exist. Don't add social icons speculatively.
