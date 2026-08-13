@@ -7,13 +7,8 @@ description: >-
   for multi-step API workflows. Validate documents, run workflows against live APIs, and read the
   trace of each step.
 keywords: UseArazzo, Arazzo, Arazzo Specification, OpenAPI, API workflows, workflow automation, CLI, Runner, Validator, API tooling
-# TESTING ON THE GITHUB PAGES PROJECT URL.
-# Before usearazzo.com goes live, revert these two to:
-#   baseurl: ""
-#   url: "https://usearazzo.com"
-# Leaving them as-is once DNS points at GitHub Pages would prefix every URL with /website.
-baseurl: "/website"
-url: "https://usearazzo.github.io"
+baseurl: ""
+url: "https://usearazzo.com"
 github_username: usearazzo
 
 # Build settings
