@@ -3,7 +3,7 @@ title: "API Workflows Are Still Improvised. Here Is What We Are Doing About It"
 description: "OpenAPI describes endpoints, not the order you call them in. Arazzo fixes that on paper. UseArazzo is building the tooling that makes it real, in the open."
 date: 2026-08-18
 image:
-  path: /assets/images/blog/introducing-usearazzo.png
+  path: /assets/images/blog/api-workflows-are-still-improvised.png
   width: 1200
   height: 630
   alt: "One path splitting into two parallel green tracks that rejoin, on a dark green background"
