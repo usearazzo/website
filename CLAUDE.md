@@ -222,11 +222,23 @@ not paste rendered mermaid screenshots (they also mangle `<br/>` labels into run
 - No mention of SmartBear or Swagger as company names in ApiDOM-adjacent content beyond what's
   already public (the founders' own Swagger contribution history on the About page is fine — that's
   founder biography, not proprietary company detail).
-- **`baseurl` is currently `"/website"` and `url` is `https://usearazzo.github.io`** so the site can
-  be tested on the GitHub Pages project URL. `_config.yml` carries a comment with the exact values
-  to restore (`baseurl: ""`, `url: "https://usearazzo.com"`) before `usearazzo.com` goes live.
-  Reverting the config and repointing DNS have to happen together: with a `CNAME` present, GitHub
-  applies the custom domain as soon as DNS verifies, and every URL would gain a `/website` prefix.
+- **The site is live on the custom domain: `baseurl: ""`, `url: "https://usearazzo.com"`, with a
+  `CNAME` of `usearazzo.com`.** These are the correct values; do not "restore" the old project-page
+  pair (`baseurl: "/website"`, `url: "https://usearazzo.github.io"`), which is what an earlier
+  version of this file documented as current. `usearazzo.github.io/website/` now 301s to the custom
+  domain.
+  - If you ever do test on the project URL again, note that the config and the `CNAME` have to move
+    together. With a `CNAME` present, GitHub applies the custom domain as soon as DNS verifies, so a
+    `/website` baseurl makes every real URL 404 at the domain root and serves GitHub Pages' default
+    "Page not found" page instead.
+  - That mismatch is not just a broken-links problem. It happened for a window on 2026-08-13
+    (`CNAME` added in `0e1d355`, baseurl fixed later the same day in `7471ebe`), and Google crawled
+    `usearazzo.com` during it, found only GitHub's 404 page, and cached **GitHub's Octocat as the
+    site favicon** in search results and Search Console. The live favicon chain has been verified
+    correct since (`/favicon.ico` is a valid ICO with 16/32/48px entries, Googlebot gets a 200,
+    nothing is blocked in `robots.txt`); only Google's cache is stale. The fix is Request Indexing
+    on the home page in Search Console plus patience, and **never renaming `/favicon.ico`**, since a
+    moved favicon URL restarts Google's refresh clock.
 - Never hardcode a root-relative path. Always `{{ '/path/' | relative_url }}` for `href`/`src`, and
   `{{ '/path/' | absolute_url }}` inside JSON-LD, which needs absolute URLs. A non-empty `baseurl`
   is what exposes these; three were found and fixed this way (`/favicon.ico`, the footer logo link,
