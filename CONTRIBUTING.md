@@ -26,7 +26,9 @@ Two ways to submit:
 
 3. `<small>` carries the author or organisation and, for dated content, a `&middot;` plus the
    month of publication as `Mon YYYY`. For living resources with no publication date (a
-   repository, a product, a Slack channel), just the author or organisation.
+   repository, a product, a Slack channel), just the author or organisation. When crediting
+   both a person and their organisation, write the person first, joined by a comma:
+   `Jane Doe, Acme Inc.`
 4. Drop the `<span class="note">` line if you have nothing to say.
 5. Match the surrounding indentation so the diff stays one clean block.
 6. For a YouTube video, add an embedded player as the last line inside the `<li>`, using the
