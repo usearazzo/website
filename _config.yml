@@ -46,6 +46,7 @@ defaults:
 # Exclude from processing
 exclude:
   - CLAUDE.md
+  - CONTRIBUTING.md
   - README.md
   - LICENSE
   - NOTICE

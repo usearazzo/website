@@ -1,0 +1,439 @@
+---
+layout: base
+title: Arazzo Ecosystem - Every Arazzo Resource, in One Place
+description: A registry of external Arazzo resources. Articles, videos, tools, the specification itself, and real Arazzo documents in the wild, curated and reviewed.
+permalink: /ecosystem/
+stylesheets:
+  - /assets/css/ecosystem.css
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Ecosystem", "item": "{{ '/ecosystem/' | absolute_url }}" }
+  ]
+}
+</script>
+
+<div class="flex-1">
+<div class="flex">
+  <!-- Sticky Sidebar -->
+  <aside class="hidden lg:block w-64 flex-shrink-0">
+    <nav class="sticky top-[82px] p-6 space-y-4 text-sm">
+      <div class="font-bold text-primary-dark mb-4">Ecosystem</div>
+      <a href="#spec" class="block text-gray-600 hover:text-primary-light">Spec</a>
+      <a href="#tools" class="block text-gray-600 hover:text-primary-light">Tools</a>
+      <a href="#articles" class="block text-gray-600 hover:text-primary-light">Articles</a>
+      <a href="#videos" class="block text-gray-600 hover:text-primary-light">Videos</a>
+      <a href="#examples" class="block text-gray-600 hover:text-primary-light">Examples</a>
+      <a href="#other" class="block text-gray-600 hover:text-primary-light">Other</a>
+      <a href="#curation" class="block text-gray-600 hover:text-primary-light">Curation policy</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 min-w-0">
+  <div class="ecosystem-hero">
+    <div class="max-w-6xl px-6 py-12">
+      <header>
+        <h1 class="text-4xl font-extrabold text-primary-dark mb-3">Arazzo Ecosystem</h1>
+        <p class="text-xl text-gray-600 max-w-3xl">Every <strong>external Arazzo resource</strong>, in one place: the specification, tools, articles, videos, and examples in the wild.</p>
+        <p class="text-gray-600 max-w-3xl mt-3">Arazzo is the <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Initiative's specification</a> for describing multi-step API workflows, and a real ecosystem is forming around it. This page keeps track: hand-curated, reviewed regularly, and open to submissions from any vendor.</p>
+        <p class="text-sm text-gray-500 mt-4">
+          Last reviewed: 22 August 2026
+          <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
+          <a href="https://github.com/usearazzo/website/issues/new?template=submit-a-resource.yml" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Submit a resource</a>
+          <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
+          <a href="https://github.com/usearazzo/website/commits/main.atom" class="text-primary-light underline hover:no-underline" target="_blank" rel="noopener noreferrer">Subscribe to updates</a>
+        </p>
+      </header>
+
+    </div>
+  </div>
+
+  <!-- Add new entries where they fit best; when unsure, at the top. Snippet and rules: CONTRIBUTING.md in the repo root. -->
+
+  <section id="spec" class="bg-white">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Spec</h2>
+      <p class="text-gray-600 mb-4">The Arazzo Specification itself: published versions, JSON Schemas, the official examples, and where its development happens. The latest version is 1.1.0; most tooling still targets 1.0.1.</p>
+
+      <div class="ecosystem-group">
+        <h3>Specification versions</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://spec.openapis.org/arazzo/v1.1.0.html" target="_blank" rel="noopener noreferrer">Arazzo Specification 1.1.0</a>
+            <small>OpenAPI Initiative &middot; May 2026</small>
+            <span class="note">The current version. Adds AsyncAPI source descriptions; most tooling still targets 1.0.1.</span>
+          </li>
+          <li>
+            <a href="https://spec.openapis.org/arazzo/v1.0.1.html" target="_blank" rel="noopener noreferrer">Arazzo Specification 1.0.1</a>
+            <small>OpenAPI Initiative &middot; Jan 2025</small>
+            <span class="note">The patch release of 1.0 and the version most tooling targets today.</span>
+          </li>
+          <li>
+            <a href="https://spec.openapis.org/arazzo/v1.0.0.html" target="_blank" rel="noopener noreferrer">Arazzo Specification 1.0.0</a>
+            <small>OpenAPI Initiative &middot; May 2024</small>
+            <span class="note">The first release of the specification.</span>
+          </li>
+          <li>
+            <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer">Arazzo Specification, latest</a>
+            <small>OpenAPI Initiative</small>
+            <span class="note">A permalink that always resolves to the newest published version.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>JSON Schemas</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://spec.openapis.org/arazzo/1.1/schema/2026-04-15" target="_blank" rel="noopener noreferrer">Arazzo 1.1 JSON Schema (iteration 2026-04-15)</a>
+            <small>OpenAPI Initiative &middot; Apr 2026</small>
+            <span class="note">Structural validation only; the specification's semantic requirements need a validator on top.</span>
+          </li>
+          <li>
+            <a href="https://spec.openapis.org/arazzo/1.0/schema/2025-10-15" target="_blank" rel="noopener noreferrer">Arazzo 1.0 JSON Schema (iteration 2025-10-15)</a>
+            <small>OpenAPI Initiative &middot; Oct 2025</small>
+            <span class="note">The newest schema iteration for 1.0.x documents.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Official examples</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/OAI/Arazzo-Specification/tree/main/examples/1.0.0" target="_blank" rel="noopener noreferrer">Official Arazzo 1.0 examples</a>
+            <small>OpenAPI Initiative &middot; May 2024</small>
+            <span class="note">Pet adoption, buy-now-pay-later, OAuth, and FAPI-PAR workflows, each alongside its OpenAPI source description.</span>
+          </li>
+          <li>
+            <a href="https://github.com/OAI/Arazzo-Specification/tree/main/examples/1.1.0" target="_blank" rel="noopener noreferrer">Official Arazzo 1.1 examples</a>
+            <small>OpenAPI Initiative &middot; May 2026</small>
+            <span class="note">Currently one file: the AsyncAPI source description used by the 1.1.0 specification.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Participation</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/OAI/Arazzo-Specification" target="_blank" rel="noopener noreferrer">OAI/Arazzo-Specification repository</a>
+            <small>OpenAPI Initiative</small>
+            <span class="note">Where the specification is developed: issues, pull requests, and the community tooling list.</span>
+          </li>
+          <li>
+            <a href="https://github.com/OAI/Arazzo-Specification/blob/main/SPECIAL_INTEREST_GROUP.md" target="_blank" rel="noopener noreferrer">Arazzo Special Interest Group</a>
+            <small>OpenAPI Initiative</small>
+            <span class="note">How the SIG behind the specification works and how to take part.</span>
+          </li>
+          <li>
+            <a href="https://github.com/OAI/sig-workflows" target="_blank" rel="noopener noreferrer">OAI/sig-workflows repository</a>
+            <small>OpenAPI Initiative</small>
+            <span class="note">The SIG Workflows repository where the specification effort began; early history and proposals.</span>
+          </li>
+          <li>
+            <a href="https://github.com/OAI/Arazzo-Specification/blob/main/README.md#getting-involved" target="_blank" rel="noopener noreferrer">OpenAPI Slack, arazzo channel</a>
+            <small>OpenAPI Initiative</small>
+            <span class="note">The README's Getting Involved section carries the workspace invite link and channel name.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="tools" class="ecosystem-band-tint">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Tools</h2>
+      <p class="text-gray-600 mb-4">Arazzo tooling grouped by the job you are trying to do. UseArazzo's own toolkit is deliberately absent; this page is for everyone else's.</p>
+
+      <div class="ecosystem-group">
+        <h3>Author &amp; visualise</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://jentic.com/arazzo-editor" target="_blank" rel="noopener noreferrer">Arazzo Editor</a>
+            <small>Jentic</small>
+            <span class="note">Form-based editing with a live diagram of the workflow.</span>
+          </li>
+          <li>
+            <a href="https://arazzo-editor.symplr.io/" target="_blank" rel="noopener noreferrer">Arazzo Editor</a>
+            <small>Symplr</small>
+            <span class="note">Visualise, execute, and publish Arazzo workflows in the browser.</span>
+          </li>
+          <li>
+            <a href="https://arazzo-ui.jentic.com/" target="_blank" rel="noopener noreferrer">Arazzo UI</a>
+            <small>Jentic</small>
+            <span class="note">Renders workflows as interactive documentation with diagram and text views.</span>
+          </li>
+          <li>
+            <a href="https://github.com/API-Flows/api-flows-studio" target="_blank" rel="noopener noreferrer">API Flows Studio</a>
+            <small>API-Flows</small>
+            <span class="note">Web application that loads and displays an Arazzo document.</span>
+          </li>
+          <li>
+            <a href="https://github.com/lornajane/apitapviz" target="_blank" rel="noopener noreferrer">apitapviz</a>
+            <small>Lorna Mitchell</small>
+            <span class="note">Renders Arazzo files as Markdown or Mermaid diagrams.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Lint &amp; validate</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/Redocly/redocly-cli" target="_blank" rel="noopener noreferrer">Redocly CLI</a>
+            <small>Redocly</small>
+            <span class="note">Lints, bundles, and documents OpenAPI, AsyncAPI, and Arazzo.</span>
+          </li>
+          <li>
+            <a href="https://stoplight.io/spectral" target="_blank" rel="noopener noreferrer">Spectral</a>
+            <small>Stoplight</small>
+            <span class="note">JSON/YAML linter with an out-of-the-box Arazzo ruleset.</span>
+          </li>
+          <li>
+            <a href="https://github.com/speakeasy-api/openapi" target="_blank" rel="noopener noreferrer">Speakeasy OpenAPI</a>
+            <small>Speakeasy</small>
+            <span class="note">Go packages and CLI for validating Arazzo, OpenAPI, and Overlay documents.</span>
+          </li>
+          <li>
+            <a href="https://github.com/jentic/jentic-arazzo-tools/tree/main/packages/jentic-arazzo-validator" target="_blank" rel="noopener noreferrer">Arazzo Validator</a>
+            <small>Jentic</small>
+            <span class="note">JSON Schema validation plus semantic validation and linting.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Run &amp; test</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/Mohammed-Alama/php-arazzo" target="_blank" rel="noopener noreferrer">php-arazzo</a>
+            <small>Mohammed Alama</small>
+            <span class="note">Native Arazzo workflow engine for PHP and Laravel: parse, validate, and execute OpenAPI call sequences.</span>
+          </li>
+          <li>
+            <a href="https://redocly.com/respect-cli" target="_blank" rel="noopener noreferrer">Respect CLI</a>
+            <small>Redocly</small>
+            <span class="note">Runs Arazzo workflows and checks schemas, status codes, and success criteria.</span>
+          </li>
+          <li>
+            <a href="https://github.com/jentic/arazzo-engine/tree/main/runner" target="_blank" rel="noopener noreferrer">Arazzo Runner</a>
+            <small>Jentic</small>
+            <span class="note">Python engine that executes Arazzo workflows and individual OpenAPI calls.</span>
+          </li>
+          <li>
+            <a href="https://strefethen.github.io/arazzo-cli/" target="_blank" rel="noopener noreferrer">arazzo-cli</a>
+            <small>Steve Trefethen</small>
+            <span class="note">Standalone workflow executor with a runtime engine, debugger, and MCP server.</span>
+          </li>
+          <li>
+            <a href="https://github.com/leidenheit/itarazzo-library" target="_blank" rel="noopener noreferrer">Itarazzo</a>
+            <small>leidenheit</small>
+            <span class="note">Java library to parse, validate, and execute Arazzo documents.</span>
+          </li>
+          <li>
+            <a href="https://specmatic.io/" target="_blank" rel="noopener noreferrer">Specmatic</a>
+            <small>Specmatic</small>
+            <span class="note">Authoring, generation, mocking, and testing of Arazzo workflows.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Generate &amp; convert</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/jentic/arazzo-engine/tree/main/generator" target="_blank" rel="noopener noreferrer">Arazzo Generator</a>
+            <small>Jentic</small>
+            <span class="note">Analyses an OpenAPI description and proposes meaningful workflows.</span>
+          </li>
+          <li>
+            <a href="https://github.com/JaredCE/Arazzo-Generator" target="_blank" rel="noopener noreferrer">Arazzo-Generator</a>
+            <small>JaredCE</small>
+            <span class="note">Generates Arazzo workflows from OpenAPI documents.</span>
+          </li>
+          <li>
+            <a href="https://frankkilcommins.github.io/arazzo2openapi" target="_blank" rel="noopener noreferrer">arazzo2openapi</a>
+            <small>Frank Kilcommins</small>
+            <span class="note">Converts Arazzo documents into OpenAPI documents with type inference.</span>
+          </li>
+          <li>
+            <a href="https://github.com/b-lab-io/pyarazzo" target="_blank" rel="noopener noreferrer">pyarazzo</a>
+            <small>b-lab-io</small>
+            <span class="note">CLI that renders Arazzo into other formats such as Markdown or PlantUML.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Libraries &amp; SDKs</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/jentic/jentic-arazzo-tools/tree/main/packages/jentic-arazzo-parser" target="_blank" rel="noopener noreferrer">Arazzo Parser</a>
+            <small>Jentic</small>
+            <span class="note">TypeScript/JavaScript parser for Arazzo 1.0.0 and 1.0.1 documents.</span>
+          </li>
+          <li>
+            <a href="https://github.com/jentic/jentic-arazzo-tools/tree/main/packages/jentic-arazzo-resolver" target="_blank" rel="noopener noreferrer">Arazzo Resolver</a>
+            <small>Jentic</small>
+            <span class="note">Resolves and dereferences Arazzo and OpenAPI documents.</span>
+          </li>
+          <li>
+            <a href="https://github.com/swaggerexpert/arazzo-runtime-expression" target="_blank" rel="noopener noreferrer">Arazzo Runtime Expression</a>
+            <small>SwaggerExpert</small>
+            <span class="note">Parses, validates, and extracts Arazzo runtime expressions.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="articles" class="bg-white">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Articles</h2>
+      <p class="text-gray-600 mb-4">Blog posts, tutorials, guides, and announcements about Arazzo.</p>
+      <ul class="ecosystem-list">
+        <li>
+          <a href="https://b-lab.io/posts/2026-06-23-arazzo-next-layer/" target="_blank" rel="noopener noreferrer">Arazzo as the Next-Layer Specification for Workflow Intent Across APIs</a>
+          <small>B-Lab.io &middot; Jun 2026</small>
+        </li>
+        <li>
+          <a href="https://b-lab.io/posts/2026-06-19-composability-gap/" target="_blank" rel="noopener noreferrer">The Composability Gap: When Valid APIs Fail Real Workflows</a>
+          <small>B-Lab.io &middot; Jun 2026</small>
+        </li>
+        <li>
+          <a href="https://zuplo.com/blog/openapi-arazzo-overlay-specifications-guide" target="_blank" rel="noopener noreferrer">OpenAPI Arazzo &amp; Overlay: Workflows and Spec Management</a>
+          <small>Zuplo &middot; Apr 2026</small>
+          <span class="note">Where Arazzo and Overlay fit around the core OpenAPI specification.</span>
+        </li>
+        <li>
+          <a href="https://b-lab.io/posts/2026-02-19-arazzo-api-compiler/" target="_blank" rel="noopener noreferrer">Arazzo Specification, the Compiler of Agentic AI</a>
+          <small>B-Lab.io &middot; Feb 2026</small>
+        </li>
+        <li>
+          <a href="https://swagger.io/blog/the-arazzo-specification-a-deep-dive/" target="_blank" rel="noopener noreferrer">The Arazzo Specification: A Deep Dive</a>
+          <small>Frank Kilcommins &middot; Feb 2025</small>
+          <span class="note">Long-form walkthrough of the specification by one of its editors.</span>
+        </li>
+        <li>
+          <a href="https://bump.sh/blog/arazzo-describe-api-workflows-extension-openapi/" target="_blank" rel="noopener noreferrer">Introducing Arazzo: Describe API Workflows with this extension to OpenAPI</a>
+          <small>Phil Sturgeon, Bump.sh &middot; Sep 2024</small>
+        </li>
+        <li>
+          <a href="https://brandonverzuu.com/articles/improving-dx-with-arazzo" target="_blank" rel="noopener noreferrer">Improving Developer Experience with OpenAPI's Arazzo Workflow Specification</a>
+          <small>Brandon Verzuu &middot; Jun 2024</small>
+        </li>
+        <li>
+          <a href="https://redocly.com/learn/arazzo/what-is-arazzo" target="_blank" rel="noopener noreferrer">What is Arazzo?</a>
+          <small>Redocly</small>
+          <span class="note">First chapter of Redocly's multi-part learning guide to Arazzo.</span>
+        </li>
+        <li>
+          <a href="https://www.speakeasy.com/openapi/arazzo" target="_blank" rel="noopener noreferrer">Arazzo in OpenAPI best practices</a>
+          <small>Speakeasy</small>
+          <span class="note">Reference guide to the shape of an Arazzo document, object by object.</span>
+        </li>
+        <li>
+          <a href="https://www.workflows.guru/blogs/what-is-arazzo" target="_blank" rel="noopener noreferrer">What is Arazzo Workflow Specification?</a>
+          <small>Workflows Guru</small>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="videos" class="ecosystem-band-tint">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Videos</h2>
+      <p class="text-gray-600 mb-4">Conference talks, podcasts, and screencasts about Arazzo.</p>
+      <ul class="ecosystem-list">
+        <li>
+          <a href="https://www.youtube.com/watch?v=QWHkPax6B9E" target="_blank" rel="noopener noreferrer">Arazzo and OpenAPI: Applying API First to Arazzo Workflows</a>
+          <small>Erik Wilde &middot; Nov 2025</small>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/QWHkPax6B9E" title="Arazzo and OpenAPI: Applying API First to Arazzo Workflows" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=ivUyjJEYmKg" target="_blank" rel="noopener noreferrer">API Evangelist Conversation With Frank Kilcommins About the OpenAPI Arazzo Specification</a>
+          <small>Kin Lane, The API Evangelist &middot; Feb 2025</small>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/ivUyjJEYmKg" title="API Evangelist Conversation With Frank Kilcommins About the OpenAPI Arazzo Specification" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=2dW85UChfKs" target="_blank" rel="noopener noreferrer">OpenAPI for workflows? Meet Arazzo with Frank Kilcommins</a>
+          <small>Zuplo &middot; Jun 2024</small>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/2dW85UChfKs" title="OpenAPI for workflows? Meet Arazzo with Frank Kilcommins" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=EQaGHjMIcD8" target="_blank" rel="noopener noreferrer">The Arazzo Specification: A Tapestry for API Workflows</a>
+          <small>Apidays Helsinki &amp; North &middot; Jun 2024</small>
+          <span class="note">The launch-era conference talk introducing the specification.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/EQaGHjMIcD8" title="The Arazzo Specification: A Tapestry for API Workflows" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="examples" class="bg-white">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Examples</h2>
+      <p class="text-gray-600 mb-4">Real Arazzo documents published in the wild. The specification's own examples live under Spec.</p>
+      <ul class="ecosystem-list">
+        <li>
+          <a href="https://github.com/jentic/jentic-public-apis/tree/main/workflows" target="_blank" rel="noopener noreferrer">jentic-public-apis workflows</a>
+          <small>Jentic</small>
+          <span class="note">Hundreds of Arazzo workflow documents for real public APIs, organised by API provider.</span>
+        </li>
+        <li>
+          <a href="https://arazzo-ui.jentic.com/petstore-order-workflow.arazzo.yaml" target="_blank" rel="noopener noreferrer">Petstore Order Workflow</a>
+          <small>Jentic</small>
+          <span class="note">A live Arazzo 1.0.1 document: authenticate, find a pet, place and confirm an order against the Swagger Petstore API. The demo document behind Arazzo UI.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="other" class="ecosystem-band-tint">
+    <div class="max-w-6xl px-6 py-12">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Other</h2>
+      <p class="text-gray-600 mb-4">Books, courses, newsletters, slide decks, infographics, and anything else that fits no other section.</p>
+      <ul class="ecosystem-list">
+        <li>
+          <a href="https://www.linkedin.com/feed/update/urn:li:activity:7495895464551305216/" target="_blank" rel="noopener noreferrer">Arazzo 1.1: Required Properties and Workflows Explained (infographic)</a>
+          <small>Kin Lane, The API Evangelist &middot; Aug 2026</small>
+          <span class="note">A one-page visual of the Arazzo 1.1 document shape, posted on LinkedIn.</span>
+          <a class="ecosystem-thumb-link" href="https://www.linkedin.com/feed/update/urn:li:activity:7495895464551305216/" target="_blank" rel="noopener noreferrer" aria-hidden="true" tabindex="-1"><img class="ecosystem-thumb" src="{{ '/assets/images/ecosystem/arazzo-11-infographic.jpg' | relative_url }}" alt="" width="800" height="1127" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://noti.st/frankkilcommins/2Sgric" target="_blank" rel="noopener noreferrer">The Arazzo Specification: A Tapestry for API Workflows (slides)</a>
+          <small>Frank Kilcommins &middot; May 2024</small>
+          <span class="note">Slide deck from the conference talk of the same name.</span>
+          <a class="ecosystem-thumb-link" href="https://noti.st/frankkilcommins/2Sgric" target="_blank" rel="noopener noreferrer" aria-hidden="true" tabindex="-1"><img class="ecosystem-thumb" src="{{ '/assets/images/ecosystem/tapestry-slides.jpg' | relative_url }}" alt="" width="540" height="548" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://openapi.tools/collections/arazzo" target="_blank" rel="noopener noreferrer">openapi.tools, Arazzo collection</a>
+          <small>APIs You Won't Hate</small>
+          <span class="note">The OpenAPI tooling directory filtered to tools with Arazzo support.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+  <div class="bg-white" id="curation">
+    <div class="max-w-6xl px-6 py-12">
+      <footer class="border-t border-gray-200 pt-8">
+        <h2 class="text-lg font-bold text-primary-dark mb-3">Curation policy</h2>
+        <p class="text-gray-600 text-sm mb-4 max-w-3xl">
+          Any vendor is welcome; listing here is free, and there is no ranking. The bar for acceptance is that a resource is about Arazzo, reachable at a stable URL, and not a duplicate of something already listed. UseArazzo's own tools and content are deliberately not listed here; they have <a href="{{ '/' | relative_url }}" class="text-primary-light underline hover:no-underline">the rest of this site</a>.
+        </p>
+        <p class="text-gray-600 text-sm max-w-3xl">
+          Two neighbouring lists deserve credit: the OpenAPI Initiative's <a href="https://github.com/OAI/Arazzo-Specification/blob/main/README.md#tooling" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">tooling list in the Arazzo repository</a> and <a href="https://github.com/workflows-guru/awesome-arazzo" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">workflows-guru/awesome-arazzo</a>. This registry complements them rather than competing with them.
+        </p>
+      </footer>
+    </div>
+  </div>
+  </main>
+</div>
+</div>

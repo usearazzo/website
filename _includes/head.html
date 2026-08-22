@@ -27,6 +27,9 @@
   <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}">
   <!-- Styles -->
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  {%- for stylesheet in page.stylesheets %}
+  <link rel="stylesheet" href="{{ stylesheet | relative_url }}">
+  {%- endfor %}
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Syntax highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">

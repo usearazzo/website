@@ -1,0 +1,61 @@
+name: Submit a resource
+description: Suggest an external Arazzo resource for the Ecosystem registry at usearazzo.com/ecosystem/
+title: "[resource] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding to the registry. Any vendor is welcome and listing is free. A maintainer
+        reviews each submission against the acceptance bar and ports accepted ones to the page.
+        Prefer a pull request? See [CONTRIBUTING.md](https://github.com/usearazzo/website/blob/main/CONTRIBUTING.md).
+  - type: input
+    id: url
+    attributes:
+      label: Resource URL
+      description: A stable, publicly reachable link (no login walls, no drafts).
+      placeholder: https://example.com/the-resource
+    validations:
+      required: true
+  - type: dropdown
+    id: section
+    attributes:
+      label: Section
+      description: Where on the page it belongs. Pick Other if nothing fits.
+      options:
+        - Spec
+        - Tools
+        - Articles
+        - Videos
+        - Examples
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: Author or organisation
+      placeholder: Jane Doe, or Acme Inc.
+    validations:
+      required: true
+  - type: input
+    id: published
+    attributes:
+      label: Publication month
+      description: For dated content, as `Mon YYYY`. Leave empty for living resources (a repository, a product).
+      placeholder: Aug 2026
+  - type: textarea
+    id: note
+    attributes:
+      label: One-line note
+      description: Optional. Why is this worth a reader's time?
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: Acceptance bar
+      options:
+        - label: The resource is about Arazzo
+          required: true
+        - label: The URL is reachable and stable
+          required: true
+        - label: It is not already listed on the page
+          required: true

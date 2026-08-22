@@ -80,6 +80,22 @@ _posts/
 pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
+  ecosystem.html                 # "Arazzo Ecosystem" registry of EXTERNAL resources: ONE page
+                                 # at /ecosystem/ with hash sections in this order: #spec #tools
+                                 # #articles #videos #examples #other #curation. Product-page
+                                 # sticky sidebar (hidden below lg, like /cli/), hero gradient
+                                 # header, full-width bands alternating white / #F0F5E7 tint
+                                 # (assets/css/ecosystem.css). YouTube entries embed a
+                                 # youtube-nocookie.com iframe (.ecosystem-video). Pure HTML,
+                                 # no JS, no per-entry data-* attributes: a filter bar, star
+                                 # picks, JS-computed counts, "recently added", nav pills, nav
+                                 # cards, and six sub-pages were all built and removed at the
+                                 # owner's request ("simple and easily maintainable"); don't
+                                 # reintroduce any unasked. The page was named "Learn" first;
+                                 # the owner renamed it Ecosystem. All entry URLs are
+                                 # curl-verified before listing; never invent one. Entry
+                                 # snippet and acceptance bar in CONTRIBUTING.md. UseArazzo's
+                                 # own content is never listed; linked in nav and footer.
   cli.html                       # CLI product page — design sketch only, package does not exist
   runner.html                    # Runner product page, sidebar nav, inline SVG architecture + JS API
   validator.html                 # Validator product page, sidebar nav, in-development framing + JS API
