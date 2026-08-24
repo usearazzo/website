@@ -94,6 +94,59 @@
     border: 1px solid #E5E7EB;
 }
 
+/* Sticky "Submit a resource" button (Material-style extended FAB), so the CTA that's
+   otherwise just a small text link in the hero stays reachable while scrolling. */
+.ecosystem-fab {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-primary-dark);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: 0.875rem 1.375rem;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(23, 33, 13, 0.35), 0 2px 4px rgba(23, 33, 13, 0.25);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ecosystem-fab:hover {
+    background-color: #2A3A18;
+    box-shadow: 0 6px 16px rgba(23, 33, 13, 0.4), 0 3px 6px rgba(23, 33, 13, 0.3);
+    transform: translateY(-2px);
+}
+
+.ecosystem-fab:active {
+    transform: translateY(0);
+}
+
+.ecosystem-fab:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.ecosystem-fab svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+}
+
+/* Collapse to an icon-only circle on narrow screens so it doesn't crowd the page */
+@media (max-width: 480px) {
+    .ecosystem-fab span {
+        display: none;
+    }
+
+    .ecosystem-fab {
+        padding: 0.875rem;
+    }
+}
+
 /* Embedded YouTube player (privacy-enhanced youtube-nocookie.com).
    Reordered to the top of its card via CSS; the HTML entry format is unchanged. */
 .ecosystem-video {
