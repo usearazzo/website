@@ -10,3 +10,7 @@
 /.claude/*
 !/.claude/skills
 /.claude/settings.local.json
+
+# Python bytecode from skill scripts
+__pycache__/
+*.pyc
