@@ -575,11 +575,38 @@ h4:hover .heading-anchor {
     font-size: 0.875em;
 }
 
+.post-content .post-callout {
+    background: #F0F5E7;
+    border-left: 4px solid var(--color-primary-light);
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 1rem 1.25rem 0.25rem;
+    margin: 0 0 1.5rem;
+}
+
+.post-content .post-callout h3 {
+    margin-top: 0;
+}
+
+.post-content .post-callout code {
+    background: #E1E9D3;
+}
+
 .post-content pre {
     border-radius: 0.5rem;
     margin: 0 0 1.25rem;
     overflow-x: auto;
     max-width: 100%;
+}
+
+.post-content :not(pre) > code[class*="language-"] {
+    /* Prism's tomorrow theme paints inline code dark; kramdown adds
+       language-plaintext to every inline <code>, so win on specificity. */
+    background: #F3F4F6;
+    color: #17210D;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    text-shadow: none;
+    white-space: normal;
 }
 
 .post-content pre code {
