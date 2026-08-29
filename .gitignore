@@ -4,3 +4,9 @@
 /.jekyll-metadata
 /.bundle
 /vendor
+
+# Track Claude Code skills (overrides the global *.claude rule); keep local state out
+!/.claude
+/.claude/*
+!/.claude/skills
+/.claude/settings.local.json
