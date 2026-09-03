@@ -242,7 +242,8 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
   1.1.0 workflow documents validate and run. Arazzo documents as source descriptions validate and
   run (the Runner has supported `$sourceDescriptions.<name>.<workflowId>` cross-document
   references since arazzo-toolkit#73). OpenAPI 2.0, 3.0.x, 3.1.x source descriptions validate and
-  run. AsyncAPI source descriptions do neither. The "Supported versions" lists on `/validator/` and
+  run. OpenAPI 3.2.x and AsyncAPI source descriptions do neither, and both get an explicit
+  "no / no" row so the gap is stated rather than implied. The "Supported versions" lists on `/validator/` and
   `/runner/`, the Validator FAQ (visible and JSON-LD), and every toolkit package README must list
   the same Arazzo versions. Compatibility changes are pushed directly to `main` in all repos.
 

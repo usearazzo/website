@@ -18,6 +18,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 | Document | Versions | Validate | Run |
 | Workflow Document: Arazzo | 1.0.0, 1.0.1, 1.1.0 | yes | yes |
 | Source Description: OpenAPI | 2.0, 3.0.x, 3.1.x | yes | yes |
+| Source Description: OpenAPI | 3.2.x | no | no |
 | Source Description: Arazzo | 1.0.0, 1.0.1, 1.1.0 | yes | yes |
 | Source Description: AsyncAPI | any | no | no |
 
