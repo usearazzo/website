@@ -24,6 +24,9 @@ collections:
   posts:
     output: true
     permalink: /blog/:title/
+  guides:
+    output: true
+    permalink: /docs/guides/:title/
 
 # Default front matter
 defaults:
@@ -39,6 +42,14 @@ defaults:
       type: posts
     values:
       layout: post
+      author: "Vladimír Gorej"
+      author_url: "https://vladimirgorej.com/"
+      author_link: "/about/#vladimir-gorej"
+  - scope:
+      path: ""
+      type: guides
+    values:
+      layout: guide
       author: "Vladimír Gorej"
       author_url: "https://vladimirgorej.com/"
       author_link: "/about/#vladimir-gorej"

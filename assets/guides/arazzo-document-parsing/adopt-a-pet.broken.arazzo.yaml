@@ -1,0 +1,32 @@
+arazzo: 1.0.1
+info:
+  title: Pet adoption
+  version: 1.0.0
+sourceDescriptions:
+  - name: petstore
+    type: openapi
+    url: ./petstore.openapi.yaml
+workflows:
+  - workflowId: adopt-a-pet
+    inputs:
+      type: object
+      properties:
+        petId:
+          type: string
+    steps:
+      - stepId: find-pet
+        operationId: getPetById
+        parameters:
+          - name: petId
+            in: path
+            value: $inputs.petId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          name: $response.body#/name
+      - stepId: adopt
+       operationId: adoptPet
+        parameters:
+          - name: petId
+            in: path
+            value: $inputs.petId

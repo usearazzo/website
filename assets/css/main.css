@@ -705,3 +705,20 @@ h4:hover .heading-anchor {
 .lightbox-trigger:hover {
     opacity: 0.9;
 }
+
+/* Docs hub: a guide card left alone on its row spans both columns and goes image-left */
+@media (min-width: 768px) {
+    .guides-grid > article:last-child:nth-child(odd) {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .guides-grid > article:last-child:nth-child(odd) > a {
+        height: 100%;
+    }
+
+    .guides-grid > article:last-child:nth-child(odd) img {
+        height: 100%;
+    }
+}

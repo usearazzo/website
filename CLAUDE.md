@@ -69,6 +69,8 @@ _layouts/
   base.html                      # HTML skeleton: head, nav, content, footer, org schema
   default.html                   # Wraps content in container (inherits base)
   post.html                      # Blog post layout (breadcrumb, byline, TechArticle JSON-LD)
+  guide.html                     # Guide layout: product-page two-column shape, sidebar TOC from
+                                 # front matter `toc`, "Updated" date, TechArticle + BreadcrumbList
 _includes/
   head.html                      # <head> with seo tag, meta, CDN scripts
   nav.html                       # Responsive navbar with dropdowns
@@ -76,10 +78,21 @@ _includes/
   schema-organization.html       # Organization JSON-LD (included sitewide)
   share-buttons.html             # Social share icons (Bluesky/LinkedIn/Mastodon/X), used on blog posts
 _posts/
-  YYYY-MM-DD-title.md            # Blog posts (Markdown, rendered with post layout) — none yet
+  YYYY-MM-DD-title.md            # Blog posts (Markdown, rendered with post layout)
+_guides/
+  slug.md                        # Guides (Markdown, guide layout), output at /docs/guides/<slug>/
+assets/guides/<slug>/            # Sample documents a guide's code runs against, served as-is so
+                                 # readers can download them; every number in the guide must be
+                                 # reproducible from these files
 pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
+  docs.html                      # Docs hub (permalink: /docs/): product-page two-column shape with
+                                 # sticky sidebar (#guides #packages), guide cards from site.guides
+                                 # (empty state when none), package README cards. A guide card left
+                                 # alone on its row spans both columns, image-left (.guides-grid
+                                 # rules in main.css, pure CSS). No spec section: the Ecosystem
+                                 # page's #spec covers it
   ecosystem.html                 # "Arazzo Ecosystem" registry of EXTERNAL resources: ONE page
                                  # at /ecosystem/ with hash sections in this order: #spec #tools
                                  # #articles #videos #examples #other #curation. Product-page
@@ -165,6 +178,48 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - **Post prose is written by humans.** AI assistants build blog infrastructure and hero images but never draft or rewrite article content.
 - **Author is always a Person, never the Organization.** Defaults to Vladimír Gorej via `_config.yml` front matter defaults; UseArazzo appears only as `publisher` in JSON-LD. Byline links to `/about/#vladimir-gorej`.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
+
+## Docs and guides
+
+- `/docs/` is the single entry point for reading material, modelled on Redocly's `/docs` hub but
+  deliberately one tree, not two: guides live at `/docs/guides/<slug>/` (Jekyll `guides`
+  collection in `_guides/`), and future per-package reference pages would slot in at
+  `/docs/<package>/` beside them. The owner chose `/docs/guides/` over a top-level `/guides/` so
+  the hub is the real parent (breadcrumbs, JSON-LD) and the nav needs only one `Docs` link.
+- Breadcrumb on a guide is Home / Docs / Guides / Title, with Guides linking to `/docs/#guides`
+  (there is no separate guides index page). The JSON-LD `BreadcrumbList` mirrors it.
+- Guides are reachable from the footer's Resources column (`Guides`, pointing at `/docs/#guides`)
+  and the `Docs` nav link. The homepage does not feature guides: a homepage section was built and
+  removed at the owner's request in favour of the footer link.
+- A guide is evergreen and undated in the reader's eyes: the layout shows "Updated" (from
+  `last_modified_at`, falling back to `date`) rather than a publish date. Guides are not in the
+  RSS feed.
+- Guide front matter: `title`, `description`, `date`, `image` (`path`/`width`/`height`/`alt`,
+  optional `caption`), optional `last_modified_at`, optional `status` (rendered as a badge, e.g.
+  `Draft`), and `toc` (list of `{id, title}`) which drives the sidebar. Heading IDs in the Markdown
+  must match the `toc` ids (`## Heading {#id}`).
+- **Every guide has a hero image**, same rules and pipeline as blog posts (`blog-hero-image`
+  skill, brand greens, no photography, no logo), saved in `assets/images/guides/`. The layout and
+  the hub card both assume `image` is set.
+- Guide audience, per the owner: any developer building their own Arazzo tooling (editor plugins,
+  linters, generators, agents). Not people merely writing Arazzo documents; that is blog territory.
+- **The parsing guide describes intended behaviour for shared source descriptions**, not current
+  behaviour: it says only true cycles (ancestor on the current chain) get the cycle warning and that
+  a document reached twice through different paths is parsed once and reachable from every entry.
+  Today the parser skips both cases with the same "cycle" warning. Tracked in
+  usearazzo/arazzo-toolkit#139; re-verify the guide's network section and result tree when it lands.
+  The guide also assumes two other pending toolkit changes: `ParseError` exported from the package
+  (usearazzo/arazzo-toolkit#140) and `resolve.baseURI` for object and inline input (toolkit branch
+  `feat/137-base-uri`). Re-verify those sentences when each merges.
+- Guides follow the blog authorship rule: prose is the founders'. AI may build scaffolding,
+  outline, and first drafts from site copy and package READMEs, but final text is theirs.
+- **Owner decision (2026-09-03): the parsing guide assumes `@usearazzo/parser` is on npm** and
+  shows `npm install @usearazzo/parser`. This is a scoped exception to the sitewide "no npm
+  install until it resolves" rule, made because the package is about to publish. Before the
+  guide's `status: Draft` is removed, verify the registry returns 200 for it.
+- Package reference stays in the READMEs on GitHub until packages publish. The docs hub links to
+  them; do not mirror README content onto the site.
+- No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
 
 ## Product content accuracy
 
