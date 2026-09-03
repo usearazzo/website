@@ -80,6 +80,12 @@ None of these are built yet. They are planned, not shipping:
 
 UseArazzo is built end to end on SpecLynx (https://github.com/speclynx): the semantic parsing core, reference resolution, and standards discipline behind years of Swagger/OpenAPI tooling.
 
+## Docs
+
+- Hub for reading material: guides written by the founders, plus links to each package's README in the monorepo
+- Index: {{ site.url }}{{ site.baseurl }}/docs/
+{% for guide in site.guides %}- Guide: {{ guide.title }} ({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+{% endfor %}
 ## Arazzo Ecosystem
 
 - A registry of external Arazzo resources (not UseArazzo's own content): articles, videos, tools, the specification, examples in the wild, and anything else on-topic

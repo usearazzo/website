@@ -1,0 +1,126 @@
+---
+layout: base
+title: Docs - Guides and Package Reference
+description: Guides to working with Arazzo documents in JavaScript and TypeScript, plus the reference README for every package in the UseArazzo toolkit.
+permalink: /docs/
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Docs", "item": "{{ '/docs/' | absolute_url }}" }
+  ]
+}
+</script>
+
+<div class="flex-1">
+<div class="flex">
+  <!-- Sticky Sidebar -->
+  <aside class="hidden lg:block w-64 flex-shrink-0">
+    <nav class="sticky top-[82px] p-6 space-y-4 text-sm">
+      <div class="font-bold text-primary-dark mb-4">Docs</div>
+      <a href="#guides" class="block text-gray-600 hover:text-primary-light">Guides</a>
+      <a href="#packages" class="block text-gray-600 hover:text-primary-light">Package reference</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 min-w-0 max-w-4xl px-6 py-12">
+    <header class="mb-10">
+      <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Docs</h1>
+      <p class="text-xl text-gray-600 max-w-3xl">
+        <strong>Guides</strong> that walk through working with Arazzo documents in JavaScript and TypeScript, and the <strong>reference README</strong> for every package in the toolkit.
+      </p>
+    </header>
+
+    <!-- Guides -->
+    <section id="guides" class="mb-14">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Guides</h2>
+      <p class="text-gray-600 mb-6 max-w-3xl">Longer reads on one problem each: what it is, how you would solve it by hand, and how the toolkit approaches it. Kept up to date as the packages change.</p>
+      {% if site.guides.size > 0 %}
+      <div class="guides-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for guide in site.guides %}
+        <article class="product-card !p-0 overflow-hidden flex flex-col">
+          <a href="{{ guide.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="" class="w-full h-40 object-cover object-left">
+          </a>
+          <div class="p-6 flex flex-col flex-1">
+          <p class="text-sm text-gray-500 mb-3 flex items-center gap-2">
+            {% if guide.status %}<span class="badge badge-secondary">{{ guide.status | escape }}</span>{% endif %}
+            <span>Updated <time datetime="{{ guide.last_modified_at | default: guide.date | date_to_xmlschema }}">{{ guide.last_modified_at | default: guide.date | date: "%-d %B %Y" }}</time></span>
+          </p>
+          <h3 class="product-card-title text-xl">
+            <a href="{{ guide.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ guide.title | escape }}</a>
+          </h3>
+          <p class="product-card-description flex-1">{{ guide.description | escape }}</p>
+          <a href="{{ guide.url | relative_url }}" class="product-card-link">
+            Read guide
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
+        <p class="text-xl font-bold text-primary-dark mb-2">No guides yet</p>
+        <p class="text-gray-600 max-w-xl mx-auto">The first ones are being written. Watch the repository or follow Discussions to hear when they land.</p>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Package reference -->
+    <section id="packages">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Package reference</h2>
+      <p class="text-gray-600 mb-6 max-w-3xl">Each package documents its own API in its README, which is the reference until the packages publish. All of them live in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="product-card">
+          <h3 class="product-card-title text-xl">@usearazzo/parser</h3>
+          <p class="product-card-description">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees.</p>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
+            README on GitHub
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title text-xl">@usearazzo/resolver</h3>
+          <p class="product-card-description">Dereferences <code class="bg-gray-100 px-1 rounded">$ref</code>, JSON Schema, and reusable components across Arazzo and OpenAPI documents.</p>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
+            README on GitHub
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title text-xl">@usearazzo/validator</h3>
+          <p class="product-card-description">Semantic validation and linting with LSP-compatible diagnostics. The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator page</a> introduces it.</p>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
+            README on GitHub
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title text-xl">@usearazzo/runner</h3>
+          <p class="product-card-description">Executes Arazzo workflows against live APIs, step by step. The <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner page</a> introduces it.</p>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
+            README on GitHub
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</div>
