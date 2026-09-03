@@ -236,6 +236,15 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
   is not the goal; three additions were reverted for exactly this reason.
 - Product page copy is checked against the package README, but the README is not automatically
   right. Both the `docs/rules.md` link (a 404) and the "private" framing came from READMEs.
+- **The compatibility table lives in three places and must stay identical**: the homepage
+  `#compatibility` section, `llms.txt`, and the org profile README
+  (`usearazzo/.github/profile/README.md`). Current facts (2026-09-03): Arazzo 1.0.0, 1.0.1, and
+  1.1.0 workflow documents validate and run. Arazzo documents as source descriptions validate and
+  run (the Runner has supported `$sourceDescriptions.<name>.<workflowId>` cross-document
+  references since arazzo-toolkit#73). OpenAPI 2.0, 3.0.x, 3.1.x source descriptions validate and
+  run. AsyncAPI source descriptions do neither. The "Supported versions" lists on `/validator/` and
+  `/runner/`, the Validator FAQ (visible and JSON-LD), and every toolkit package README must list
+  the same Arazzo versions. Compatibility changes are pushed directly to `main` in all repos.
 
 ## Writing style
 
