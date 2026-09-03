@@ -111,7 +111,7 @@ This is raw. Heavy development, pre-1.0, nothing published to npm yet, APIs chan
 
 I'm announcing it anyway. Everything is built in the open, and I'd rather have you watching, questioning, and shaping it from day one than unveil a polished black box a year from now.
 
-Today the toolkit validates and runs Arazzo 1.0.0 and 1.0.1 workflows against OpenAPI 2.0, 3.0.x, and 3.1.x source descriptions. Arazzo 1.1.0 runs partially and doesn't validate yet, and AsyncAPI isn't supported. The [compatibility table]({{ '/#compatibility' | relative_url }}) on the homepage is where we keep that current, and every product page tells you exactly where that piece stands, including what doesn't exist yet. No smoke, no mirrors.
+Today the toolkit validates and runs Arazzo 1.0.0, 1.0.1, and 1.1.0 workflows against OpenAPI 2.0, 3.0.x, and 3.1.x source descriptions. AsyncAPI isn't supported yet. The [compatibility table]({{ '/#compatibility' | relative_url }}) on the homepage is where we keep that current, and every product page tells you exactly where that piece stands, including what doesn't exist yet. No smoke, no mirrors.
 
 ## Where it's headed
 

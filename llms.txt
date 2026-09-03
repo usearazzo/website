@@ -16,10 +16,9 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 ## Compatibility
 
 | Document | Versions | Validate | Run |
-| Workflow Document: Arazzo | 1.0.0, 1.0.1 | yes | yes |
-| Workflow Document: Arazzo | 1.1.0 | no | partial |
+| Workflow Document: Arazzo | 1.0.0, 1.0.1, 1.1.0 | yes | yes |
 | Source Description: OpenAPI | 2.0, 3.0.x, 3.1.x | yes | yes |
-| Source Description: Arazzo | 1.0.0, 1.0.1 | yes | no |
+| Source Description: Arazzo | 1.0.0, 1.0.1, 1.1.0 | yes | no |
 | Source Description: AsyncAPI | any | no | no |
 
 ## Products
@@ -35,7 +34,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 ### Validator
 - Semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
 - Opt-in JSON Schema (AJV) validation
-- Supports Arazzo 1.0.0 and 1.0.1
+- Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Pre-1.0, not yet published to npm, under heavy development
 - Free, open source (Apache 2.0)
 - Docs: {{ site.url }}{{ site.baseurl }}/validator/
@@ -48,7 +47,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
 - Pre-1.0, not yet published to npm, under heavy development in the open (as is every package in the toolkit)
-- Supports Arazzo 1.0.0/1.0.1 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
+- Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 - Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
