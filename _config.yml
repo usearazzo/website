@@ -36,7 +36,7 @@ defaults:
       layout: default
       # Link preview card (LinkedIn, Slack, X, Facebook). Blog posts override this
       # with their own hero image via front matter.
-      image: /assets/images/social/og-default.png
+      image: /assets/images/social/og-default-2026-09.png
   - scope:
       path: ""
       type: posts
