@@ -59,6 +59,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Collapsible FAQ: <dt><button aria-controls> toggles the matching <dd>.
+  // Without JS every answer stays visible.
+  document.querySelectorAll('.faq-toggle[aria-controls]').forEach(function(button) {
+    const answer = document.getElementById(button.getAttribute('aria-controls'));
+    if (!answer) return;
+    answer.hidden = true;
+    button.addEventListener('click', function() {
+      const open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!open));
+      answer.hidden = open;
+    });
+  });
+
   function addAnchor(heading, id) {
     const anchor = document.createElement('a');
     anchor.href = '#' + id;

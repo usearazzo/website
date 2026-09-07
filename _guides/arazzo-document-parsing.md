@@ -21,6 +21,148 @@ toc:
     title: How @usearazzo/parser approaches it
   - id: next-steps
     title: Next steps
+faq:
+  - question: "How do I parse an Arazzo document in JavaScript or TypeScript?"
+    answer: |
+      Use `@usearazzo/parser`. Its `parseArazzo` function takes a file path, a URL, a YAML or JSON string, or a plain object, and returns the same kind of result for all four:
+
+      ```js
+      import { parseArazzo } from '@usearazzo/parser';
+
+      const { api, errors, warnings } = await parseArazzo('./adopt-a-pet.arazzo.yaml');
+      ```
+
+      `api` is a typed tree of the document, and `errors` and `warnings` are annotations collected while parsing. The parser checks that the input is Arazzo and detects the format before anything else runs. A plain YAML loader also works for scripts you run yourself, but it gives you no detection, no positions, and no parsing of the expressions inside strings.
+  - question: "Can Arazzo documents be written in JSON or YAML?"
+    answer: |
+      Both. JSON is a subset of YAML 1.2, so one YAML parser reads either, but the relation only runs one way: a YAML parser also accepts a `.json` file with comments, single-quoted strings, or a trailing comma, none of which is JSON. A tool that writes the document back out, or hands it to a strict JSON consumer, has to know which format it really has. That is why `@usearazzo/parser` sniffs the content instead of trusting the file extension, and parses real JSON with the native, stricter JSON parser.
+  - question: "Can I just load an Arazzo file with a YAML parser?"
+    answer: |
+      For a one-off script over documents you wrote, yes:
+
+      ```js
+      import { readFile } from 'node:fs/promises';
+      import YAML from 'yaml';
+
+      const doc = YAML.parse(await readFile('./adopt-a-pet.arazzo.yaml', 'utf8'));
+      ```
+
+      For a tool other people use, a YAML loader falls short in four ways:
+
+      - it accepts any YAML or JSON without checking that it is Arazzo;
+      - it has no line and column positions for the nodes it returns;
+      - it leaves runtime expressions such as `$steps.find-pet.outputs.name` and success criteria as opaque strings;
+      - it stops at the file, while the workflow's meaning spans the OpenAPI, AsyncAPI, and Arazzo documents its source descriptions point at.
+  - question: "How do I tell whether a file is an Arazzo document?"
+    answer: |
+      Look for a top-level `arazzo` field holding a `1.x.y` version string. A YAML loader will happily load an OpenAPI description or a Kubernetes manifest, so something has to check for that field before any later stage runs. `parseArazzo` does this first and throws a `ParseError`, with a `cause` saying why, for anything that is not Arazzo:
+
+      ```js
+      try {
+        await parseArazzo('./petstore.openapi.yaml');
+      } catch (error) {
+        error.name;  // ParseError
+        error.cause; // why the input was refused
+      }
+      ```
+
+      By default the file resolver only reads paths ending in `.json`, `.yaml`, or `.yml`, so a `workflow.arazzo` with no extension is reported as unreadable. To read other names, pass your own `FileResolver` with a different `fileAllowList` through `resolve.resolvers`.
+  - question: "Which versions of the Arazzo specification exist?"
+    answer: |
+      Three releases so far:
+
+      - **1.0.0**, September 2024: the initial stable release.
+      - **1.0.1**, January 2025: a patch with erratum fixes and clarifications, plus the first official JSON Schema.
+      - **1.1.0**, May 2026: a minor release that adds AsyncAPI v3 source descriptions, Selector Objects, `$self` for document identity, step dependencies, and tightened evaluation semantics. It removes nothing, so a 1.0.1 document is a 1.1.0 document once the version string is bumped.
+
+      A document says which one it targets in its top-level `arazzo` field. The blog post [I Diffed Every Arazzo Release So You Don't Have To](/blog/arazzo-specification-evolution/) walks through what each release changed.
+  - question: "Which Arazzo versions does @usearazzo/parser support?"
+    answer: |
+      Arazzo 1.0.0, 1.0.1, and 1.1.0. Any `1.x.y` version is read through the same code path, so a 1.0.0 document and a 1.1.0 document produce the same kind of tree. The fields 1.1.0 added, `$self`, `channelPath`, `action`, and `correlationId`, come through as typed getters. Fields the parser does not know, from a future release or an `x-` extension, are kept with their positions, never dropped. A `2.0.0` document is refused as not Arazzo.
+
+      Deciding what is valid *for* a version is a separate job that belongs to the Validator.
+  - question: "How do I get line numbers for steps and errors in an Arazzo document?"
+    answer: |
+      Parse with `strict: false` and `sourceMap: true`:
+
+      ```js
+      const { api, errors } = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
+        parse: { parserOpts: { strict: false, sourceMap: true } },
+      });
+
+      const step = api.workflows.get(0).steps.get(0);
+      step.startLine;      // 16, zero-based
+      step.startCharacter; // 8
+      ```
+
+      Every element then carries zero-based positions counted in UTF-16 code units, which is how the Language Server Protocol and JavaScript strings both count. The tolerant parser keeps going on damaged input and reports each syntax error as an annotation in `errors` that points at the damaged text. The default `strict: true` mode uses native JSON or a strict YAML parser and throws instead, which suits runners and CI checks.
+  - question: "What is a source description in Arazzo?"
+    answer: |
+      A Source Description names an external document the workflow's steps run against, by URL and type:
+
+      ```yaml
+      sourceDescriptions:
+        - name: petstore
+          type: openapi
+          url: ./petstore.openapi.yaml
+      ```
+
+      The type is `openapi`, `arazzo`, or, since Arazzo 1.1.0, `asyncapi`. Steps reach into it through expressions such as `$sourceDescriptions.petstore.getPetById`, and a step's `workflowId` can call a workflow that lives in another Arazzo document the same way. Because an `arazzo` source has source descriptions of its own, the file you were handed is one node in a graph of documents, and a parser that stops at the file has left the hardest part to you.
+  - question: "Which OpenAPI and AsyncAPI versions can an Arazzo source description point at?"
+    answer: |
+      The specification does not pin an OpenAPI version: an `openapi` source can be any of 2.0, 3.0.x, 3.1.x, or 3.2.x, each with its own structure. An `asyncapi` source, allowed since Arazzo 1.1.0, is AsyncAPI v3 only. An `arazzo` source is another 1.x document.
+
+      What a tool can actually read is narrower. `@usearazzo/parser` parses OpenAPI 2.0, 3.0.x, and 3.1.x sources today. OpenAPI 3.2.x and AsyncAPI sources are not yet parsed: a `type: asyncapi` source comes back with an error annotation saying no parser could read it, and the main document still parses.
+  - question: "How do I parse an Arazzo runtime expression?"
+    answer: |
+      Call `parseRuntimeExpression`: string in, AST out, no document needed and nothing evaluated.
+
+      ```js
+      import { parseRuntimeExpression } from '@usearazzo/parser';
+
+      parseRuntimeExpression('$steps.find-pet.outputs.name').tree;
+      // { type: 'StepsExpression', stepId: 'find-pet', field: 'outputs', outputName: 'name' }
+
+      const { result } = parseRuntimeExpression('$steps.find-pet.outputs');
+      result.success;    // false: an outputs reference needs an output name
+      result.maxMatched; // 15, the offset where parsing stopped
+      ```
+
+      Runtime expressions such as `$inputs.petId` or `$response.body#/pets/0/id` are a small language with their own ABNF grammar, embedded in ordinary strings. Invalid syntax never throws: `result.success` goes false and `result.maxMatched` is the offset a diagnostic should point at.
+  - question: "How do I parse an Arazzo success criterion condition?"
+    answer: |
+      Call `parseCriterionCondition` with the condition string:
+
+      ```js
+      import { parseCriterionCondition } from '@usearazzo/parser';
+
+      const { tree } = parseCriterionCondition("$response.body#/status == 'available' && $statusCode == 200");
+      tree.type;                 // LogicalExpression
+      tree.left.type;            // BinaryExpression
+      tree.left.left.type;       // RuntimeExpression, the sub-AST from parseRuntimeExpression
+      tree.left.right;           // { type: 'Literal', valueType: 'string', value: 'available' }
+      ```
+
+      It covers the `simple` criterion type: comparisons, boolean operators, negation, literals, and the `.field` and `[0]` accessors, with each runtime expression operand parsed into its own sub-AST. JSONPath, XPath, and regular expression criteria are left to their own libraries.
+  - question: "Does parsing an Arazzo document also validate it?"
+    answer: |
+      No. A step that references a workflow that does not exist is still a well-formed document, and validity depends on rules that change with every Arazzo release. The UseArazzo toolkit keeps the jobs apart:
+
+      - `@usearazzo/parser` reads the document;
+      - `@usearazzo/resolver` dereferences `$ref`s and reusable references;
+      - the Validator judges whether the document is correct;
+      - the Runner evaluates expressions during a run.
+  - question: "Can an Arazzo parser follow source descriptions to other Arazzo and OpenAPI documents?"
+    answer: |
+      Yes. In `@usearazzo/parser` it is off by default, because it means file system and network access, and switched on per call:
+
+      ```js
+      const parseResult = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
+        parse: { parserOpts: { sourceDescriptions: true, sourceDescriptionsMaxDepth: 2 } },
+      });
+      ```
+
+      `sourceDescriptions` can also be an array of names to parse only some. Each source becomes its own parse result, appended after the main document. Every link is resolved to a canonical URI first, a document already on the chain of ancestors is reported as a cycle and skipped, a document shared by two parents is parsed once, and an unreachable file becomes an error annotation rather than an exception. For inline strings and objects, which have no location of their own, pass `resolve.baseURI` so relative URLs have something to resolve against.
 ---
 
 You are building something that reads Arazzo documents. An editor plugin, a linter, a generator, an agent that turns workflows into tools, or just a script that lists every step in a repository's workflows. Before any of that can start, the document has to be read. This guide is about that reading step: why it is more than a YAML loader, what a tool actually needs from a parser, and how UseArazzo's parser, `@usearazzo/parser`, answers those needs.
@@ -231,7 +373,7 @@ workflow.steps.forEach((step) => {
 console.log(parseResult.errors.length, parseResult.warnings.length); // 0 0
 ```
 
-Input that cannot be read as Arazzo at all, an OpenAPI description passed by mistake or a file that is not there, throws a `ParseError` whose `cause` says why. Local file paths must end in `.json`, `.yaml`, or `.yml`. The file resolver refuses anything else, so a `workflow.arazzo` with no extension is reported as unreadable.
+Input that cannot be read as Arazzo at all, an OpenAPI description passed by mistake or a file that is not there, throws a `ParseError` whose `cause` says why. By default the file resolver only reads paths ending in `.json`, `.yaml`, or `.yml`, so a `workflow.arazzo` with no extension is reported as unreadable. The allowlist is a `FileResolver` option, and `resolve.resolvers` accepts your own resolver with a different one.
 
 ### Versions
 

@@ -116,7 +116,11 @@ pages/
   privacy.html, terms.html       # Legal pages
 assets/
   css/main.css                   # Custom CSS + CSS variables
-  js/main.js                     # Mobile menu, lightbox, heading anchors
+  js/main.js                     # Mobile menu, lightbox, heading anchors, guide FAQ toggles.
+                                 # Loaded ONCE, deferred, from head.html. A second synchronous
+                                 # include in footer.html ran every DOMContentLoaded handler
+                                 # twice (two FAQ click listeners cancelled each other out);
+                                 # it was removed 2026-09-07, do not re-add
   images/                        # Logos (incl. asyncapi-logo.svg), favicons, team/ headshots
 robots.txt                       # Sitemap directive (uses Jekyll variables)
 llms.txt                         # LLM crawler discovery file
@@ -197,7 +201,15 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - Guide front matter: `title`, `description`, `date`, `image` (`path`/`width`/`height`/`alt`,
   optional `caption`), optional `last_modified_at`, optional `status` (rendered as a badge, e.g.
   `Draft`), and `toc` (list of `{id, title}`) which drives the sidebar. Heading IDs in the Markdown
-  must match the `toc` ids (`## Heading {#id}`).
+  must match the `toc` ids (`## Heading {#id}`). Optional `faq` (list of `{question, answer}`;
+  answers are Markdown block scalars and may carry inline code, lists, and short fenced examples,
+  rendered with the `.post-content` styles; front matter is not run through Liquid, so write
+  internal links as plain root-relative Markdown links, `[text](/blog/slug/)`, and the layout
+  prefixes `site.baseurl`) renders a collapsible `<dl>` FAQ section after the body (a button in each `<dt>` toggles its `<dd>` via `main.js`; without JS every answer shows), a `FAQ` sidebar link, and
+  a matching `FAQPage` JSON-LD from the same strings (Markdown rendered then stripped to plain
+  text, entities unescaped), so visible text and schema cannot drift.
+  Phrase questions the way someone would ask an LLM or search engine ("How do I parse an Arazzo
+  document in JavaScript?"), and lead each answer with the direct answer.
 - **Every guide has a hero image**, same rules and pipeline as blog posts (`blog-hero-image`
   skill, brand greens, no photography, no logo), saved in `assets/images/guides/`. The layout and
   the hub card both assume `image` is set.

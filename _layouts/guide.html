@@ -32,6 +32,23 @@ layout: base
   ]
 }
 </script>
+{% if page.faq %}
+{% capture link_prefix %}]({{ '/' | relative_url }}{% endcapture %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in page.faq %}{% capture answer_text %}{{ item.answer | replace: '](/', link_prefix | markdownify | strip_html | strip }}{% endcapture %}{
+      "@type": "Question",
+      "name": {{ item.question | jsonify }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ answer_text | replace: '&lt;', '<' | replace: '&gt;', '>' | replace: '&quot;', '"' | replace: '&#39;', "'" | replace: '&amp;', '&' | jsonify }} }
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
 
 <div class="flex-1">
 <div class="flex">
@@ -42,6 +59,7 @@ layout: base
       {% for item in page.toc %}
       <a href="#{{ item.id }}" class="block text-gray-600 hover:text-primary-light">{{ item.title | escape }}</a>
       {% endfor %}
+      {% if page.faq %}<a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>{% endif %}
     </nav>
   </aside>
 
@@ -80,8 +98,27 @@ layout: base
         {{ content }}
       </div>
 
-      <footer class="mt-12 pt-6 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <a href="{{ '/docs/' | relative_url }}" class="text-primary-light font-semibold hover:text-primary-dark transition-colors">&larr; Back to Docs</a>
+      {% if page.faq %}
+      <section id="faq" class="mt-12">
+        <h2 class="text-2xl font-bold text-primary-dark mb-6">Frequently Asked Questions</h2>
+        <dl class="divide-y divide-gray-200 border-y border-gray-200">
+          {% for item in page.faq %}
+          <div class="py-4">
+            <dt>
+              <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-{{ forloop.index }}">
+                <span>{{ item.question | escape }}</span>
+                <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+              </button>
+            </dt>
+            <dd id="faq-answer-{{ forloop.index }}" class="faq-answer post-content mt-3">{{ item.answer | replace: '](/', link_prefix | markdownify }}</dd>
+          </div>
+          {% endfor %}
+        </dl>
+      </section>
+      {% endif %}
+
+      <footer class="{% if page.faq %}mt-8{% else %}mt-12 pt-6 border-t border-gray-200{% endif %} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <a href="{{ '/docs/#guides' | relative_url }}" class="text-primary-light font-semibold hover:text-primary-dark transition-colors">&larr; Back to Guides</a>
         <p class="text-sm text-gray-700">Something unclear or wrong? Say so in <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a>.</p>
       </footer>
     </article>

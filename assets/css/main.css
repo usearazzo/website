@@ -722,3 +722,9 @@ h4:hover .heading-anchor {
         height: 100%;
     }
 }
+
+/* Guide FAQ answers are Markdown rendered inside a <dd>; the last block
+   must not carry .post-content's bottom margin into the row padding. */
+.faq-answer > :last-child {
+    margin-bottom: 0;
+}
