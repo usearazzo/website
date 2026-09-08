@@ -20,15 +20,17 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
   workflows against live APIs described by OpenAPI source descriptions, step by step.
 
-**Nothing in the toolkit is on npm.** All five package names 404 on the registry — verify with
+**Only `@usearazzo/parser` is on npm** (published 2026-09-08 as `1.0.1-alpha.0`). The other four
+package names 404 on the registry — verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
 trusting `"private": false` in a `package.json`, which only means publish*able*. Never add
 `npm install` instructions, "Published" badges, or `npmjs.com/package/@usearazzo/*` links (they are
-dead) until a package actually resolves. Link to the monorepo's `packages/<name>` tree instead.
+dead) for a package until it actually resolves. Link to the monorepo's `packages/<name>` tree instead.
 
-Lower-level packages `@usearazzo/parser` and `@usearazzo/resolver` are also unpublished and have no
-dedicated product page — they're referenced only in "Built With" sections and `llms.txt`, per the
-org's own framing of them as packages for people building their own Arazzo tooling.
+Lower-level packages `@usearazzo/parser` and `@usearazzo/resolver` have no product page by design —
+they're for people building their own Arazzo tooling, per the org's own framing. The parser has an
+API reference page at `/docs/parser/` (see "Package reference pages" below); the resolver is
+unpublished and referenced only in "Built With" sections, the docs hub card, and `llms.txt`.
 
 All three products (plus parser/resolver) live in one monorepo:
 [usearazzo/arazzo-toolkit](https://github.com/usearazzo/arazzo-toolkit).
@@ -71,6 +73,12 @@ _layouts/
   post.html                      # Blog post layout (breadcrumb, byline, TechArticle JSON-LD)
   guide.html                     # Guide layout: product-page two-column shape, sidebar TOC from
                                  # front matter `toc`, "Updated" date, TechArticle + BreadcrumbList
+  reference.html                 # Package reference layout: outline sidebar from `toc` (items may
+                                 # carry `children`, rendered indented like the Runner page's
+                                 # Architecture sub-entries), breadcrumb Home / Docs / Package
+                                 # reference, "Documents version X" line from `package.version`,
+                                 # npm + Source links, no hero, no author byline, TechArticle
+                                 # (about: SoftwareSourceCode) + BreadcrumbList JSON-LD
 _includes/
   head.html                      # <head> with seo tag, meta, CDN scripts
   nav.html                       # Responsive navbar with dropdowns
@@ -81,6 +89,9 @@ _posts/
   YYYY-MM-DD-title.md            # Blog posts (Markdown, rendered with post layout)
 _guides/
   slug.md                        # Guides (Markdown, guide layout), output at /docs/guides/<slug>/
+_reference/
+  <package>.md                   # Package API reference (Markdown, reference layout), output at
+                                 # /docs/<package>/. One page per published package
 assets/guides/<slug>/            # Sample documents a guide's code runs against, served as-is so
                                  # readers can download them; every number in the guide must be
                                  # reproducible from these files
@@ -88,7 +99,11 @@ pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
   docs.html                      # Docs hub (permalink: /docs/): product-page two-column shape with
-                                 # sticky sidebar (#guides #packages), guide cards from site.guides
+                                 # sticky sidebar: two eyebrow labels (#guides #packages, styled
+                                 # like the homepage "Works with" strip: text-xs uppercase
+                                 # tracking-wider gray) each with its entries beneath at normal
+                                 # size: guide titles looped from site.guides, four static package
+                                 # README links. Guide cards from site.guides
                                  # (empty state when none), package README cards. A guide card left
                                  # alone on its row spans both columns, image-left (.guides-grid
                                  # rules in main.css, pure CSS). No spec section: the Ecosystem
@@ -215,23 +230,45 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   the hub card both assume `image` is set.
 - Guide audience, per the owner: any developer building their own Arazzo tooling (editor plugins,
   linters, generators, agents). Not people merely writing Arazzo documents; that is blog territory.
-- **The parsing guide describes intended behaviour for shared source descriptions**, not current
-  behaviour: it says only true cycles (ancestor on the current chain) get the cycle warning and that
-  a document reached twice through different paths is parsed once and reachable from every entry.
-  Today the parser skips both cases with the same "cycle" warning. Tracked in
-  usearazzo/arazzo-toolkit#139; re-verify the guide's network section and result tree when it lands.
-  The guide also assumes two other pending toolkit changes: `ParseError` exported from the package
-  (usearazzo/arazzo-toolkit#140) and `resolve.baseURI` for object and inline input (toolkit branch
-  `feat/137-base-uri`). Re-verify those sentences when each merges.
+- The parsing guide's three formerly-pending toolkit changes have all landed on the toolkit's
+  `main` and are in the published `@usearazzo/parser` 1.0.1-alpha.0: shared source descriptions are
+  parsed once and distinguished from true cycles (usearazzo/arazzo-toolkit#139, merged as #142),
+  `ParseError` is exported from the package entry (#140, merged as #141), and `resolve.baseURI`
+  works for object and inline input (#137, merged as #138). All three were re-verified by running
+  the guide's samples against the package on 2026-09-08. The reference page documents the same
+  behaviour.
 - Guides follow the blog authorship rule: prose is the founders'. AI may build scaffolding,
   outline, and first drafts from site copy and package READMEs, but final text is theirs.
-- **Owner decision (2026-09-03): the parsing guide assumes `@usearazzo/parser` is on npm** and
-  shows `npm install @usearazzo/parser`. This is a scoped exception to the sitewide "no npm
-  install until it resolves" rule, made because the package is about to publish. Before the
-  guide's `status: Draft` is removed, verify the registry returns 200 for it.
-- Package reference stays in the READMEs on GitHub until packages publish. The docs hub links to
-  them; do not mirror README content onto the site.
+- The parsing guide shows `npm install @usearazzo/parser`. That was an owner-approved exception
+  (2026-09-03) while the package was about to publish; since 2026-09-08 the registry returns 200
+  for it, so the instruction is simply true and the guide is no longer `Draft`.
+- **Package reference pages** (`_reference/<package>.md`, `/docs/<package>/`) exist only for
+  packages that resolve on npm. Front matter: `title` (the package name), `description`, `date`,
+  optional `last_modified_at`, `status` (`Published`), `package` (`name`, `version`, `npm`,
+  `github`), and `toc` (list of `{id, title, children?}`). Heading IDs use `{#id}` and must match.
+  The reference is the site's copy, edited from the package README, not mirrored: when the two
+  diverge, the source of truth is the package's `types/*.d.ts` and `src/`, and every claim on the
+  page was checked against them (the old README misquoted the `ParseError` message, for example).
+  Bump `package.version` when re-verifying against a new release. The package README, in turn, is
+  a front door on purpose (~90 lines: what it parses, an at-a-glance table, install, one document
+  example and one grammar example, links to the reference and the guide, supported versions, the
+  toolkit) with the UseArazzo logo hot-linked from
+  `https://usearazzo.com/assets/images/logos/usearazzo-logo.svg`. No License section: the badge,
+  `package.json`, and the shipped LICENSE file cover it. Do not grow it back into a manual.
+- Unpublished packages keep their reference in the README on GitHub. The docs hub links to it; do
+  not mirror README content onto the site ahead of publishing.
 - No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
+- **Owner decision (2026-09-08): tutorials are a separate Docs section, not a blog post type.**
+  They will live in a `tutorials` collection at `/docs/tutorials/<slug>/`, a sibling of Guides,
+  with the guide lifecycle (Updated date, `status` badge, sample files under
+  `assets/tutorials/<slug>/`, not in the RSS feed), a hub section placed above Guides, a footer
+  link, and an `llms.txt` line. A tutorial is one use case, one package, verb-first steps,
+  runnable end to end, finishable in one sitting, every command real today. A guide unpacks a
+  problem space and shows the DIY route. Do not build the section until a package resolves on npm
+  and the first tutorial exists; no empty-state section in the hub. The blog does not carry
+  tutorials and its types stay Explainer and Field notes; a package release gets a Field notes
+  post that links the tutorial as its next step, and a companion post beyond that only when the
+  tutorial's context turned up an angle worth its own piece.
 
 ## Product content accuracy
 

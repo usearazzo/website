@@ -27,6 +27,9 @@ collections:
   guides:
     output: true
     permalink: /docs/guides/:title/
+  reference:
+    output: true
+    permalink: /docs/:title/
 
 # Default front matter
 defaults:
@@ -53,6 +56,11 @@ defaults:
       author: "Vladimír Gorej"
       author_url: "https://vladimirgorej.com/"
       author_link: "/about/#vladimir-gorej"
+  - scope:
+      path: ""
+      type: reference
+    values:
+      layout: reference
 
 # Exclude from processing
 exclude:

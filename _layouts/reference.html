@@ -1,0 +1,98 @@
+---
+layout: base
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": {{ page.title | jsonify }},
+  "description": {{ page.description | jsonify }},
+  "url": "{{ page.url | absolute_url }}",
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "about": {
+    "@type": "SoftwareSourceCode",
+    "name": {{ page.package.name | jsonify }},
+    "version": {{ page.package.version | jsonify }},
+    "codeRepository": {{ page.package.github | jsonify }},
+    "programmingLanguage": "JavaScript",
+    "runtimePlatform": "Node.js",
+    "license": "https://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "author": { "@id": "{{ '/' | absolute_url }}" },
+  "publisher": { "@id": "{{ '/' | absolute_url }}" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ '/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 2, "name": "Docs", "item": "{{ '/docs/' | absolute_url }}" },
+    { "@type": "ListItem", "position": 3, "name": "Package reference", "item": "{{ '/docs/#packages' | absolute_url }}" },
+    { "@type": "ListItem", "position": 4, "name": {{ page.title | jsonify }}, "item": "{{ page.url | absolute_url }}" }
+  ]
+}
+</script>
+
+<div class="flex-1">
+<div class="flex">
+  <!-- Sticky Sidebar: outline from front matter, product-page style -->
+  <aside class="hidden lg:block w-64 flex-shrink-0">
+    <nav class="sticky top-[82px] p-6 space-y-4 text-sm max-h-[calc(100vh-82px)] overflow-y-auto" aria-label="On this page">
+      <div class="font-bold text-primary-dark mb-4">{{ page.title | escape }}</div>
+      {% for item in page.toc %}
+      <a href="#{{ item.id }}" class="block text-gray-600 hover:text-primary-light">{{ item.title | escape }}</a>
+      {% if item.children %}
+      <div class="pl-3 space-y-2 mt-2">
+        {% for child in item.children %}
+        <a href="#{{ child.id }}" class="block text-gray-500 hover:text-primary-light text-xs">{{ child.title | escape }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 min-w-0 max-w-4xl px-6 py-12">
+    <article>
+      <nav aria-label="Breadcrumb" class="text-sm text-gray-500 mb-6">
+        <a href="{{ '/' | relative_url }}" class="hover:text-primary-light">Home</a>
+        <span class="mx-2" aria-hidden="true">/</span>
+        <a href="{{ '/docs/' | relative_url }}" class="hover:text-primary-light">Docs</a>
+        <span class="mx-2" aria-hidden="true">/</span>
+        <a href="{{ '/docs/#packages' | relative_url }}" class="hover:text-primary-light">Package reference</a>
+      </nav>
+
+      <header class="mb-8">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <h1 class="text-4xl font-extrabold text-primary-dark">{{ page.title | escape }}</h1>
+          {% if page.status %}<span class="badge badge-primary">{{ page.status | escape }}</span>{% endif %}
+        </div>
+        <p class="text-xl text-gray-600 mb-4">{{ page.description | escape }}</p>
+        <p class="text-gray-500 text-sm">
+          Documents version <code class="bg-gray-100 px-1 rounded">{{ page.package.version | escape }}</code>
+          <span class="mx-1" aria-hidden="true">&middot;</span>
+          Updated <time datetime="{{ page.last_modified_at | default: page.date | date_to_xmlschema }}">{{ page.last_modified_at | default: page.date | date: "%-d %B %Y" }}</time>
+          <span class="mx-1" aria-hidden="true">&middot;</span>
+          <a href="{{ page.package.npm }}" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">npm</a>
+          <span class="mx-1" aria-hidden="true">&middot;</span>
+          <a href="{{ page.package.github }}" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Source</a>
+        </p>
+      </header>
+
+      <div class="post-content">
+        {{ content }}
+      </div>
+
+      <footer class="mt-12 pt-6 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <a href="{{ '/docs/#packages' | relative_url }}" class="text-primary-light font-semibold hover:text-primary-dark transition-colors">&larr; Back to Docs</a>
+        <p class="text-sm text-gray-700">Something unclear or wrong? Say so in <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a>.</p>
+      </footer>
+    </article>
+  </main>
+</div>
+</div>

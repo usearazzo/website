@@ -22,8 +22,27 @@ permalink: /docs/
   <aside class="hidden lg:block w-64 flex-shrink-0">
     <nav class="sticky top-[82px] p-6 space-y-4 text-sm">
       <div class="font-bold text-primary-dark mb-4">Docs</div>
-      <a href="#guides" class="block text-gray-600 hover:text-primary-light">Guides</a>
-      <a href="#packages" class="block text-gray-600 hover:text-primary-light">Package reference</a>
+      <div>
+        <a href="#guides" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Guides</a>
+        {% if site.guides.size > 0 %}
+        <div class="pl-2 space-y-2">
+          {% for guide in site.guides %}
+          <a href="{{ guide.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ guide.title | escape }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div>
+        <a href="#packages" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Package reference</a>
+        <div class="pl-2 space-y-2">
+          {% for ref in site.reference %}
+          <a href="{{ ref.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ ref.title | escape }}</a>
+          {% endfor %}
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/resolver</a>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/validator</a>
+          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/runner</a>
+        </div>
+      </div>
     </nav>
   </aside>
 
@@ -32,7 +51,7 @@ permalink: /docs/
     <header class="mb-10">
       <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Docs</h1>
       <p class="text-xl text-gray-600 max-w-3xl">
-        <strong>Guides</strong> that walk through working with Arazzo documents in JavaScript and TypeScript, and the <strong>reference README</strong> for every package in the toolkit.
+        <strong>Guides</strong> that walk through working with Arazzo documents in JavaScript and TypeScript, and the <strong>API reference</strong> for every package in the toolkit.
       </p>
     </header>
 
@@ -77,13 +96,14 @@ permalink: /docs/
     <!-- Package reference -->
     <section id="packages">
       <h2 class="text-2xl font-bold text-primary-dark mb-2">Package reference</h2>
-      <p class="text-gray-600 mb-6 max-w-3xl">Each package documents its own API in its README, which is the reference until the packages publish. All of them live in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo.</p>
+      <p class="text-gray-600 mb-6 max-w-3xl">A published package gets its API reference here. Until a package publishes, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="product-card">
+          <p class="mb-3"><span class="badge badge-primary">Published</span></p>
           <h3 class="product-card-title text-xl">@usearazzo/parser</h3>
-          <p class="product-card-description">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees.</p>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
-            README on GitHub
+          <p class="product-card-description">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees. On <a href="https://www.npmjs.com/package/@usearazzo/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">npm</a> as an alpha.</p>
+          <a href="{{ '/docs/parser/' | relative_url }}" class="product-card-link">
+            API reference
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>

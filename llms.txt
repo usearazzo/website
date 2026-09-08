@@ -11,7 +11,7 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. No package has been published to npm yet, and APIs may change without notice. Everything is built in the open in the arazzo-toolkit monorepo.
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. Only @usearazzo/parser is on npm so far, as an alpha; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the arazzo-toolkit monorepo.
 
 ## Compatibility
 
@@ -53,7 +53,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
 ### Lower-level packages
-- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model
+- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm (1.0.1-alpha.0); API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
 - @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
 - Not yet published to npm, free, open source (Apache 2.0)
 
@@ -82,9 +82,10 @@ UseArazzo is built end to end on SpecLynx (https://github.com/speclynx): the sem
 
 ## Docs
 
-- Hub for reading material: guides written by the founders, plus links to each package's README in the monorepo
+- Hub for reading material: guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
 - Index: {{ site.url }}{{ site.baseurl }}/docs/
 {% for guide in site.guides %}- Guide: {{ guide.title }} ({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+{% endfor %}{% for ref in site.reference %}- API reference: {{ ref.title }} {{ ref.package.version }} ({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem
 
