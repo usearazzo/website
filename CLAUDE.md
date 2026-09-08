@@ -78,7 +78,7 @@ _layouts/
   reference.html                 # Package reference layout: outline sidebar from `toc` (items may
                                  # carry `children`, rendered indented like the Runner page's
                                  # Architecture sub-entries), breadcrumb Home / Docs / Package
-                                 # reference, "Documents version X" line from `package.version`,
+                                 # reference, "Updated" date (no version line, see "No concrete versions"),
                                  # npm + Source links, no hero, no author byline, TechArticle
                                  # (about: SoftwareSourceCode) + BreadcrumbList JSON-LD
 _includes/
@@ -180,7 +180,7 @@ JavaScript in `main.js` auto-generates `#` anchor links on headings with IDs and
 
 ### Schema.org JSON-LD Structured Data
 - **Organization** — sitewide via `_includes/schema-organization.html` (name, logo, email, sameAs). Carries `"@id"` (the site root URL) so other JSON-LD blocks can reference it, e.g. blog posts' `"publisher": { "@id": ... }`
-- **SoftwareApplication** — on `/validator/` and `/runner/` only (category, license, version,
+- **SoftwareApplication** — on `/validator/` and `/runner/` only (category, license,
   author). Deliberately **absent from `/cli/`**: that block asserts a real application with a
   zero-price `Offer`, and no `@usearazzo/cli` source exists yet, so it would tell crawlers something
   the visible page denies. Add it when the package does.
@@ -253,6 +253,12 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - The parsing guide shows `npm install @usearazzo/parser`. That was an owner-approved exception
   (2026-09-03) while the package was about to publish; since 2026-09-08 the registry returns 200
   for it, so the instruction is simply true and the guide is no longer `Draft`.
+- **No concrete versions on the site** (owner decision 2026-09-08). Product pages, the parser
+  reference, `llms.txt`, and blog posts say "alpha" or "published", never `1.0.1-alpha.1`: a number
+  goes stale with the next release and the npm page already carries it. The reference layout has
+  no "Documents version" line and no `version` in its JSON-LD; `package` front matter carries
+  `name`, `npm`, `github` only. `softwareVersion` was removed from the Validator and Runner
+  `SoftwareApplication` blocks for the same reason. This file may cite versions; it is internal.
 - **Package reference pages** (`_reference/<package>.md`, `/docs/<package>/`) exist only for
   packages that resolve on npm. Front matter: `title` (the package name), `description`, `date`,
   optional `last_modified_at`, `status` (`Published`), `package` (`name`, `version`, `npm`,
@@ -260,7 +266,7 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   The reference is the site's copy, edited from the package README, not mirrored: when the two
   diverge, the source of truth is the package's `types/*.d.ts` and `src/`, and every claim on the
   page was checked against them (the old README misquoted the `ParseError` message, for example).
-  Bump `package.version` when re-verifying against a new release. The package README, in turn, is
+  Bump `last_modified_at` when re-verifying against a new release. The package README, in turn, is
   a front door on purpose (~90 lines: what it parses, an at-a-glance table, install, one document
   example and one grammar example, links to the reference and the guide, supported versions, the
   toolkit) with the UseArazzo logo hot-linked from
@@ -304,7 +310,7 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   and fail (usearazzo/arazzo-toolkit#147). The fix, PR #148, resolves relative paths against the
   working directory. On the owner's instruction (2026-09-08) the tutorial and its shipped script
   assume that fix: no `path.resolve`, no FAQ entry about it. Do not publish the tutorial before a
-  parser release containing #148 is on npm, and bump the reference's `package.version` then.
+  parser release containing #148 is on npm.
 
 ## Product content accuracy
 

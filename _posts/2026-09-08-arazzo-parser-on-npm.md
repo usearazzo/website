@@ -10,7 +10,7 @@ image:
   caption: "The bottom layer ships first. Everything else stands on it."
 ---
 
-The first package from the UseArazzo toolkit is on npm: [@usearazzo/parser](https://www.npmjs.com/package/@usearazzo/parser), version 1.0.1-alpha.1. It reads Arazzo documents, the OpenAPI documents they point at, and the two small languages that live inside Arazzo strings, runtime expressions and criterion conditions. It is the reading layer everything else in the toolkit stands on.
+The first package from the UseArazzo toolkit is on npm: [@usearazzo/parser](https://www.npmjs.com/package/@usearazzo/parser), as an alpha. It reads Arazzo documents, the OpenAPI documents they point at, and the two small languages that live inside Arazzo strings, runtime expressions and criterion conditions. It is the reading layer everything else in the toolkit stands on.
 
 ```bash
 npm install @usearazzo/parser

@@ -53,7 +53,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
 ### Lower-level packages
-- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm (1.0.1-alpha.1); API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
+- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm as an alpha; API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
 - @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
 - Not yet published to npm, free, open source (Apache 2.0)
 
