@@ -1,0 +1,19 @@
+arazzo: 1.0.1
+info:
+  title: Onboarding
+  version: 1.0.0
+sourceDescriptions:
+  - name: petstore
+    type: openapi
+    url: ./petstore.openapi.yaml
+  - name: adoption
+    type: arazzo
+    url: ./adopt-a-pet.arazzo.yaml
+  - name: billing
+    type: openapi
+    url: ./billing.openapi.yaml
+workflows:
+  - workflowId: create-account
+    steps:
+      - stepId: adopt
+        workflowId: $sourceDescriptions.adoption.adopt-a-pet

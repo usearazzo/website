@@ -53,7 +53,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
 ### Lower-level packages
-- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm (1.0.1-alpha.0); API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
+- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm (1.0.1-alpha.1); API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
 - @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
 - Not yet published to npm, free, open source (Apache 2.0)
 
@@ -82,9 +82,10 @@ UseArazzo is built end to end on SpecLynx (https://github.com/speclynx): the sem
 
 ## Docs
 
-- Hub for reading material: guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
+- Hub for reading material: tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
 - Index: {{ site.url }}{{ site.baseurl }}/docs/
-{% for guide in site.guides %}- Guide: {{ guide.title }} ({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+{% for tutorial in site.tutorials %}- Tutorial: {{ tutorial.title }} ({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
+{% endfor %}{% for guide in site.guides %}- Guide: {{ guide.title }} ({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
 {% endfor %}{% for ref in site.reference %}- API reference: {{ ref.title }} {{ ref.package.version }} ({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem

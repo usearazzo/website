@@ -20,7 +20,7 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
   workflows against live APIs described by OpenAPI source descriptions, step by step.
 
-**Only `@usearazzo/parser` is on npm** (published 2026-09-08 as `1.0.1-alpha.0`). The other four
+**Only `@usearazzo/parser` is on npm** (published 2026-09-08; `1.0.1-alpha.0` and then `1.0.1-alpha.1`, a README-only release the same day). The other four
 package names 404 on the registry — verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
 trusting `"private": false` in a `package.json`, which only means publish*able*. Never add
@@ -73,6 +73,8 @@ _layouts/
   post.html                      # Blog post layout (breadcrumb, byline, TechArticle JSON-LD)
   guide.html                     # Guide layout: product-page two-column shape, sidebar TOC from
                                  # front matter `toc`, "Updated" date, TechArticle + BreadcrumbList
+  tutorial.html                  # Tutorial layout: a copy of guide.html with the breadcrumb, JSON-LD,
+                                 # and back link pointing at /docs/#tutorials. Keep the two in step
   reference.html                 # Package reference layout: outline sidebar from `toc` (items may
                                  # carry `children`, rendered indented like the Runner page's
                                  # Architecture sub-entries), breadcrumb Home / Docs / Package
@@ -87,6 +89,8 @@ _includes/
   share-buttons.html             # Social share icons (Bluesky/LinkedIn/Mastodon/X), used on blog posts
 _posts/
   YYYY-MM-DD-title.md            # Blog posts (Markdown, rendered with post layout)
+_tutorials/
+  slug.md                        # Tutorials (Markdown, tutorial layout), output at /docs/tutorials/<slug>/
 _guides/
   slug.md                        # Guides (Markdown, guide layout), output at /docs/guides/<slug>/
 _reference/
@@ -95,11 +99,13 @@ _reference/
 assets/guides/<slug>/            # Sample documents a guide's code runs against, served as-is so
                                  # readers can download them; every number in the guide must be
                                  # reproducible from these files
+assets/tutorials/<slug>/         # Same for tutorials, plus the finished script the tutorial builds
+                                 # (readers download it; keep it byte-identical to the final listing)
 pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
   docs.html                      # Docs hub (permalink: /docs/): product-page two-column shape with
-                                 # sticky sidebar: two eyebrow labels (#guides #packages, styled
+                                 # sticky sidebar: three eyebrow labels (#tutorials #guides #packages, styled
                                  # like the homepage "Works with" strip: text-xs uppercase
                                  # tracking-wider gray) each with its entries beneath at normal
                                  # size: guide titles looped from site.guides, four static package
@@ -196,6 +202,11 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - **Every post must have a catchy hero image** — brand colors (the greens above), no photography, no logo/wordmark in the image itself.
 - **Post prose is written by humans.** AI assistants build blog infrastructure and hero images but never draft or rewrite article content.
 - **Author is always a Person, never the Organization.** Defaults to Vladimír Gorej via `_config.yml` front matter defaults; UseArazzo appears only as `publisher` in JSON-LD. Byline links to `/about/#vladimir-gorej`.
+- The parser release announcement is a Field notes post, `_posts/2026-09-08-arazzo-parser-on-npm.md`,
+  drafted 2026-09-08 (dated today so it shows in a plain `jekyll serve`; the owner sets the real
+  date and file name before pushing). It names the release in the title and first paragraph, then the field
+  notes (why the parser shipped first, the five bugs the docs turned up, what alpha means), and
+  links the tutorial as the next step. Publish it a few days after the tutorial, never before.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
@@ -258,17 +269,42 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - Unpublished packages keep their reference in the README on GitHub. The docs hub links to it; do
   not mirror README content onto the site ahead of publishing.
 - No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
-- **Owner decision (2026-09-08): tutorials are a separate Docs section, not a blog post type.**
-  They will live in a `tutorials` collection at `/docs/tutorials/<slug>/`, a sibling of Guides,
-  with the guide lifecycle (Updated date, `status` badge, sample files under
-  `assets/tutorials/<slug>/`, not in the RSS feed), a hub section placed above Guides, a footer
-  link, and an `llms.txt` line. A tutorial is one use case, one package, verb-first steps,
+- **Tutorials are a separate Docs section, not a blog post type** (owner decision 2026-09-08, built
+  the same day once `@usearazzo/parser` resolved on npm). They live in the `tutorials` collection at
+  `/docs/tutorials/<slug>/`, a sibling of Guides, with the guide lifecycle: same front matter
+  (`title`, `description`, `date`, `image`, optional `last_modified_at`, `status`, `toc`, `faq`),
+  "Updated" date, `status` badge, sample files under `assets/tutorials/<slug>/`, hero in
+  `assets/images/tutorials/`, not in the RSS feed. Hub section above Guides, sidebar eyebrow,
+  footer link, and an `llms.txt` loop. A tutorial is one use case, one package, verb-first steps,
   runnable end to end, finishable in one sitting, every command real today. A guide unpacks a
-  problem space and shows the DIY route. Do not build the section until a package resolves on npm
-  and the first tutorial exists; no empty-state section in the hub. The blog does not carry
-  tutorials and its types stay Explainer and Field notes; a package release gets a Field notes
-  post that links the tutorial as its next step, and a companion post beyond that only when the
-  tutorial's context turned up an angle worth its own piece.
+  problem space and shows the DIY route. No empty-state section in the hub: the section loops
+  `site.tutorials` unguarded, so the first tutorial must stay. The blog does not carry tutorials
+  and its types stay Explainer and Field notes; a package release gets a Field notes post that
+  links the tutorial as its next step, and a companion post beyond that only when the tutorial's
+  context turned up an angle worth its own piece.
+- The first tutorial, "List Every Document an Arazzo Workflow Depends On"
+  (`_tutorials/list-arazzo-workflow-dependencies.md`), builds a 71-line `inventory.mjs` that parses
+  an entry document with `sourceDescriptions: true` and prints a Mermaid graph of the documents it
+  reaches (stdout), with problems on stderr keyed by source description name (source maps and
+  positions were in an earlier draft and dropped at the owner's request as not adding value; the
+  reference is linked from Next steps instead). There is no text-tree step: the owner
+  asked for the graph as the end result and then for the text trees to go, so the walk emits
+  Mermaid from the first recursive step and the diagnostics section only adds stderr and the
+  exit code. Nothing the reader writes gets deleted later. The page shows the rendered graph as an
+  inline SVG in the Runner diagram's light palette (no Mermaid runtime on the site) with the
+  Mermaid source beneath it.
+  Every output block was captured from a real run against the published 1.0.1-alpha.1 on
+  2026-09-08 (only the scratch directory in error messages was replaced by `/home/you/inventory`).
+  The chosen problem is deliberately document-level (the network of source descriptions), not
+  expressions or criteria, and needs no dereferencing, so `@usearazzo/resolver` is never in the
+  path. Rejected candidates: an `operationId` cross-check (needs dereferenced OpenAPI and is the
+  Validator's job) and a step dependency graph (expression parsing, not document parsing).
+- **Relative entry paths**: the published alphas (1.0.1-alpha.0 and .1) record a relative entry
+  path unchanged as `retrievalURI`, so relative source description URLs resolve to `/samples/...`
+  and fail (usearazzo/arazzo-toolkit#147). The fix, PR #148, resolves relative paths against the
+  working directory. On the owner's instruction (2026-09-08) the tutorial and its shipped script
+  assume that fix: no `path.resolve`, no FAQ entry about it. Do not publish the tutorial before a
+  parser release containing #148 is on npm, and bump the reference's `package.version` then.
 
 ## Product content accuracy
 

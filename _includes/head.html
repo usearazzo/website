@@ -5,7 +5,7 @@
   {% if page.collection == "posts" %}
   {%- seo title=false -%}
   <title>{{ page.title | escape }} | UseArazzo Blog</title>
-  {% elsif page.collection == "guides" %}
+  {% elsif page.collection == "guides" or page.collection == "tutorials" %}
   {%- seo title=false -%}
   <title>{{ page.title | escape }} | UseArazzo Docs</title>
   {% elsif page.url == "/" %}

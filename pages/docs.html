@@ -1,7 +1,7 @@
 ---
 layout: base
-title: Docs - Guides and Package Reference
-description: Guides to working with Arazzo documents in JavaScript and TypeScript, plus the reference README for every package in the UseArazzo toolkit.
+title: Docs - Tutorials, Guides, and Package Reference
+description: Tutorials and guides for working with Arazzo documents in JavaScript and TypeScript, plus the API reference for every published package in the UseArazzo toolkit.
 permalink: /docs/
 ---
 
@@ -22,6 +22,16 @@ permalink: /docs/
   <aside class="hidden lg:block w-64 flex-shrink-0">
     <nav class="sticky top-[82px] p-6 space-y-4 text-sm">
       <div class="font-bold text-primary-dark mb-4">Docs</div>
+      <div>
+        <a href="#tutorials" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Tutorials</a>
+        {% if site.tutorials.size > 0 %}
+        <div class="pl-2 space-y-2">
+          {% for tutorial in site.tutorials %}
+          <a href="{{ tutorial.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ tutorial.title | escape }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
       <div>
         <a href="#guides" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Guides</a>
         {% if site.guides.size > 0 %}
@@ -51,9 +61,40 @@ permalink: /docs/
     <header class="mb-10">
       <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Docs</h1>
       <p class="text-xl text-gray-600 max-w-3xl">
-        <strong>Guides</strong> that walk through working with Arazzo documents in JavaScript and TypeScript, and the <strong>API reference</strong> for every package in the toolkit.
+        <strong>Tutorials</strong> that get one job done with one package, <strong>guides</strong> that unpack a problem and how the toolkit approaches it, and the <strong>API reference</strong> for every published package.
       </p>
     </header>
+
+    <!-- Tutorials -->
+    <section id="tutorials" class="mb-14">
+      <h2 class="text-2xl font-bold text-primary-dark mb-2">Tutorials</h2>
+      <p class="text-gray-600 mb-6 max-w-3xl">One use case, one package, finished in a sitting. Every command runs against the published package today, and the sample files are yours to download.</p>
+      <div class="guides-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for tutorial in site.tutorials %}
+        <article class="product-card !p-0 overflow-hidden flex flex-col">
+          <a href="{{ tutorial.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ tutorial.image.path | relative_url }}" width="{{ tutorial.image.width }}" height="{{ tutorial.image.height }}" alt="" class="w-full h-40 object-cover object-left">
+          </a>
+          <div class="p-6 flex flex-col flex-1">
+          <p class="text-sm text-gray-500 mb-3 flex items-center gap-2">
+            {% if tutorial.status %}<span class="badge badge-secondary">{{ tutorial.status | escape }}</span>{% endif %}
+            <span>Updated <time datetime="{{ tutorial.last_modified_at | default: tutorial.date | date_to_xmlschema }}">{{ tutorial.last_modified_at | default: tutorial.date | date: "%-d %B %Y" }}</time></span>
+          </p>
+          <h3 class="product-card-title text-xl">
+            <a href="{{ tutorial.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ tutorial.title | escape }}</a>
+          </h3>
+          <p class="product-card-description flex-1">{{ tutorial.description | escape }}</p>
+          <a href="{{ tutorial.url | relative_url }}" class="product-card-link">
+            Start tutorial
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
 
     <!-- Guides -->
     <section id="guides" class="mb-14">
