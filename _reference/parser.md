@@ -5,7 +5,7 @@ date: 2026-09-08
 status: Published
 package:
   name: "@usearazzo/parser"
-  version: "1.0.1-alpha.0"
+  version: "1.0.1-alpha.1"
   npm: https://www.npmjs.com/package/@usearazzo/parser
   github: https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser
 toc:
