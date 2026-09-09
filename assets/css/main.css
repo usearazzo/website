@@ -728,3 +728,48 @@ h4:hover .heading-anchor {
 .faq-answer > :last-child {
     margin-bottom: 0;
 }
+
+/* "Try it in your browser" micro-app on the dependencies tutorial
+   (assets/js/tutorials/list-arazzo-workflow-dependencies.js) */
+.dep-demo [hidden] {
+    display: none !important;
+}
+
+.dep-demo-spinner {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    border: 2px solid #C7D5B5;
+    border-top-color: var(--color-primary-light);
+    border-radius: 50%;
+    animation: dep-demo-spin 0.8s linear infinite;
+}
+
+@keyframes dep-demo-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dep-demo-spinner { animation-duration: 2s; }
+}
+
+.dep-demo-graph svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.post-content .dep-demo pre {
+    margin: 0;
+}
+
+.dep-demo [role="tab"] {
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.dep-demo [role="tab"][aria-selected="true"] {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary-light);
+}

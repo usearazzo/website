@@ -297,20 +297,39 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   asked for the graph as the end result and then for the text trees to go, so the walk emits
   Mermaid from the first recursive step and the diagnostics section only adds stderr and the
   exit code. Nothing the reader writes gets deleted later. The page shows the rendered graph as an
-  inline SVG in the Runner diagram's light palette (no Mermaid runtime on the site) with the
-  Mermaid source beneath it.
+  inline SVG in the Runner diagram's light palette (the Graph tab's initial content; Mermaid loads
+  only when the reader runs the micro-app, see below) with the Mermaid source in the next tab.
   Every output block was captured from a real run against the published 1.0.1-alpha.1 on
   2026-09-08 (only the scratch directory in error messages was replaced by `/home/you/inventory`).
   The chosen problem is deliberately document-level (the network of source descriptions), not
   expressions or criteria, and needs no dereferencing, so `@usearazzo/resolver` is never in the
   path. Rejected candidates: an `operationId` cross-check (needs dereferenced OpenAPI and is the
   Validator's job) and a step dependency graph (expression parsing, not document parsing).
+- **The tutorial's "The end result" is a micro-app** (built 2026-09-09 at the owner's request). The
+  static graph, Mermaid text, and stderr for the samples sit in three tabs (Graph / Mermaid source /
+  Standard error) inside a form with a URL input. Submitting a URL loads the parser's UMD browser
+  build (`dist/arazzo-parser.browser.min.js`, ~410 KB gzipped) and Mermaid (~1 MB gzipped) from
+  unpkg **on demand, never in `head.html`**, runs the same walk as `inventory.mjs` (ported in
+  `assets/js/tutorials/list-arazzo-workflow-dependencies.js`; keep the two in step), and replaces
+  the tabs with the live result. Loader, error box (parser `ParseError` cause chain, CORS hint,
+  60 s timeout), and a 700 ms minimum status time are deliberate. This is the only page with
+  remote scripts outside the sitewide CDN set, and the `src` URLs are **pinned to exact versions
+  with SRI hashes** (an exception to "No concrete versions": a `src` attribute is not copy, and the
+  pin plus hash is what keeps the page working when a new release changes behaviour). To bump:
+  change the version in both `data-*-src` attributes and recompute
+  `openssl dgst -sha384 -binary <file> | base64`. The sample URL is written root-relative and made
+  absolute against the page's own origin at runtime, so it is same-origin on localhost, 127.0.0.1,
+  and production alike (an absolute `site.url` value failed with a CORS error on a local server).
+  The browser build is not documented in the package README or the reference page, so the page
+  uses it without teaching it as an install path. Headless Chrome in the Claude Code sandbox has no
+  outbound network: external URLs (raw GitHub, which sends `access-control-allow-origin: *`) can
+  only be verified in a real browser.
 - **Relative entry paths**: the published alphas (1.0.1-alpha.0 and .1) record a relative entry
   path unchanged as `retrievalURI`, so relative source description URLs resolve to `/samples/...`
   and fail (usearazzo/arazzo-toolkit#147). The fix, PR #148, resolves relative paths against the
   working directory. On the owner's instruction (2026-09-08) the tutorial and its shipped script
-  assume that fix: no `path.resolve`, no FAQ entry about it. Do not publish the tutorial before a
-  parser release containing #148 is on npm.
+  assume that fix: no `path.resolve`, no FAQ entry about it. `1.0.1-alpha.2` (published
+  2026-09-08, now `latest`) contains #148, so the tutorial's publish gate is met.
 
 ## Product content accuracy
 
@@ -385,8 +404,9 @@ every product page loses the right edge of its prose below roughly 500px, and `.
 ### Diagrams
 
 The Runner's architecture diagram is **inline SVG** in `pages/runner.html`, not an image: real text,
-brand palette, `role="img"` with `<title>`/`<desc>`. There is no mermaid runtime on the site, so do
-not paste rendered mermaid screenshots (they also mangle `<br/>` labels into run-on text). The old
+brand palette, `role="img"` with `<title>`/`<desc>`. There is no mermaid runtime on the site (the
+one exception is loaded on demand by the dependencies tutorial's micro-app), so do not paste
+rendered mermaid screenshots (they also mangle `<br/>` labels into run-on text). The old
 `.architecture-box` / `.architecture-box-highlight` rules in `main.css` are now unused.
 
 ## Important Notes
