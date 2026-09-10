@@ -53,6 +53,16 @@ permalink: /
   </div>
 </section>
 
+<!-- Problem Framing Section -->
+<section class="py-12 md:py-16 bg-gray-50">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="max-w-2xl mx-auto text-center mb-10">
+      <h2 class="text-3xl font-extrabold text-primary-dark mb-4">Why API workflows still get improvised</h2>
+      <p class="text-gray-600">Even with an OpenAPI description in hand, agent frameworks still improvise the call order at runtime, and improvisation is exactly what you don't want in production.<br><br><a href="{{ '/blog/api-workflows-are-still-improvised/' | relative_url }}" class="text-primary-light underline hover:no-underline">Read why it still happens &rarr;</a></p>
+    </div>
+  </div>
+</section>
+
 <!-- What It Does Section -->
 <section class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
@@ -83,27 +93,17 @@ permalink: /
   </div>
 </section>
 
-<!-- Problem Framing Section -->
-<section class="py-12 md:py-16 bg-gray-50">
-  <div class="container mx-auto px-4 max-w-6xl">
-    <div class="max-w-2xl mx-auto text-center mb-10">
-      <h2 class="text-3xl font-extrabold text-primary-dark mb-4">Why API workflows still get improvised</h2>
-      <p class="text-gray-600">A single API call is a solved problem, and everything above it isn't. OpenAPI describes endpoints, but not the order you call them in, what you carry between them, or when you're done. Agent frameworks improvise that order at runtime, and improvisation is exactly what you don't want in production. UseArazzo fills the gap with <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a>, the OpenAPI Initiative's specification for multi-step API workflows.</p>
-    </div>
-  </div>
-</section>
-
 <!-- Why UseArazzo Pillars Section -->
 <section class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
     <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Why UseArazzo</h2>
     <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-      UseArazzo is the foundational operating system for Arazzo API workflows: one shared engine, not three separate tools that happen to sound related. The Validator, Runner, and CLI are all built on the same parser, so when they read a document, they agree about what it means.
+      As maintainers of UseArazzo, we believe multi-step API workflows deserve the same rigor OpenAPI brought to single endpoints: described once, in a standard, and executed the same way every time. That's what <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a> is for, and UseArazzo exists to validate and run it: deterministically, on your machine, in CI, or through an agent. It's one shared engine, not three separate tools that happen to sound related.
     </p>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-dark">
         <h3 class="text-lg font-bold text-primary-dark mb-3">Deterministic execution</h3>
-        <p class="text-gray-600">A workflow that ran yesterday runs the same today. Agents get autonomy at the decision boundary, not inside the steps.</p>
+        <p class="text-gray-600">A workflow that ran yesterday runs the same today. Agents can choose which workflow to run, not improvise the steps inside it.</p>
       </div>
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-light">
         <h3 class="text-lg font-bold text-primary-dark mb-3">The standard is the product</h3>
