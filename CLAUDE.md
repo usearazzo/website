@@ -384,6 +384,9 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   `openssl dgst -sha384 -binary <file> | base64`. The sample URL is written root-relative and made
   absolute against the page's own origin at runtime, so it is same-origin on localhost, 127.0.0.1,
   and production alike (an absolute `site.url` value failed with a CORS error on a local server).
+  It travels in `data-dep-demo-sample` on the input, not `value`: a relative string in the
+  `value` of a `type="url"` input is invalid HTML (the Nu checker flags it), and the script
+  prefills the field from the attribute.
   The browser build is not documented in the package README or the reference page, so the page
   uses it without teaching it as an install path. Headless Chrome in the Claude Code sandbox has no
   outbound network: external URLs (raw GitHub, which sends `access-control-allow-origin: *`) can

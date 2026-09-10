@@ -342,7 +342,8 @@ h4:hover .heading-anchor {
 }
 
 .spec-no {
-    color: #9CA3AF;
+    /* gray-400 measured 2.5:1 on white in Lighthouse; text-light keeps it muted at 7:1 */
+    color: var(--color-text-light);
 }
 
 /* Architecture diagram */
@@ -575,6 +576,12 @@ h4:hover .heading-anchor {
     font-size: 0.875em;
 }
 
+/* Inline code is ink on light grey wherever it sits, including white-on-dark table
+   headers; scoped to :not(pre) so Prism keeps colouring the text inside code blocks. */
+.post-content :not(pre) > code {
+    color: var(--color-primary-dark);
+}
+
 .post-content .post-callout {
     background: #F0F5E7;
     border-left: 4px solid var(--color-primary-light);
@@ -596,17 +603,6 @@ h4:hover .heading-anchor {
     margin: 0 0 1.25rem;
     overflow-x: auto;
     max-width: 100%;
-}
-
-.post-content :not(pre) > code[class*="language-"] {
-    /* Prism's tomorrow theme paints inline code dark; kramdown adds
-       language-plaintext to every inline <code>, so win on specificity. */
-    background: #F3F4F6;
-    color: #17210D;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    text-shadow: none;
-    white-space: normal;
 }
 
 .post-content pre code {
@@ -745,6 +741,13 @@ h4:hover .heading-anchor {
 
 .post-content .dep-demo pre {
     margin: 0;
+}
+
+/* The strip scrolls sideways on narrow screens. overflow-x: auto also makes overflow-y
+   auto, and the tabs' -1px margin below (so the active underline sits on the strip's
+   border) would then show as a one-pixel vertical scrollbar. */
+.dep-demo [role="tablist"] {
+    overflow-y: hidden;
 }
 
 .dep-demo [role="tab"] {

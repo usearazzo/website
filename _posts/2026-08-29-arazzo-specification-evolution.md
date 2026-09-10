@@ -4,6 +4,7 @@ description: "Three releases in two years. A guide to what each one changed, whi
 date: 2026-08-29
 image:
   path: /assets/images/blog/arazzo-specification-evolution.png
+  webp: /assets/images/blog/arazzo-specification-evolution.webp
   width: 1200
   height: 630
   alt: "Five green figures standing on a ground line, left to right, evolving from a seed into a stalk, a fork, and finally a full workflow shape whose two branches rejoin at the top"

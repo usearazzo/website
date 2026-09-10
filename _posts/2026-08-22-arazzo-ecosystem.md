@@ -4,6 +4,7 @@ description: "Now there's a place to see the whole thing."
 date: 2026-08-22
 image:
   path: /assets/images/blog/arazzo-ecosystem.png
+  webp: /assets/images/blog/arazzo-ecosystem.webp
   width: 1200
   height: 630
   alt: "A row of different stylized green plants growing from shared ground on a dark green background, the UseArazzo fork mark growing among them as one of the plants"

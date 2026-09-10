@@ -57,7 +57,7 @@ layout: base
       </header>
 
       <figure class="mb-8">
-        <img src="{{ page.image.path | relative_url }}" width="{{ page.image.width }}" height="{{ page.image.height }}" class="rounded-lg w-full h-auto" alt="{{ page.image.alt | default: page.title | escape }}">
+        <img src="{{ page.image.webp | default: page.image.path | relative_url }}" width="{{ page.image.width }}" height="{{ page.image.height }}" class="rounded-lg w-full h-auto" alt="{{ page.image.alt | default: page.title | escape }}">
         <figcaption class="text-center text-sm text-gray-500 mt-2">{{ page.image.caption | escape }}</figcaption>
       </figure>
 

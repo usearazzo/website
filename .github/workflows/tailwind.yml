@@ -1,0 +1,23 @@
+name: Tailwind CSS is up to date
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Regenerate assets/css/tailwind.css
+        run: npx --yes tailwindcss@3.4.17 -c tailwind.config.js -i _tailwind/input.css -o assets/css/tailwind.css --minify
+      - name: Fail if the committed file is stale
+        run: |
+          git diff --exit-code -- assets/css/tailwind.css || {
+            echo "assets/css/tailwind.css is out of date. Run the command in tailwind.config.js and commit the result."
+            exit 1
+          }

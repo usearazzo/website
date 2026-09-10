@@ -28,20 +28,28 @@
   <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/images/favicons/favicon-16x16.png' | relative_url }}">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ '/apple-touch-icon.png' | relative_url }}">
   <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}">
+  {%- if page.prism %}
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  {%- endif %}
   <!-- Styles -->
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
   {%- for stylesheet in page.stylesheets %}
   <link rel="stylesheet" href="{{ stylesheet | relative_url }}">
   {%- endfor %}
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Syntax highlighting -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <!-- Tailwind, generated: see tailwind.config.js for the regenerate command. Kept after the
+       site stylesheets so the cascade matches what the CDN script produced. -->
+  <link rel="stylesheet" href="{{ '/assets/css/tailwind.css' | relative_url }}">
+  {%- if page.prism %}
+  <!-- Syntax highlighting: only on pages with code blocks (prism: true in front matter;
+       collections get it from _config.yml defaults, product pages set it themselves) -->
+  <link rel="stylesheet" href="{{ '/assets/css/prism-tomorrow.min.css' | relative_url }}">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" defer></script>
+  {%- endif %}
   <!-- Site JavaScript -->
   <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
 </head>

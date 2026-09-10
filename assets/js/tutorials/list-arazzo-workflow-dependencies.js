@@ -28,7 +28,9 @@
   const MIN_STATUS_MS = 700;
 
   // The sample URL is written root-relative so it always shares the page's origin
-  // (localhost, 127.0.0.1, production); make it absolute for the URL input.
+  // (localhost, 127.0.0.1, production). It travels in a data attribute rather than
+  // `value`, because a relative string is not valid HTML in a type="url" input;
+  // make it absolute here and prefill the field.
   const absolute = (value) => {
     try {
       return new URL(value, window.location.href).href;
@@ -36,7 +38,7 @@
       return value;
     }
   };
-  urlInput.value = absolute(urlInput.value);
+  urlInput.value = absolute(urlInput.dataset.depDemoSample || urlInput.value);
   form.querySelectorAll('[data-dep-demo-url]').forEach((link) => {
     link.dataset.depDemoUrl = absolute(link.dataset.depDemoUrl);
   });

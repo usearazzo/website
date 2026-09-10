@@ -4,6 +4,7 @@ description: "The first UseArazzo package is published, as an alpha. Why the par
 date: 2026-09-08
 image:
   path: /assets/images/blog/arazzo-parser-on-npm.png
+  webp: /assets/images/blog/arazzo-parser-on-npm.webp
   width: 1200
   height: 630
   alt: "Three stacked rounded slabs on a dark green ground; the bottom one is solid bright green and lit, the two above it are dimmer outlines"

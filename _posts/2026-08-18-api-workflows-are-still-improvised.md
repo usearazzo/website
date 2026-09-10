@@ -4,6 +4,7 @@ description: "OpenAPI describes endpoints, not the order you call them in. Arazz
 date: 2026-08-18
 image:
   path: /assets/images/blog/api-workflows-are-still-improvised.png
+  webp: /assets/images/blog/api-workflows-are-still-improvised.webp
   width: 1200
   height: 630
   alt: "One path splitting into two parallel green tracks that rejoin, on a dark green background"
