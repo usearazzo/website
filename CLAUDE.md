@@ -46,10 +46,53 @@ unbuilt; don't add product pages for roadmap items ahead of the code.
 ## Tech Stack
 
 - **Jekyll** via `github-pages` gem (~232)
-- **Tailwind CSS** via CDN (`cdn.tailwindcss.com`)
-- **Prism.js** v1.29.0 for syntax highlighting (JS, TS, YAML, JSON, Bash)
+- **Tailwind CSS** 3.4.17 as a **generated, committed stylesheet** (`assets/css/tailwind.css`,
+  ~17 KB), not the Play CDN script. See "Page performance" below for why and how to regenerate
+- **Prism.js** v1.29.0 for syntax highlighting (JS, TS, YAML, JSON, Bash); scripts from cdnjs,
+  theme CSS self-hosted, both only on pages with `prism: true`
 - **Vanilla JavaScript** (no framework)
-- **No npm/Node dependencies** — pure Ruby/Jekyll with CDN-based frontend libs
+- **No npm/Node dependencies in the repo** (no `package.json`). Node is needed only to regenerate
+  the Tailwind file, via `npx`, when a page gains a class it does not have yet
+
+### Page performance (2026-09-10)
+- **Tailwind is a static file.** The Play CDN script (127 KB of JavaScript compiling the page's
+  CSS in the browser, render-blocking, "not for production" per Tailwind's docs) held every page
+  at ~90 performance with FCP 2.2 s / LCP 2.9 s; the generated file scores 100 with 1.2 s / 1.5 s
+  and rendered pixel-identical on /, /docs/, /runner/, and the tutorial. Inputs:
+  `tailwind.config.js` (repo root, content globs, excluded from the Jekyll build) and
+  `_tailwind/input.css`. **Regenerate whenever a page gains a Tailwind class the file does not
+  have yet**, or the class silently does nothing:
+  `npx --yes tailwindcss@3.4.17 -c tailwind.config.js -i _tailwind/input.css -o assets/css/tailwind.css --minify`.
+  `.github/workflows/tailwind.yml` regenerates on push and PR and fails when the committed file is
+  stale. The globs include `assets/js/**` so classes toggled from JavaScript are picked up. The
+  `<link>` sits where the CDN `<script>` was, after `main.css` and page stylesheets, so the
+  cascade is unchanged. Brand colour utilities (`.text-primary-dark` etc.) are plain rules in
+  `main.css`, so Tailwind runs on its default config.
+- **Hero images ship as WebP with the PNG kept.** Front matter `image.webp` (optional) names a
+  WebP sibling of `image.path`; the guide, tutorial, and post layouts and the docs hub and blog
+  index cards render `image.webp | default: image.path`, while `image.path` (PNG) stays the
+  Open Graph and JSON-LD image, where WebP support is still patchy. The heroes are flat
+  brand-green artwork, so WebP q90 is 16 to 20 KB against 130 to 350 KB PNG. Generate with
+  Pillow: `Image.open(p).convert('RGB').save(p[:-4] + '.webp', 'WEBP', quality=90, method=6)`.
+  Every post, guide, and tutorial hero has one; a new hero needs the PNG (for OG) and the WebP.
+- **No server-side syntax highlighting** (`highlighter: none` plus kramdown
+  `syntax_highlighter_opts.disable` in `_config.yml`). Rouge, on by default under `github-pages`,
+  wrapped every token of every fenced block in a span, about 800 per docs page and 20 to 45 KB of
+  HTML, which Prism then discarded when it re-highlighted in the browser. kramdown still emits
+  `<pre><code class="language-x">`, which is all Prism needs; code blocks render identically. Side
+  effect: inline `<code>` no longer carries Rouge's `language-plaintext`, so Prism's theme no longer
+  touches it and `.post-content code` in `main.css` styles it as written (the override rule that
+  fought Rouge was removed).
+- **The Prism theme is self-hosted** (`assets/css/prism-tomorrow.min.css`, MIT, provenance in its
+  header): a render-blocking stylesheet on a third-party origin cost ~800 ms for 1.3 KB. The
+  Prism scripts still come deferred from cdnjs.
+- **Prism loads only where `prism: true`**: `head.html` gates the theme CSS and the six scripts on
+  it. `_config.yml` defaults set it for posts, tutorials, guides, and reference; `cli`, `validator`,
+  and `runner` set it in their own front matter. A new page with code blocks needs the flag or its
+  code renders unstyled. Pages without code (home, docs hub, blog index, ecosystem, about, legal)
+  skip the cdnjs connection and a render-blocking stylesheet.
+- `head.html` preconnects to `cdnjs.cloudflare.com` only when Prism loads. (An interim step
+  pinned the Tailwind CDN URL to dodge its per-load 302; the static file made that moot.)
 
 ### Jekyll Plugins
 - `jekyll-feed` — RSS feed
@@ -104,16 +147,30 @@ assets/tutorials/<slug>/         # Same for tutorials, plus the finished script 
 pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
-  docs.html                      # Docs hub (permalink: /docs/): product-page two-column shape with
-                                 # sticky sidebar: three eyebrow labels (#tutorials #guides #packages, styled
-                                 # like the homepage "Works with" strip: text-xs uppercase
-                                 # tracking-wider gray) each with its entries beneath at normal
-                                 # size: guide titles looped from site.guides, four static package
-                                 # README links. Guide cards from site.guides
-                                 # (empty state when none), package README cards. A guide card left
-                                 # alone on its row spans both columns, image-left (.guides-grid
-                                 # rules in main.css, pure CSS). No spec section: the Ecosystem
-                                 # page's #spec covers it
+  docs.html                      # Docs hub (permalink: /docs/), redone 2026-09-10 on the shape of
+                                 # stoplight.io/guides at the owner's request: no sidebar, centred
+                                 # full-width page. Hero gradient band (title, intro, three jump
+                                 # pills #tutorials #guides #packages), then three bands alternating
+                                 # white / #F0F5E7 tint, each a centred heading, one-line lead, and
+                                 # a row of compact cards (assets/css/docs.css, loaded via the
+                                 # page's `stylesheets` front matter). .docs-grid is a plain
+                                 # left-aligned grid (1 / 2 / 3 columns); a short row leaves its
+                                 # slots empty (the owner chose this over centred cards and over
+                                 # the old full-width image-left card). Tutorial and guide cards: thumbnail
+                                 # (16:9 crop of the hero), status badge only when set, title,
+                                 # `summary` front matter (one sentence; falls back to
+                                 # `description`), one filled button. No "Updated" date on cards.
+                                 # Each band fills to three with dashed placeholder cards
+                                 # (owner's request 2026-09-10): the first says "More ... on the
+                                 # way" with a Discussions link, the rest are aria-hidden ghosts
+                                 # shown only at three columns (lg); below that they would just
+                                 # add scroll, so docs.css hides them.
+                                 # They also cover the zero-guides case, so the old empty-state
+                                 # branch is gone.
+                                 # Package cards are all static (badge, name, one-line blurb,
+                                 # filled "API reference" for published, outline "README on
+                                 # GitHub" for the rest). No spec
+                                 # section: the Ecosystem page's #spec covers it
   ecosystem.html                 # "Arazzo Ecosystem" registry of EXTERNAL resources: ONE page
                                  # at /ecosystem/ with hash sections in this order: #spec #tools
                                  # #articles #videos #examples #other #curation. Product-page
@@ -135,7 +192,13 @@ pages/
   validator.html                 # Validator product page, sidebar nav, in-development framing + JS API
   about.html                     # Mission, team, track record, "Built on SpecLynx" credit
   privacy.html, terms.html       # Legal pages
+tailwind.config.js               # Content globs for the generated Tailwind file; regenerate command
+                                 # in its header comment. Excluded from the Jekyll build
+_tailwind/input.css              # The three @tailwind directives the generator compiles
+.github/workflows/tailwind.yml   # CI: regenerates assets/css/tailwind.css and fails if it is stale
 assets/
+  css/tailwind.css               # GENERATED, committed. Do not edit by hand; regenerate (see above)
+  css/docs.css                   # Docs hub only (bands, cards, placeholders); loaded via front matter
   css/main.css                   # Custom CSS + CSS variables
   js/main.js                     # Mobile menu, lightbox, heading anchors, guide FAQ toggles.
                                  # Loaded ONCE, deferred, from head.html. A second synchronous
@@ -224,7 +287,8 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - A guide is evergreen and undated in the reader's eyes: the layout shows "Updated" (from
   `last_modified_at`, falling back to `date`) rather than a publish date. Guides are not in the
   RSS feed.
-- Guide front matter: `title`, `description`, `date`, `image` (`path`/`width`/`height`/`alt`,
+- Guide front matter: `title`, `description`, optional `summary` (one sentence for the docs hub
+  card; the card falls back to `description`), `date`, `image` (`path`/`width`/`height`/`alt`,
   optional `caption`), optional `last_modified_at`, optional `status` (rendered as a badge, e.g.
   `Draft`), and `toc` (list of `{id, title}`) which drives the sidebar. Heading IDs in the Markdown
   must match the `toc` ids (`## Heading {#id}`). Optional `faq` (list of `{question, answer}`;
@@ -280,7 +344,7 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   `/docs/tutorials/<slug>/`, a sibling of Guides, with the guide lifecycle: same front matter
   (`title`, `description`, `date`, `image`, optional `last_modified_at`, `status`, `toc`, `faq`),
   "Updated" date, `status` badge, sample files under `assets/tutorials/<slug>/`, hero in
-  `assets/images/tutorials/`, not in the RSS feed. Hub section above Guides, sidebar eyebrow,
+  `assets/images/tutorials/`, not in the RSS feed. Hub band above Guides,
   footer link, and an `llms.txt` loop. A tutorial is one use case, one package, verb-first steps,
   runnable end to end, finishable in one sitting, every command real today. A guide unpacks a
   problem space and shows the DIY route. No empty-state section in the hub: the section loops

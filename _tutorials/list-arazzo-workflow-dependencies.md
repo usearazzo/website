@@ -1,9 +1,11 @@
 ---
 title: "List Every Document an Arazzo Workflow Depends On"
 description: "An Arazzo workflow names the APIs and other workflows it calls, and a run fetches all of them. Write a script that parses the entry document, follows every source description, and draws the graph of what each document is, which are shared, and which cannot be read."
+summary: "Write a script that parses an entry document, follows every source description, and draws the graph of documents the workflow reaches."
 date: 2026-09-08
 image:
   path: /assets/images/tutorials/list-arazzo-workflow-dependencies.png
+  webp: /assets/images/tutorials/list-arazzo-workflow-dependencies.webp
   width: 1200
   height: 630
   alt: "A rounded-square document node on the left with three lines branching to three nodes; the middle one continues to a fourth node that loops back to the first with a dotted line, and the bottom one is drawn as a dashed outline with a gap in its line"

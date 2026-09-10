@@ -1,9 +1,11 @@
 ---
 title: "Parsing Arazzo Documents"
 description: "An Arazzo document is several languages in one file, and one file in a network of documents. Why reading one properly is harder than loading YAML, what a tool needs from a parser, and how UseArazzo's parser approaches it."
+summary: "Why reading an Arazzo document properly is harder than loading YAML, what a tool needs from a parser, and how UseArazzo's parser approaches it."
 date: 2026-09-03
 image:
   path: /assets/images/guides/arazzo-document-parsing.png
+  webp: /assets/images/guides/arazzo-document-parsing.webp
   width: 1200
   height: 630
   alt: "A document sheet with indented text lines feeding into two meshing gears, which turn it into a tree of rounded-square nodes fanning out from one root on the right"

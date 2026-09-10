@@ -3,6 +3,8 @@ layout: base
 title: Docs - Tutorials, Guides, and Package Reference
 description: Tutorials and guides for working with Arazzo documents in JavaScript and TypeScript, plus the API reference for every published package in the UseArazzo toolkit.
 permalink: /docs/
+stylesheets:
+  - /assets/css/docs.css
 ---
 
 <script type="application/ld+json">
@@ -16,172 +18,172 @@ permalink: /docs/
 }
 </script>
 
-<div class="flex-1">
-<div class="flex">
-  <!-- Sticky Sidebar -->
-  <aside class="hidden lg:block w-64 flex-shrink-0">
-    <nav class="sticky top-[82px] p-6 space-y-4 text-sm">
-      <div class="font-bold text-primary-dark mb-4">Docs</div>
-      <div>
-        <a href="#tutorials" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Tutorials</a>
-        {% if site.tutorials.size > 0 %}
-        <div class="pl-2 space-y-2">
-          {% for tutorial in site.tutorials %}
-          <a href="{{ tutorial.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ tutorial.title | escape }}</a>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-      <div>
-        <a href="#guides" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Guides</a>
-        {% if site.guides.size > 0 %}
-        <div class="pl-2 space-y-2">
-          {% for guide in site.guides %}
-          <a href="{{ guide.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ guide.title | escape }}</a>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-      <div>
-        <a href="#packages" class="block text-gray-500 text-xs uppercase tracking-wider mb-2 hover:text-primary-light">Package reference</a>
-        <div class="pl-2 space-y-2">
-          {% for ref in site.reference %}
-          <a href="{{ ref.url | relative_url }}" class="block text-gray-600 hover:text-primary-light">{{ ref.title | escape }}</a>
-          {% endfor %}
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/resolver</a>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/validator</a>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="block text-gray-600 hover:text-primary-light">@usearazzo/runner</a>
-        </div>
-      </div>
-    </nav>
-  </aside>
+<main class="flex-1 min-w-0">
 
-  <!-- Main Content -->
-  <main class="flex-1 min-w-0 max-w-4xl px-6 py-12">
-    <header class="mb-10">
+  <!-- Hero -->
+  <div class="docs-hero">
+    <div class="max-w-6xl mx-auto px-6 py-16 text-center">
       <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Docs</h1>
-      <p class="text-xl text-gray-600 max-w-3xl">
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
         <strong>Tutorials</strong> that get one job done with one package, <strong>guides</strong> that unpack a problem and how the toolkit approaches it, and the <strong>API reference</strong> for every published package.
       </p>
-    </header>
+      <p class="text-gray-500 text-xs uppercase tracking-wider mt-10 mb-4">What are you looking for?</p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="#tutorials" class="docs-jump">Tutorials</a>
+        <a href="#guides" class="docs-jump">Guides</a>
+        <a href="#packages" class="docs-jump">Package reference</a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Tutorials -->
-    <section id="tutorials" class="mb-14">
-      <h2 class="text-2xl font-bold text-primary-dark mb-2">Tutorials</h2>
-      <p class="text-gray-600 mb-6 max-w-3xl">One use case, one package, finished in a sitting. Every command runs against the published package today, and the sample files are yours to download.</p>
-      <div class="guides-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Tutorials -->
+  <section id="tutorials" class="bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-14">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold text-primary-dark mb-3">Tutorials</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">One use case, one package, finished in a sitting. Every command runs against the published package today, and the sample files are yours to download.</p>
+      </div>
+      <div class="docs-grid">
         {% for tutorial in site.tutorials %}
-        <article class="product-card !p-0 overflow-hidden flex flex-col">
-          <a href="{{ tutorial.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
-            <img loading="lazy" src="{{ tutorial.image.path | relative_url }}" width="{{ tutorial.image.width }}" height="{{ tutorial.image.height }}" alt="" class="w-full h-40 object-cover object-left">
+        <article class="docs-card">
+          <a href="{{ tutorial.url | relative_url }}" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ tutorial.image.webp | default: tutorial.image.path | relative_url }}" width="{{ tutorial.image.width }}" height="{{ tutorial.image.height }}" alt="" class="docs-card-thumb">
           </a>
-          <div class="p-6 flex flex-col flex-1">
-          <p class="text-sm text-gray-500 mb-3 flex items-center gap-2">
-            {% if tutorial.status %}<span class="badge badge-secondary">{{ tutorial.status | escape }}</span>{% endif %}
-            <span>Updated <time datetime="{{ tutorial.last_modified_at | default: tutorial.date | date_to_xmlschema }}">{{ tutorial.last_modified_at | default: tutorial.date | date: "%-d %B %Y" }}</time></span>
-          </p>
-          <h3 class="product-card-title text-xl">
-            <a href="{{ tutorial.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ tutorial.title | escape }}</a>
-          </h3>
-          <p class="product-card-description flex-1">{{ tutorial.description | escape }}</p>
-          <a href="{{ tutorial.url | relative_url }}" class="product-card-link">
-            Start tutorial
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
+          <div class="docs-card-body">
+            {% if tutorial.status %}
+            <p class="docs-card-meta"><span class="badge badge-secondary">{{ tutorial.status | escape }}</span></p>
+            {% endif %}
+            <h3 class="docs-card-title"><a href="{{ tutorial.url | relative_url }}">{{ tutorial.title | escape }}</a></h3>
+            <p class="docs-card-text">{{ tutorial.summary | default: tutorial.description | escape }}</p>
+            <a href="{{ tutorial.url | relative_url }}" class="docs-card-cta">
+              Start tutorial
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
           </div>
         </article>
         {% endfor %}
+        {% assign fill = 3 | minus: site.tutorials.size %}
+        {% if fill > 0 %}
+        {% for i in (1..fill) %}
+        <div class="docs-card docs-card-placeholder"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
+          {% if forloop.first %}
+          <p class="docs-card-title">More tutorials on the way</p>
+          <p class="docs-card-text">The next ones are being written. Follow <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> to hear when they land.</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Guides -->
-    <section id="guides" class="mb-14">
-      <h2 class="text-2xl font-bold text-primary-dark mb-2">Guides</h2>
-      <p class="text-gray-600 mb-6 max-w-3xl">Longer reads on one problem each: what it is, how you would solve it by hand, and how the toolkit approaches it. Kept up to date as the packages change.</p>
-      {% if site.guides.size > 0 %}
-      <div class="guides-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Guides -->
+  <section id="guides" class="docs-band-tint">
+    <div class="max-w-6xl mx-auto px-6 py-14">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold text-primary-dark mb-3">Guides</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Longer reads on one problem each: what it is, how you would solve it by hand, and how the toolkit approaches it. Kept up to date as the packages change.</p>
+      </div>
+      <div class="docs-grid">
         {% for guide in site.guides %}
-        <article class="product-card !p-0 overflow-hidden flex flex-col">
-          <a href="{{ guide.url | relative_url }}" class="block" aria-hidden="true" tabindex="-1">
-            <img loading="lazy" src="{{ guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="" class="w-full h-40 object-cover object-left">
+        <article class="docs-card">
+          <a href="{{ guide.url | relative_url }}" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ guide.image.webp | default: guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="" class="docs-card-thumb">
           </a>
-          <div class="p-6 flex flex-col flex-1">
-          <p class="text-sm text-gray-500 mb-3 flex items-center gap-2">
-            {% if guide.status %}<span class="badge badge-secondary">{{ guide.status | escape }}</span>{% endif %}
-            <span>Updated <time datetime="{{ guide.last_modified_at | default: guide.date | date_to_xmlschema }}">{{ guide.last_modified_at | default: guide.date | date: "%-d %B %Y" }}</time></span>
-          </p>
-          <h3 class="product-card-title text-xl">
-            <a href="{{ guide.url | relative_url }}" class="hover:text-primary-light transition-colors">{{ guide.title | escape }}</a>
-          </h3>
-          <p class="product-card-description flex-1">{{ guide.description | escape }}</p>
-          <a href="{{ guide.url | relative_url }}" class="product-card-link">
-            Read guide
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
+          <div class="docs-card-body">
+            {% if guide.status %}
+            <p class="docs-card-meta"><span class="badge badge-secondary">{{ guide.status | escape }}</span></p>
+            {% endif %}
+            <h3 class="docs-card-title"><a href="{{ guide.url | relative_url }}">{{ guide.title | escape }}</a></h3>
+            <p class="docs-card-text">{{ guide.summary | default: guide.description | escape }}</p>
+            <a href="{{ guide.url | relative_url }}" class="docs-card-cta">
+              Read guide
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
           </div>
         </article>
         {% endfor %}
+        {% assign fill = 3 | minus: site.guides.size %}
+        {% if fill > 0 %}
+        {% for i in (1..fill) %}
+        <div class="docs-card docs-card-placeholder"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
+          {% if forloop.first %}
+          <p class="docs-card-title">More guides on the way</p>
+          <p class="docs-card-text">The next ones are being written. Follow <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> to hear when they land.</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
       </div>
-      {% else %}
-      <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
-        <p class="text-xl font-bold text-primary-dark mb-2">No guides yet</p>
-        <p class="text-gray-600 max-w-xl mx-auto">The first ones are being written. Watch the repository or follow Discussions to hear when they land.</p>
-      </div>
-      {% endif %}
-    </section>
+    </div>
+  </section>
 
-    <!-- Package reference -->
-    <section id="packages">
-      <h2 class="text-2xl font-bold text-primary-dark mb-2">Package reference</h2>
-      <p class="text-gray-600 mb-6 max-w-3xl">A published package gets its API reference here. Until a package publishes, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="product-card">
-          <p class="mb-3"><span class="badge badge-primary">Published</span></p>
-          <h3 class="product-card-title text-xl">@usearazzo/parser</h3>
-          <p class="product-card-description">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees. On <a href="https://www.npmjs.com/package/@usearazzo/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">npm</a> as an alpha.</p>
-          <a href="{{ '/docs/parser/' | relative_url }}" class="product-card-link">
-            API reference
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
-        <div class="product-card">
-          <h3 class="product-card-title text-xl">@usearazzo/resolver</h3>
-          <p class="product-card-description">Dereferences <code class="bg-gray-100 px-1 rounded">$ref</code>, JSON Schema, and reusable components across Arazzo and OpenAPI documents.</p>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
-            README on GitHub
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
-        <div class="product-card">
-          <h3 class="product-card-title text-xl">@usearazzo/validator</h3>
-          <p class="product-card-description">Semantic validation and linting with LSP-compatible diagnostics. The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator page</a> introduces it.</p>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
-            README on GitHub
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
-        <div class="product-card">
-          <h3 class="product-card-title text-xl">@usearazzo/runner</h3>
-          <p class="product-card-description">Executes Arazzo workflows against live APIs, step by step. The <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner page</a> introduces it.</p>
-          <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="product-card-link">
-            README on GitHub
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
+  <!-- Package reference -->
+  <section id="packages" class="bg-white">
+    <div class="max-w-6xl mx-auto px-6 py-14">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold text-primary-dark mb-3">Package reference</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">A published package gets its API reference here. Until a package publishes, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
       </div>
-    </section>
-  </main>
-</div>
-</div>
+      <div class="docs-grid">
+        <article class="docs-card">
+          <div class="docs-card-body">
+            <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
+            <h3 class="docs-card-title"><a href="{{ '/docs/parser/' | relative_url }}">@usearazzo/parser</a></h3>
+            <p class="docs-card-text">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees.</p>
+            <a href="{{ '/docs/parser/' | relative_url }}" class="docs-card-cta">
+              API reference
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        <article class="docs-card">
+          <div class="docs-card-body">
+            <p class="docs-card-meta"><span class="badge badge-secondary">In development</span></p>
+            <h3 class="docs-card-title">@usearazzo/resolver</h3>
+            <p class="docs-card-text">Dereferences <code>$ref</code>, JSON Schema, and reusable components across Arazzo and OpenAPI documents.</p>
+            <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver#readme" target="_blank" rel="noopener noreferrer" class="docs-card-cta docs-card-cta-secondary">
+              README on GitHub
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        <article class="docs-card">
+          <div class="docs-card-body">
+            <p class="docs-card-meta"><span class="badge badge-secondary">In development</span></p>
+            <h3 class="docs-card-title">@usearazzo/validator</h3>
+            <p class="docs-card-text">Semantic validation and linting with LSP-compatible diagnostics. The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator page</a> introduces it.</p>
+            <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="docs-card-cta docs-card-cta-secondary">
+              README on GitHub
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        <article class="docs-card">
+          <div class="docs-card-body">
+            <p class="docs-card-meta"><span class="badge badge-secondary">In development</span></p>
+            <h3 class="docs-card-title">@usearazzo/runner</h3>
+            <p class="docs-card-text">Executes Arazzo workflows against live APIs, step by step. The <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner page</a> introduces it.</p>
+            <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="docs-card-cta docs-card-cta-secondary">
+              README on GitHub
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
