@@ -12,8 +12,8 @@ permalink: /
     <div class="flex flex-col md:flex-row gap-12 items-center">
       <!-- Left: Text Content -->
       <div class="flex-1">
-        <h1 class="hero-title mb-6">The Foundational Operating System for Arazzo API Workflows</h1>
-        <p class="hero-subtitle mb-6">A JavaScript/TypeScript toolkit for <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a>, the OpenAPI Initiative's specification for multi-step API workflows. Validate documents, run workflows against live APIs, and read the trace of each step.</p>
+        <h1 class="hero-title mb-6"><span class="block">OpenAPI Describes Each Call.</span> <span class="block">Arazzo Describes the API Workflow.</span></h1>
+        <p class="hero-subtitle mb-6">You've probably scripted your API workflow by hand, and it breaks quietly when the API changes. Write it as an <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a> document instead, the OpenAPI Initiative's specification for multi-step API workflows. UseArazzo validates it, runs it against live APIs, and shows you exactly what happened at each step.</p>
         <!-- Credibility -->
         <div class="border-t border-gray-200 pt-5 mb-8">
           <p class="text-gray-500 text-sm">Founded by two industry veterans with over 15 years of combined experience building and maintaining core Swagger/OpenAPI tooling. <a href="{{ '/about/' | relative_url }}" class="product-card-link">Meet the team &rarr;</a></p>
@@ -96,7 +96,10 @@ permalink: /
 <!-- Why UseArazzo Pillars Section -->
 <section class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-12">Why UseArazzo</h2>
+    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Why UseArazzo</h2>
+    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+      UseArazzo is the foundational operating system for Arazzo API workflows: one shared engine, not three separate tools that happen to sound related. The Validator, Runner, and CLI are all built on the same parser, so when they read a document, they agree about what it means.
+    </p>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-dark">
         <h3 class="text-lg font-bold text-primary-dark mb-3">Deterministic execution</h3>
