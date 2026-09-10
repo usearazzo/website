@@ -11,11 +11,12 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. Only @usearazzo/parser is on npm so far, as an alpha; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the arazzo-toolkit monorepo.
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. Only @usearazzo/parser is on npm so far, as an alpha; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
 
 ## Compatibility
 
 | Document | Versions | Validate | Run |
+| --- | --- | --- | --- |
 | Workflow Document: Arazzo | 1.0.0, 1.0.1, 1.1.0 | yes | yes |
 | Source Description: OpenAPI | 2.0, 3.0.x, 3.1.x | yes | yes |
 | Source Description: OpenAPI | 3.2.x | no | no |
@@ -25,23 +26,26 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 ## Products
 
 ### CLI
-- One command-line interface across the toolchain: validate and run workflows on your machine and in CI
+
+- [CLI product page]({{ site.url }}{{ site.baseurl }}/cli/): one command-line interface across the toolchain: validate and run workflows on your machine and in CI
 - Not yet published to npm, in development
 - Planned commands: `validate` (wraps @usearazzo/validator), `run` (wraps @usearazzo/runner)
 - Under consideration, not built or decided: `init`, which would read a workflow and write an editable config file covering its inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
-- No cli package exists in the monorepo yet; the page is a design sketch, and feedback on it is welcome in Discussions
-- Docs: {{ site.url }}{{ site.baseurl }}/cli/
+- No cli package exists in the monorepo yet; the page is a design sketch, and feedback on it is welcome in [Discussions](https://github.com/orgs/usearazzo/discussions)
 
 ### Validator
-- Semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
+
+- [Validator product page]({{ site.url }}{{ site.baseurl }}/validator/): semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
+- [Validator source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator): the package in the monorepo, with its README
 - Opt-in JSON Schema (AJV) validation
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Pre-1.0, not yet published to npm, under heavy development
 - Free, open source (Apache 2.0)
-- Docs: {{ site.url }}{{ site.baseurl }}/validator/
 
 ### Runner
-- Executes Arazzo workflows against live APIs described by OpenAPI source descriptions
+
+- [Runner product page]({{ site.url }}{{ site.baseurl }}/runner/): executes Arazzo workflows against live APIs described by OpenAPI source descriptions
+- [Runner source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner): the package in the monorepo, with its README
 - Step-by-step execution: criteria evaluation, output mapping, failure actions, retries, sub-workflows, dependsOn prerequisites, cancellation via AbortSignal
 - Pluggable HTTP transport (a function from the built request to a WHATWG Response; global fetch by default)
 - Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
@@ -50,12 +54,13 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Pre-1.0, not yet published to npm, under heavy development in the open (as is every package in the toolkit)
 - Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
-- Docs: {{ site.url }}{{ site.baseurl }}/runner/
 
 ### Lower-level packages
-- @usearazzo/parser: parses Arazzo documents into an ApiDOM data model. Published on npm as an alpha; API reference at {{ site.url }}{{ site.baseurl }}/docs/parser/
-- @usearazzo/resolver: dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents
-- Not yet published to npm, free, open source (Apache 2.0)
+
+- [@usearazzo/parser on npm](https://www.npmjs.com/package/@usearazzo/parser): parses Arazzo documents into an ApiDOM data model. Published as an alpha
+- [@usearazzo/parser API reference]({{ site.url }}{{ site.baseurl }}/docs/parser/): every function, option, result shape, and error, checked against the package source
+- [@usearazzo/resolver source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver): dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents. Not yet published to npm
+- Both are free, open source (Apache 2.0)
 
 ## Why UseArazzo
 
@@ -78,31 +83,31 @@ None of these are built yet. They are planned, not shipping:
 
 ## Built on SpecLynx
 
-UseArazzo is built end to end on SpecLynx (https://github.com/speclynx): the semantic parsing core, reference resolution, and standards discipline behind years of Swagger/OpenAPI tooling.
+UseArazzo is built end to end on [SpecLynx](https://github.com/speclynx): the semantic parsing core, reference resolution, and standards discipline behind years of Swagger/OpenAPI tooling.
 
 ## Docs
 
-- Hub for reading material: tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
-- Index: {{ site.url }}{{ site.baseurl }}/docs/
-{% for tutorial in site.tutorials %}- Tutorial: {{ tutorial.title }} ({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
-{% endfor %}{% for guide in site.guides %}- Guide: {{ guide.title }} ({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
-{% endfor %}{% for ref in site.reference %}- API reference: {{ ref.title }} {{ ref.package.version }} ({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
+- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
+{% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
+{% endfor %}{% for guide in site.guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+{% endfor %}{% for ref in site.reference %}- [API reference: {{ ref.title }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem
 
-- A registry of external Arazzo resources (not UseArazzo's own content): articles, videos, tools, the specification, examples in the wild, and anything else on-topic
-- Single page: {{ site.url }}{{ site.baseurl }}/ecosystem/ (section anchors: #spec, #tools, #articles, #videos, #examples, #other)
+- [Arazzo Ecosystem]({{ site.url }}{{ site.baseurl }}/ecosystem/): a registry of external Arazzo resources (not UseArazzo's own content): articles, videos, tools, the specification, examples in the wild, and anything else on-topic
+- Section anchors on that page: [#spec]({{ site.url }}{{ site.baseurl }}/ecosystem/#spec), [#tools]({{ site.url }}{{ site.baseurl }}/ecosystem/#tools), [#articles]({{ site.url }}{{ site.baseurl }}/ecosystem/#articles), [#videos]({{ site.url }}{{ site.baseurl }}/ecosystem/#videos), [#examples]({{ site.url }}{{ site.baseurl }}/ecosystem/#examples), [#other]({{ site.url }}{{ site.baseurl }}/ecosystem/#other)
 
 ## Blog
 
-- Hands-on tutorials, looks inside how the toolkit is built, and where API workflow automation is heading
-- Index: {{ site.url }}{{ site.baseurl }}/blog/
-- RSS feed: {{ site.url }}{{ site.baseurl }}/feed.xml
-
+- [Blog]({{ site.url }}{{ site.baseurl }}/blog/): hands-on tutorials, looks inside how the toolkit is built, and where API workflow automation is heading
+- [RSS feed]({{ site.url }}{{ site.baseurl }}/feed.xml): every post, newest first
+{% for post in site.posts %}- [{{ post.title }}]({{ site.url }}{{ site.baseurl }}{{ post.url }}): {{ post.description }}
+{% endfor %}
 ## Links
 
-- Website: {{ site.url }}{{ site.baseurl }}/
-- GitHub: https://github.com/usearazzo
-- Toolkit source: https://github.com/usearazzo/arazzo-toolkit
-- Discussions: https://github.com/orgs/usearazzo/discussions
-- Contact: {{ site.email }}
+- [Website]({{ site.url }}{{ site.baseurl }}/)
+- [About]({{ site.url }}{{ site.baseurl }}/about/): mission, the two founders, and the SpecLynx lineage
+- [GitHub organization](https://github.com/usearazzo)
+- [Toolkit source](https://github.com/usearazzo/arazzo-toolkit)
+- [Discussions](https://github.com/orgs/usearazzo/discussions)
+- [Contact](mailto:{{ site.email }}): {{ site.email }}
