@@ -43,7 +43,7 @@ stylesheets:
         <p class="text-xl text-gray-600 max-w-3xl">Every <strong>external Arazzo resource</strong>, in one place: the specification, tools, articles, videos, and examples in the wild.</p>
         <p class="text-gray-600 max-w-3xl mt-3">Arazzo is the <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Initiative's specification</a> for describing multi-step API workflows, and a real ecosystem is forming around it. This page keeps track: hand-curated, reviewed regularly, and open to submissions from any vendor.</p>
         <p class="text-sm text-gray-500 mt-4">
-          Last reviewed: 5 September 2026
+          Last reviewed: 17 September 2026
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
           <a href="https://github.com/usearazzo/website/issues/new?template=submit-a-resource.yml" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Submit a resource</a>
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
@@ -180,6 +180,16 @@ stylesheets:
             <small>Imminent Technology</small>
             <span class="note">Visual workflow builder for creating Arazzo API workflows with a drag-and-drop interface.</span>
           </li>
+          <li>
+            <a href="https://github.com/wso2/arazzo-tools" target="_blank" rel="noopener noreferrer">WSO2 Arazzo Tools</a>
+            <small>WSO2</small>
+            <span class="note">VS Code extension with a visual designer, plus utilities for executing, visualising, and validating workflows.</span>
+          </li>
+          <li>
+            <a href="https://plugins.jetbrains.com/plugin/28079-arazzo" target="_blank" rel="noopener noreferrer">Arazzo plugin for IntelliJ IDEA</a>
+            <small>Pakisan</small>
+            <span class="note">Editing and validation support for Arazzo documents in JetBrains IDEs.</span>
+          </li>
         </ul>
       </div>
 
@@ -205,6 +215,11 @@ stylesheets:
             <a href="https://github.com/jentic/jentic-arazzo-tools/tree/main/packages/jentic-arazzo-validator" target="_blank" rel="noopener noreferrer">Arazzo Validator</a>
             <small>Jentic</small>
             <span class="note">JSON Schema validation plus semantic validation and linting.</span>
+          </li>
+          <li>
+            <a href="https://github.com/emmanuelperu/arazzo-maestro" target="_blank" rel="noopener noreferrer">arazzo-maestro</a>
+            <small>Emmanuel Peru</small>
+            <span class="note">Lints, views, and tests Arazzo workflows from a single Go binary.</span>
           </li>
         </ul>
       </div>
@@ -248,6 +263,11 @@ stylesheets:
             <span class="note">Turns APIs and Arazzo workflows into MCP tools, avoiding custom MCP server code from scratch.</span>
           </li>
           <li>
+            <a href="https://github.com/bump-sh/cli" target="_blank" rel="noopener noreferrer">Bump.sh CLI</a>
+            <small>Bump.sh</small>
+            <span class="note">Deploys an Arazzo workflow document to a Bump.sh hosted MCP server from the command line or CI.</span>
+          </li>
+          <li>
             <a href="https://github.com/sv-tools/roas/tree/main/crates/roas-arazzo-executor" target="_blank" rel="noopener noreferrer">ROAS</a>
             <small>Sergey Vilgelm</small>
             <span class="note">Rust libraries and a CLI for OpenAPI, AsyncAPI, Overlay, and Arazzo: parsed into typed Rust, validated, converted between versions, and, for Arazzo, executed.</span>
@@ -277,6 +297,16 @@ stylesheets:
             <a href="https://github.com/b-lab-io/pyarazzo" target="_blank" rel="noopener noreferrer">pyarazzo</a>
             <small>b-lab-io</small>
             <span class="note">CLI that renders Arazzo into other formats such as Markdown or PlantUML.</span>
+          </li>
+          <li>
+            <a href="https://github.com/wso2/arazzo-mcp-generator" target="_blank" rel="noopener noreferrer">Arazzo MCP Generator</a>
+            <small>WSO2</small>
+            <span class="note">Generates a Dockerised MCP server from an Arazzo document, with validation, inspection, and visualisation utilities built in.</span>
+          </li>
+          <li>
+            <a href="https://github.com/bump-sh/arazzo-to-flower" target="_blank" rel="noopener noreferrer">arazzo-to-flower</a>
+            <small>Bump.sh</small>
+            <span class="note">Ruby gem that transforms Arazzo workflow files into Bump.sh's Flower workflow format.</span>
           </li>
         </ul>
       </div>
@@ -309,6 +339,16 @@ stylesheets:
             <small>SwaggerExpert / Vladimír Gorej (char0n)</small>
             <span class="note">Parses, validates, and extracts Arazzo runtime expressions.</span>
           </li>
+          <li>
+            <a href="https://github.com/pb33f/libopenapi" target="_blank" rel="noopener noreferrer">libopenapi</a>
+            <small>pb33f</small>
+            <span class="note">Go parser, validator, and toolkit for OpenAPI, Overlay, and Arazzo documents.</span>
+          </li>
+          <li>
+            <a href="https://github.com/BinkyLabs/openapi-arazzo-dotnet" target="_blank" rel="noopener noreferrer">OpenAPI Arazzo for .NET</a>
+            <small>BinkyLabs</small>
+            <span class="note">Arazzo implementation for .NET, compatible with Microsoft.OpenAPI, for parsing and building documents.</span>
+          </li>
         </ul>
       </div>
     </div>
@@ -320,6 +360,16 @@ stylesheets:
       <p class="text-gray-600 mb-4">Blog posts, tutorials, guides, and announcements about Arazzo.</p>
       <ul class="ecosystem-list">
         <li>
+          <a href="https://apievangelist.com/2026/09/16/arazzo-is-adding-soap-and-the-pull-request-needs-two-approvals/" target="_blank" rel="noopener noreferrer">Arazzo Is Adding SOAP, and the Pull Request Needs Two Approvals</a>
+          <small>Kin Lane &middot; Sep 2026</small>
+          <span class="note">Walks through the pull request that adds a WSDL source description type and an operationName field so Arazzo 1.2 steps can call SOAP operations.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/09/02/the-deterministic-integration-layer-is-being-built-from-both-ends/" target="_blank" rel="noopener noreferrer">The Deterministic Integration Layer Is Being Built From Both Ends</a>
+          <small>Kin Lane &middot; Sep 2026</small>
+          <span class="note">Argues multi-provider integrations should be generated Arazzo artifacts rather than sequences an agent improvises at run time.</span>
+        </li>
+        <li>
           <a href="https://www.linkedin.com/pulse/actor-in-the-loop-much-needed-arazzo-capability-frank-kilcommins-uetwf/" target="_blank" rel="noopener noreferrer">Actor-in-the-Loop: A Much-Needed Arazzo Capability</a>
           <small>Frank Kilcommins &middot; Aug 2026</small>
           <span class="note">Proposes native actor-in-the-loop support for Arazzo, letting a workflow pause and request input from a human or another agent mid-execution.</span>
@@ -328,6 +378,11 @@ stylesheets:
           <a href="https://apievangelist.com/2026/08/21/i-counted-the-arazzo-runners-by-reading-readmes/" target="_blank" rel="noopener noreferrer">I Counted the Arazzo Runners by Reading READMEs</a>
           <small>Kin Lane &middot; Aug 2026</small>
           <span class="note">Recounts the Arazzo execution tools by digging into project directories instead of trusting README claims alone.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/08/19/the-mcp-layer-is-being-built-outside-the-contract/" target="_blank" rel="noopener noreferrer">The MCP Layer Is Being Built Outside the Contract</a>
+          <small>Kin Lane &middot; Aug 2026</small>
+          <span class="note">Shows that a single-step Arazzo workflow with inputs is already an MCP saved query, and that the two layers are being built apart.</span>
         </li>
         <li>
           <a href="https://apievangelist.com/2026/08/14/the-tools-that-actually-execute-your-arazzo-workflows/" target="_blank" rel="noopener noreferrer">The Tools That Actually Execute Your Arazzo Workflows</a>
@@ -345,9 +400,59 @@ stylesheets:
           <span class="note">How arazzo-criterion handles the one simple condition that mixes runtime expressions with its own comparison language, instead of pretending the ambiguity away.</span>
         </li>
         <li>
+          <a href="https://apievangelist.com/2026/07/08/stedi-and-edi-as-modern-api-workflows/" target="_blank" rel="noopener noreferrer">Stedi and EDI as Modern API Workflows</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Maps Stedi's clearinghouse API as Arazzo workflows, including the professional claim lifecycle from 837 submission through 277 status to 835 remittance.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/07/availity-and-the-x12-administrative-workflows/" target="_blank" rel="noopener noreferrer">Availity and the X12 Administrative Workflows</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Describes Availity's eligibility, claim, and remittance transactions as Arazzo workflows over its X12-backed API.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/06/ribbon-health-and-the-provider-directory-workflow/" target="_blank" rel="noopener noreferrer">Ribbon Health and the Provider Directory Workflow</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Turns Ribbon Health's provider directory lookups into a multi-step Arazzo workflow.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/05/drchrono-and-the-clinical-day-as-workflows/" target="_blank" rel="noopener noreferrer">DrChrono and the Clinical Day as Workflows</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Follows a clinical day through DrChrono's API, scheduling to charting, as a set of Arazzo workflows.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/04/medplum-and-fhir-as-a-developer-backend/" target="_blank" rel="noopener noreferrer">Medplum and FHIR as a Developer Backend</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Maps Medplum's FHIR-native backend as Arazzo workflows a developer would actually run.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/03/metriport-and-the-asynchronous-document-query/" target="_blank" rel="noopener noreferrer">Metriport and the Asynchronous Document Query</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Shows how Arazzo makes Metriport's asynchronous document query explicit where endpoint-by-endpoint docs hide it, with real operationIds throughout.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/02/health-gorilla-and-the-lab-order-to-result-loop/" target="_blank" rel="noopener noreferrer">Health Gorilla and the Lab Order to Result Loop</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Describes Health Gorilla's lab order to result round trip as an Arazzo workflow.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/07/01/cerner-oracle-health-and-the-smart-on-fhir-sequence/" target="_blank" rel="noopener noreferrer">Cerner Oracle Health and the SMART on FHIR Sequence</a>
+          <small>Kin Lane &middot; Jul 2026</small>
+          <span class="note">Writes the SMART on FHIR launch and data sequence against Oracle Health as an Arazzo workflow.</span>
+        </li>
+        <li>
           <a href="https://apievangelist.com/2026/07/01/arazzo-workflows-are-your-new-integration/" target="_blank" rel="noopener noreferrer">Arazzo Workflows Are Your New Integration</a>
           <small>Kin Lane &middot; Jul 2026</small>
           <span class="note">Argues that integrations between APIs should be described as portable, machine-readable Arazzo workflows rather than built as one-off code.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/06/30/canvas-medical-and-the-shape-of-an-ehr-fhir-workflow/" target="_blank" rel="noopener noreferrer">Canvas Medical and the Shape of an EHR FHIR Workflow</a>
+          <small>Kin Lane &middot; Jun 2026</small>
+          <span class="note">Maps a Canvas Medical EHR session as Arazzo workflows over its FHIR API.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2026/06/29/mapping-particle-health-record-retrieval-as-arazzo-workflows/" target="_blank" rel="noopener noreferrer">Mapping Particle Health Record Retrieval as Arazzo Workflows</a>
+          <small>Kin Lane &middot; Jun 2026</small>
+          <span class="note">Opens a ten-post series that maps one healthcare API a day as Arazzo workflows, each built from real operationIds in the provider's OpenAPI.</span>
         </li>
         <li>
           <a href="https://b-lab.io/posts/2026-06-23-arazzo-next-layer/" target="_blank" rel="noopener noreferrer">Arazzo as the Next-Layer Specification for Workflow Intent Across APIs</a>
@@ -395,9 +500,19 @@ stylesheets:
           <span class="note">Long-form walkthrough of the specification by one of its editors.</span>
         </li>
         <li>
+          <a href="https://apievangelist.com/2024/11/19/we-need-fast-healthcare-interoperability-resources-fhir-api-arazzo-workflows-to-deliver-the-real-world-healthcare-experiences/" target="_blank" rel="noopener noreferrer">We Need FHIR API Arazzo Workflows to Deliver Real-World Healthcare Experiences</a>
+          <small>Kin Lane &middot; Nov 2024</small>
+          <span class="note">Makes the case for describing FHIR interactions as Arazzo workflows instead of leaving the sequencing to every integrator.</span>
+        </li>
+        <li>
           <a href="https://medium.com/@rgranadosd/arazzo-specification-7c2c3ebd531c" target="_blank" rel="noopener noreferrer">Arazzo Specification: Revolutionizing API Documentation and Workflows</a>
           <small>Rafa Granados &middot; Oct 2024</small>
           <span class="note">Recaps Frank Kilcommins' introduction to Arazzo and its use-case oriented, programmatically readable workflow documentation.</span>
+        </li>
+        <li>
+          <a href="https://apievangelist.com/2024/10/26/the-json-schema-for-the-arazzo-specification/" target="_blank" rel="noopener noreferrer">The JSON Schema for the Arazzo Specification</a>
+          <small>Kin Lane &middot; Oct 2024</small>
+          <span class="note">A look at the specification's JSON Schema and what it does and does not let you check about a document.</span>
         </li>
         <li>
           <a href="https://bump.sh/blog/arazzo-describe-api-workflows-extension-openapi/" target="_blank" rel="noopener noreferrer">Introducing Arazzo: Describe API Workflows with this extension to OpenAPI</a>
@@ -444,6 +559,12 @@ stylesheets:
       <p class="text-gray-600 mb-4">Conference talks, podcasts, and screencasts about Arazzo.</p>
       <ul class="ecosystem-list">
         <li>
+          <a href="https://www.youtube.com/watch?v=BcQwfDq9ujM" target="_blank" rel="noopener noreferrer">Beyond OpenAPI: API Workflows That AI Agents Can Actually Execute</a>
+          <small>Apidays India 2026 (ConfEngine) &middot; Sep 2026</small>
+          <span class="note">Conference talk on why agents struggle with multi-step API calls and how Arazzo, including the 1.1 AsyncAPI support, gives them workflows to execute directly.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/BcQwfDq9ujM" title="Beyond OpenAPI: API Workflows That AI Agents Can Actually Execute" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=XjbsAdREHxA" target="_blank" rel="noopener noreferrer">Arazzo vs Traditional Chatbots: What Actually Works?</a>
           <small>GitKraken &middot; Mar 2026</small>
           <span class="note">Compares deterministic, Arazzo-driven workflows against typical chatbot-style agent interactions.</span>
@@ -480,6 +601,12 @@ stylesheets:
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/0GslqyrsVR8" title="Beyond the Agent Hype: Why Arazzo and Workflows Matter for Predictable AI" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
+          <a href="https://www.youtube.com/watch?v=gbQAbDzvQPw" target="_blank" rel="noopener noreferrer">Arazzo Visual Editor MCP Registry</a>
+          <small>Bruno Pedro &middot; Nov 2025</small>
+          <span class="note">Short demo of querying the official MCP registry from inside the Arazzo Visual Editor.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/gbQAbDzvQPw" title="Arazzo Visual Editor MCP Registry" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=tGDjB9K93js" target="_blank" rel="noopener noreferrer">Using an MCP Tool Alongside OpenAPI Inside the Arazzo Visual Editor</a>
           <small>Bruno Pedro &middot; Nov 2025</small>
           <span class="note">Demo combining an MCP tool with an OpenAPI source description inside the Arazzo Visual Editor.</span>
@@ -510,6 +637,12 @@ stylesheets:
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/vdWTPahXw7U" title="Accelerating Workflow Orchestration: Automated Code Gen Using Arazzo &amp; MCP" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
+          <a href="https://www.youtube.com/watch?v=baYcsznD_Mk" target="_blank" rel="noopener noreferrer">From REST to Events: API Workflow Testing &amp; Mocking with a Single Arazzo Spec</a>
+          <small>Naresh, Apidays India (ConfEngine) &middot; Oct 2025</small>
+          <span class="note">Apidays India talk on driving both mocks and tests across REST and event-driven steps from one Arazzo document.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/baYcsznD_Mk" title="From REST to Events: API Workflow Testing &amp; Mocking with a Single Arazzo Spec" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=RxybYvm-ano" target="_blank" rel="noopener noreferrer">Is the Arazzo Engine the Missing Piece in Agentic Workflows?</a>
           <small>AI Product Engineer &middot; Sep 2025</small>
           <span class="note">Asks whether the Arazzo Engine runner fills the missing execution layer for agentic workflows.</span>
@@ -520,6 +653,18 @@ stylesheets:
           <small>Specmatic &middot; Sep 2025</small>
           <span class="note">Demo of authoring Arazzo specs visually in Specmatic to test workflows across OpenAPI and AsyncAPI.</span>
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/fXWzgqLdWcg" title="Workflow Testing with OpenAPI and AsyncAPI Using Specmatic's Visual Arazzo Spec Authoring" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=jrkFKh37_N0" target="_blank" rel="noopener noreferrer">Visual API Workflow Mocking and Testing with Specmatic and Arazzo API Specifications</a>
+          <small>Specmatic &middot; Aug 2025</small>
+          <span class="note">Turns Arazzo documents into living contracts that drive Specmatic mocks and automated workflow tests.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/jrkFKh37_N0" title="Visual API Workflow Mocking and Testing with Specmatic and Arazzo API Specifications" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=lUelffJbkd8" target="_blank" rel="noopener noreferrer">Test Drive Your Arazzo Workflows with Symplr.io</a>
+          <small>Symplr Studio &middot; Jul 2025</small>
+          <span class="note">Two-minute tour of building, testing, and deploying Arazzo workflows in Symplr.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/lUelffJbkd8" title="Test Drive Your Arazzo Workflows with Symplr.io" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
           <a href="https://www.youtube.com/watch?v=ivUyjJEYmKg" target="_blank" rel="noopener noreferrer">API Evangelist Conversation With Frank Kilcommins About the OpenAPI Arazzo Specification</a>
@@ -534,16 +679,40 @@ stylesheets:
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/DhDeXTQAvPw" title="Linting API Workflows: Working with Arazzo Descriptions" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
+          <a href="https://www.youtube.com/watch?v=2kPkri-00I0" target="_blank" rel="noopener noreferrer">Slashfriday: Conectando Puntos, Arazzo y la Evolución de las APIs</a>
+          <small>Rafa Granados and Alex Ortega, Slashmobility &middot; Dec 2024</small>
+          <span class="note">Hour-long introduction to the specification and how to define multi-step workflows with it. In Spanish.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/2kPkri-00I0" title="Slashfriday: Conectando Puntos, Arazzo y la Evolución de las APIs" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=i8NIngWJGWg" target="_blank" rel="noopener noreferrer">The Arazzo Specification: Unlocking Value for Humans and Machines</a>
           <small>Frank Kilcommins &middot; Nov 2024</small>
           <span class="note">On the value Arazzo's workflow descriptions unlock for both people and tooling.</span>
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/i8NIngWJGWg" title="The Arazzo Specification: Unlocking Value for Humans and Machines" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
+          <a href="https://www.youtube.com/watch?v=cfh2Y2VKFfY" target="_blank" rel="noopener noreferrer">Arazzo Specification GPT</a>
+          <small>Frank Kilcommins, SmartBear &middot; Nov 2024</small>
+          <span class="note">Introduces a custom GPT trained on the Arazzo Specification for drafting and explaining workflow documents.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/cfh2Y2VKFfY" title="Arazzo Specification GPT" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=CTl9qBWIC5M" target="_blank" rel="noopener noreferrer">The Arazzo Specification: A New Way to Describe API Workflows</a>
           <small>Nordic APIs &middot; Oct 2024</small>
           <span class="note">Introduction to describing multi-step API workflows with Arazzo.</span>
           <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/CTl9qBWIC5M" title="The Arazzo Specification: A New Way to Describe API Workflows" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=Lrsl5KV9Fuw" target="_blank" rel="noopener noreferrer">Apidays London 2024: The Arazzo Specification</a>
+          <small>Frank Kilcommins, Apidays &middot; Oct 2024</small>
+          <span class="note">Conference talk introducing the specification, from one of its editors.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/Lrsl5KV9Fuw" title="Apidays London 2024: The Arazzo Specification" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=ivuEnIQA59c" target="_blank" rel="noopener noreferrer">OpenAPI Initiative Hangout: Introducing the Arazzo Specification</a>
+          <small>OpenAPI Initiative &middot; Aug 2024</small>
+          <span class="note">Hour-long community hangout walking through the newly released specification.</span>
+          <iframe class="ecosystem-video" src="https://www.youtube-nocookie.com/embed/ivuEnIQA59c" title="OpenAPI Initiative Hangout: Introducing the Arazzo Specification" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
         </li>
         <li>
           <a href="https://www.youtube.com/watch?v=2dW85UChfKs" target="_blank" rel="noopener noreferrer">OpenAPI for workflows? Meet Arazzo with Frank Kilcommins</a>
@@ -581,6 +750,11 @@ stylesheets:
           <a href="https://github.com/jentic/jentic-public-apis/tree/main/workflows" target="_blank" rel="noopener noreferrer">jentic-public-apis workflows</a>
           <small>Jentic</small>
           <span class="note">Hundreds of Arazzo workflow documents for real public APIs, organised by API provider.</span>
+        </li>
+        <li>
+          <a href="https://github.com/api-evangelist/stedi/tree/main/arazzo" target="_blank" rel="noopener noreferrer">Stedi healthcare workflows</a>
+          <small>Kin Lane, The API Evangelist</small>
+          <span class="note">Five Arazzo documents for Stedi's clearinghouse API: eligibility check, insurance discovery, claim status inquiry, provider enrollment, and the professional claim lifecycle from 837 submission to 835 remittance.</span>
         </li>
         <li>
           <a href="https://arazzo-ui.jentic.com/petstore-order-workflow.arazzo.yaml" target="_blank" rel="noopener noreferrer">Petstore Order Workflow</a>
