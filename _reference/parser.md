@@ -1,6 +1,6 @@
 ---
-title: "@usearazzo/parser"
-description: "API reference for the Arazzo parser: parseArazzo, parseOpenAPI, parseRuntimeExpression, and parseCriterionCondition, with every option, result shape, and error they produce."
+title: "Arazzo Parser API Reference: @usearazzo/parser"
+description: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, result shape, and error of @usearazzo/parser."
 date: 2026-09-08
 status: Published
 package:

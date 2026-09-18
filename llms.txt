@@ -11,7 +11,7 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. Only @usearazzo/parser is on npm so far, as an alpha; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser and @usearazzo/resolver are on npm as alphas; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
 
 ## Compatibility
 
@@ -59,7 +59,8 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 - [@usearazzo/parser on npm](https://www.npmjs.com/package/@usearazzo/parser): parses Arazzo documents into an ApiDOM data model. Published as an alpha
 - [@usearazzo/parser API reference]({{ site.url }}{{ site.baseurl }}/docs/parser/): every function, option, result shape, and error, checked against the package source
-- [@usearazzo/resolver source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver): dereferences $ref/JSON Schema/components in Arazzo and OpenAPI documents. Not yet published to npm
+- [@usearazzo/resolver on npm](https://www.npmjs.com/package/@usearazzo/resolver): dereferences, bundles, and resolves $ref/JSON Schema/components references in Arazzo and OpenAPI documents. Published as an alpha
+- [@usearazzo/resolver API reference]({{ site.url }}{{ site.baseurl }}/docs/resolver/): every function, option, result shape, and error, checked against the package source
 - Both are free, open source (Apache 2.0)
 
 ## Why UseArazzo
@@ -90,7 +91,7 @@ UseArazzo is built end to end on [SpecLynx](https://github.com/speclynx): the se
 - [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
 {% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
 {% endfor %}{% for guide in site.guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
-{% endfor %}{% for ref in site.reference %}- [API reference: {{ ref.title }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
+{% endfor %}{% for ref in site.reference %}- [API reference: {{ ref.package.name }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem
 

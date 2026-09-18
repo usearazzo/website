@@ -647,6 +647,15 @@ h4:hover .heading-anchor {
     border-bottom: 1px solid #E5E7EB;
 }
 
+/* A wide table scrolls inside itself on small screens; without this it is clipped
+   by overflow-x: hidden on html. Desktop keeps the full-width table layout. */
+@media (max-width: 640px) {
+    .post-content table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
 /* Lightbox */
 .lightbox {
     display: none;

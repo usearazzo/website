@@ -20,7 +20,7 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
   workflows against live APIs described by OpenAPI source descriptions, step by step.
 
-**Only `@usearazzo/parser` is on npm** (published 2026-09-08; `1.0.1-alpha.0` and then `1.0.1-alpha.1`, a README-only release the same day). The other four
+**Only `@usearazzo/parser` and `@usearazzo/resolver` are on npm** (parser published 2026-09-08; resolver published 2026-09-18 as `1.0.1-alpha.2`). The other three
 package names 404 on the registry — verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
 trusting `"private": false` in a `package.json`, which only means publish*able*. Never add
@@ -28,9 +28,8 @@ trusting `"private": false` in a `package.json`, which only means publish*able*.
 dead) for a package until it actually resolves. Link to the monorepo's `packages/<name>` tree instead.
 
 Lower-level packages `@usearazzo/parser` and `@usearazzo/resolver` have no product page by design —
-they're for people building their own Arazzo tooling, per the org's own framing. The parser has an
-API reference page at `/docs/parser/` (see "Package reference pages" below); the resolver is
-unpublished and referenced only in "Built With" sections, the docs hub card, and `llms.txt`.
+they're for people building their own Arazzo tooling, per the org's own framing. Each has an API
+reference page, `/docs/parser/` and `/docs/resolver/` (see "Package reference pages" below).
 
 All three products (plus parser/resolver) live in one monorepo:
 [usearazzo/arazzo-toolkit](https://github.com/usearazzo/arazzo-toolkit).
@@ -324,7 +323,11 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   `name`, `npm`, `github` only. `softwareVersion` was removed from the Validator and Runner
   `SoftwareApplication` blocks for the same reason. This file may cite versions; it is internal.
 - **Package reference pages** (`_reference/<package>.md`, `/docs/<package>/`) exist only for
-  packages that resolve on npm. Front matter: `title` (the package name), `description`, `date`,
+  packages that resolve on npm. Front matter: `title` (the search title, "Arazzo Parser API Reference:
+  @usearazzo/parser", which with the ` | UseArazzo` suffix stays under 60 characters; website#21: a bare
+  package name made a poor Google result. The H1, sidebar heading, breadcrumb JSON-LD, and the
+  `llms.txt` loop render `package.name` instead), `description` (leads with what the package does,
+  then "Every function, option, result shape, and error of <package>"), `date`,
   optional `last_modified_at`, `status` (`Published`), `package` (`name`, `version`, `npm`,
   `github`), and `toc` (list of `{id, title, children?}`). Heading IDs use `{#id}` and must match.
   The reference is the site's copy, edited from the package README, not mirrored: when the two
@@ -336,6 +339,25 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   toolkit) with the UseArazzo logo hot-linked from
   `https://usearazzo.com/assets/images/logos/usearazzo-logo.svg`. No License section: the badge,
   `package.json`, and the shipped LICENSE file cover it. Do not grow it back into a manual.
+- **The resolver reference** (`_reference/resolver.md`, built 2026-09-18 at the owner's request while
+  `@usearazzo/resolver` still 404ed on npm; it published the same day, and the page's main claims
+  were then re-run against the registry copy). Every output on the page was captured from a run of the
+  toolkit's `main` (1.0.1-alpha.2) against scratch samples on 2026-09-18. Findings from that run:
+  Arazzo and OpenAPI 3.1 bundling keeps schema `$ref`s as written and adds `$id` to the hoisted
+  schema (the README's "references are repointed" holds only for Reference Objects and 2.0
+  schemas); OpenAPI 3.0 inlines external Path Items; `cause` can be ApiDOM's own `ResolveError`,
+  a different class from the exported one; a dereferenced target gets a distinct top-level element
+  per reference site but shares everything beneath it (so the result is a DAG even without cycles,
+  never call it a tree); `continueOnError` (under `dereference` for dereference and resolve, under
+  `bundle` for bundle) skips unresolvable `$ref`s but an unresolvable Arazzo Reusable Object
+  reference still throws; `sourceDescriptions: true` works only through `dereferenceArazzo(path)`. Through the
+  `Element` functions and both resolve functions the `petstore` member comes back holding the
+  Arazzo document again: an ApiDOM bug (a nested source description inherits the caller's
+  `dereference.refSet`, and each strategy traverses `refSet.rootRef.value`), reproducible with
+  `dereferenceArazzo(path, { dereference: { refSet: new ReferenceSet(), strategyOpts } })`. The
+  page says source descriptions go through `dereferenceArazzo` only; restore the broader claim
+  once ApiDOM fixes it and the run proves it. Filed as speclynx/apidom#551; the
+  `continueOnError` gap for Reusable Objects is speclynx/apidom#550.
 - Unpublished packages keep their reference in the README on GitHub. The docs hub links to it; do
   not mirror README content onto the site ahead of publishing.
 - No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
