@@ -59,6 +59,8 @@ toc:
         title: Base URI for inline content
       - id: element-child
         title: A single element
+  - id: plain-values
+    title: Plain JavaScript, JSON, and YAML
   - id: versions
     title: Supported versions
 ---
@@ -274,6 +276,8 @@ toValue(parseResult.meta.get('retrievalURI')); // '/path/to/adopt-a-pet.arazzo.y
 ```
 
 The result is the same [`ParseResultElement`](/docs/parser/#result) the parser returns, with `api`, `errors`, `warnings`, and `annotations`. The `components` section stays in place. Only the references to it are replaced.
+
+To turn the result into a plain object, JSON, or YAML, see [Plain JavaScript, JSON, and YAML](#plain-values).
 
 ### Source descriptions {#dereference-source-descriptions}
 
@@ -595,6 +599,48 @@ The resolve functions accept a single element the same way, with two differences
 
 - The `ReferenceSet` covers what is reachable from that element, not from the whole document. Its `rootRef` has the document's URI, but holds a wrapper around a copy of the element.
 - `parseResult` is optional. Without it, pass both `resolve.baseURI` and `parse.mediaType`. The element alone cannot say what kind of document it came from.
+
+## Plain JavaScript, JSON, and YAML {#plain-values}
+
+Every function on this page returns ApiDOM elements, not plain objects. To leave ApiDOM, use the serializers in `@speclynx/apidom-core`:
+
+```sh
+npm install @speclynx/apidom-core
+```
+
+| Function | Returns | Use it to |
+|---|---|---|
+| `toValue(element)` | A plain JavaScript value | Hand the document to code that expects objects and arrays. |
+| `toJSON(element, replacer?, space?)` | A JSON string | Write a `.json` file or send the document over the wire. |
+| `toYAML(element)` | A YAML string | Write a `.yaml` file. |
+
+All three accept any element: the whole document (`parseResult.api`), a workflow, a single schema.
+
+```js
+import { dereferenceArazzo } from '@usearazzo/resolver';
+import { toValue, toJSON, toYAML } from '@speclynx/apidom-core';
+
+const parseResult = await dereferenceArazzo('/path/to/adopt-a-pet.arazzo.yaml');
+
+const document = toValue(parseResult.api);
+document.workflows[0].steps[0].parameters[0]; // { name: 'limit', in: 'query', value: 10 }
+document.workflows[0].inputs.type; // 'object'
+
+toJSON(parseResult.api); // '{"arazzo":"1.0.1","info":{"title":"Pet adoption", ...'
+toJSON(parseResult.api, undefined, 2); // the same, indented by two spaces
+toYAML(parseResult.api); // 'arazzo: 1.0.1\ninfo:\n  title: Pet adoption\n ...'
+```
+
+Pass `parseResult.api`, not `parseResult`. The parse result is a list of the document and its annotations, so `toValue(parseResult)` returns an array.
+
+Two properties of a [dereferenced](#dereference) result carry over to the plain value:
+
+- **Sharing.** `toValue` keeps shared content shared. A target referenced from two places becomes two objects whose nested objects are the same. A change inside one shows up in the other. `structuredClone` keeps that sharing too. For a copy with nothing shared, go through JSON: `JSON.parse(toJSON(element))`.
+- **Cycles.** With the default `circular: 'ignore'`, `toValue` returns an object that loops, and `JSON.stringify` rejects it. `toJSON` and `toYAML` do not throw. They write `null` where the loop closes, so the output is silently incomplete. Dereference with [`circular: 'replace'`](#dereference-cycles) before you serialize, or [bundle](#bundle) instead.
+
+A bundled result needs no such care. Its references stay `$ref`s, cycles included, so nothing loops and all three functions work on it as they are.
+
+For cloning and walking the tree, see [Working with the tree](/docs/parser/#apidom) in the parser reference.
 
 ## Supported versions {#versions}
 

@@ -224,6 +224,8 @@ parseResult.errors.length; // 0
 toValue(parseResult.meta.get('retrievalURI')); // '/path/to/adopt-a-pet.arazzo.yaml'
 ```
 
+To turn `api` into a plain object, JSON, or YAML, see [Working with the tree](#apidom).
+
 When source descriptions are parsed, the same element also holds their results as further top-level members. See [Result structure](#result-structure).
 
 ### Source maps {#source-maps}
@@ -534,6 +536,8 @@ const deep = cloneDeep(api);
 const shallow = cloneShallow(api);
 const sexpr = sexprs(api); // S-expression dump, handy when debugging
 ```
+
+A parsed document keeps its references as written. Nothing in it is shared and nothing loops, so these work as they are. A dereferenced tree needs more care. See [Plain JavaScript, JSON, and YAML](/docs/resolver/#plain-values) in the resolver reference.
 
 [@speclynx/apidom-traverse](https://github.com/speclynx/apidom/tree/main/packages/apidom-traverse) walks the tree with visitors keyed by element type:
 
