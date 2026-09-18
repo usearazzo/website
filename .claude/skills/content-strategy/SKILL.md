@@ -119,8 +119,12 @@ deliberately widen the picture:
 A few honest prompts surface real angles faster than guessing: What's
 genuinely annoying about a day in this work? How do they solve the problem
 today, before a tool like this exists for them? Where do they go first for
-a technical answer? Answer these for UseArazzo's actual audience (people
-building their own Arazzo tooling) before proposing a topic, not after.
+a technical answer? Answer these for UseArazzo's actual audience before
+proposing a topic, not after. Who that audience is lives in
+`AUDIENCE-NOTES.md` at the repo root ("Who the audience is": tool builders
+first, workflow practitioners once the products publish). Read it before
+mindhunting, name which of the two a piece is for, and record what the
+research turns up back in that file.
 
 ## The Concept Catalog: group topics before they scatter
 

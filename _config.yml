@@ -88,6 +88,8 @@ exclude:
   - CLAUDE.md
   - tailwind.config.js
   - CONTRIBUTING.md
+  - AUDIENCE-NOTES.md
+  - CONCEPT-CATALOG.md
   - README.md
   - LICENSE
   - NOTICE

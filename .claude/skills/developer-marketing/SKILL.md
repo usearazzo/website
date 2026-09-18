@@ -86,7 +86,8 @@ section matching what you're doing.
 Before proposing any topic, answer three questions, and if you can't answer
 the first, surface the gap to the user instead of guessing:
 
-1. **Who** is this reaching? Be specific: not "API developers" but e.g.
+1. **Who** is this reaching? Start from the two audiences defined in
+   `AUDIENCE-NOTES.md` (repo root) and say which one. Be specific: not "API developers" but e.g.
    "backend engineers who already maintain an OpenAPI document and are
    scripting multi-call test flows by hand." Sharpen with these axes:
    - Large companies, startups, or both?

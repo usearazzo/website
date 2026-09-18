@@ -13,6 +13,76 @@ sections in particular).
 
 ---
 
+## Who the audience is
+
+Two audiences, ordered by what is published today. A piece names which one
+it is for before it gets an angle. A piece that tries to reach both usually
+reaches neither.
+
+**These definitions are hypotheses** (drafted 2026-09-18 from what the
+toolkit does, before there was much of an audience to observe). Revise them
+as real people interact with the content: log each signal under "Observed"
+below, and change a definition when several independent signals agree, not
+on one data point.
+
+### 1. Tool builders (primary while only the parser is on npm)
+
+Developers writing code *against* Arazzo documents: editor plugins,
+linters, generators, documentation renderers, agents.
+
+- **Roles:** tooling, platform, and DX engineers; open-source maintainers
+  of API tooling. Experienced, individual contributors, comfortable
+  reading a spec.
+- **What they are trying to get out of the way:** reading an Arazzo
+  document and everything it references into a structure they can trust,
+  so they can get on with the tool they actually set out to build.
+- **How they solve it today:** `yaml.parse` plus hand-rolled handling of
+  source descriptions, references, and errors.
+- **Served by:** `@usearazzo/parser` (and the resolver), guides,
+  tutorials, the reference, Field notes posts. The only audience that can
+  be given runnable content today.
+- **Assume they know:** OpenAPI, JSON Schema, TypeScript, Node.js. Assume
+  they do not know UseArazzo exists, and may know Arazzo only by name.
+
+### 2. Workflow practitioners (primary once Validator, Runner, CLI publish)
+
+Engineers who already maintain an OpenAPI description and script the
+multi-call flows that exercise it by hand.
+
+- **Roles:** backend, QA/test, and platform engineers; API designers. Often
+  a lead choosing tooling for a team and a CI pipeline.
+- **What they are trying to get out of the way:** keeping multi-step API
+  flows correct and repeatable without maintaining a pile of scripts.
+- **How they solve it today:** the DIY Competitors list below.
+- **Served by:** the product pages and Explainer posts (problem-space
+  content that needs no package). No tutorials for them until a package
+  resolves on npm.
+- **Assume they know:** OpenAPI, Postman, CI. Assume they do not know
+  Arazzo.
+
+### Not the audience (yet)
+
+- **Agent and MCP builders:** nothing on the roadmap for them is built.
+  Revisit when it is.
+- **People learning Arazzo as a specification:** the Ecosystem page points
+  them at the spec and external material; the site does not teach the spec.
+- **Non-technical buyers:** there is nothing to buy.
+
+### Observed
+
+One line per signal: date, where (issue, Discussion, social reply,
+analytics), who (role, not name), which audience they fit or that they fit
+neither. Empty so far.
+
+### Open, to fill from real people rather than guesses
+
+- Who has actually engaged so far (toolkit issues, Discussions, replies to
+  social posts), and which of the two audiences were they?
+- Company size and whether the chooser is the user.
+- Where each audience goes first for a technical answer.
+
+---
+
 ## Lingua Franca
 
 The tools, standards, and languages UseArazzo's audience already speaks.
