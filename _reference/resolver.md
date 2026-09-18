@@ -138,8 +138,8 @@ The keys you are likely to set:
 | Option | Default | Effect |
 |---|---|---|
 | `resolve.baseURI` | none | Where to treat a parsed document as coming from. Needed only by the `Element` functions. See [Base URI for inline content](#element-base-uri). |
-| `dereference.strategyOpts.sourceDescriptions` | `false` | `dereferenceArazzo` only. Process the documents the `sourceDescriptions` array points at. Accepts `true` or an array of names. See [Source descriptions](#dereference-source-descriptions). |
-| `dereference.strategyOpts.sourceDescriptionsMaxDepth` | `+Infinity` | `dereferenceArazzo` only. How many levels of Arazzo source descriptions to follow. |
+| `dereference.strategyOpts.sourceDescriptions` | `false` | Arazzo only. Process the documents the `sourceDescriptions` array points at. Accepts `true` or an array of names. See [Source descriptions](#dereference-source-descriptions). |
+| `dereference.strategyOpts.sourceDescriptionsMaxDepth` | `+Infinity` | Arazzo only. How many levels of Arazzo source descriptions to follow. |
 | `dereference.continueOnError`, `bundle.continueOnError` | `false` | Keep going when a reference cannot be resolved: `true`, or a callback that receives each error. See [Unresolvable references](#continue-on-error). |
 | `dereference.circular` | `'ignore'` | What to do with a reference that closes a cycle: `'ignore'`, `'replace'`, or `'error'`. See [Cycles](#dereference-cycles). |
 | `dereference.strategyOpts.parseResult` | none | The parsed document a single element belongs to. See [A single element](#element-child). |
@@ -207,7 +207,7 @@ The option lives under a different key for each operation:
 | Bundle | `bundle.continueOnError` | Stays as written, so the bundle still points outside itself. |
 | Resolve | `dereference.continueOnError` | Its document is missing from the `ReferenceSet`. |
 
-One exception, in Arazzo documents only. A [Reusable Object](https://spec.openapis.org/arazzo/latest.html#reusable-object) reference that cannot be resolved, such as `$components.parameters.missing`, always throws. `continueOnError` covers `$ref` only.
+In Arazzo documents the option covers both kinds of reference. A [Reusable Object](https://spec.openapis.org/arazzo/latest.html#reusable-object) reference that cannot be resolved, such as `$components.parameters.missing`, is skipped the same way as a `$ref`.
 
 ## Dereference {#dereference}
 
@@ -500,7 +500,7 @@ refSet.rootRef.value.api.element; // 'arazzoSpecification1'
 
 A [`ReferenceSet`](https://github.com/speclynx/apidom/tree/main/packages/apidom-reference) holds one `Reference` per document. Each `Reference` has a `uri` (absolute) and a `value` (the parsed `ParseResultElement`). `rootRef` is the entry document, with its references still in place. Documents reached only through other documents are included too. `schemas/adopter.yaml` above is one.
 
-Source descriptions are not followed. The set lists what the entry document's own references reach.
+With `dereference.strategyOpts.sourceDescriptions` set, source descriptions are followed too. The set then also holds each source description document, and every document its references reach.
 
 ### resolveOpenAPI {#resolve-openapi}
 
@@ -543,7 +543,7 @@ const dereferenced = await dereferenceArazzoElement(parseResult);
 const refSet = await resolveArazzoElement(parseResult);
 ```
 
-Dereferencing returns a new element. The one you passed in keeps its references, so you can hold both. Source descriptions are the exception: process them with [`dereferenceArazzo`](#dereference-source-descriptions), from a path or URL.
+Dereferencing returns a new element. The one you passed in keeps its references, so you can hold both. Source descriptions work as they do for [`dereferenceArazzo`](#dereference-source-descriptions).
 
 ### Base URI for inline content {#element-base-uri}
 

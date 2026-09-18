@@ -355,9 +355,13 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   Arazzo document again: an ApiDOM bug (a nested source description inherits the caller's
   `dereference.refSet`, and each strategy traverses `refSet.rootRef.value`), reproducible with
   `dereferenceArazzo(path, { dereference: { refSet: new ReferenceSet(), strategyOpts } })`. The
-  page says source descriptions go through `dereferenceArazzo` only; restore the broader claim
-  once ApiDOM fixes it and the run proves it. Filed as speclynx/apidom#551; the
-  `continueOnError` gap for Reusable Objects is speclynx/apidom#550.
+  Filed as speclynx/apidom#551; the `continueOnError` gap for Reusable Objects is
+  speclynx/apidom#550. **On the owner's instruction (2026-09-18) the page assumes both fixes**,
+  the same way the tutorial assumed toolkit#148: it says source descriptions work through the
+  `Element` and resolve functions (the set then also holds the documents behind them) and that
+  `continueOnError` skips unresolvable Reusable Objects too. None of that is true of the
+  published 1.0.1-alpha.2. When a resolver alpha ships on the fixed ApiDOM, re-run the probes,
+  correct any wording the real behaviour contradicts, and bump `last_modified_at`.
 - Unpublished packages keep their reference in the README on GitHub. The docs hub links to it; do
   not mirror README content onto the site ahead of publishing.
 - No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
