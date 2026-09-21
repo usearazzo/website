@@ -1,8 +1,9 @@
 ---
 title: "Parsing Arazzo Documents"
-description: "An Arazzo document is several languages in one file, and one file in a network of documents. Why reading one properly is harder than loading YAML, what a tool needs from a parser, and how UseArazzo's parser approaches it."
-summary: "Why reading an Arazzo document properly is harder than loading YAML, what a tool needs from a parser, and how UseArazzo's parser approaches it."
+description: "An Arazzo document is several languages in one file, and one file in a network of documents. Why reading one properly is harder than loading YAML, what a tool needs from a parser, and what a good result looks like."
+summary: "Why reading an Arazzo document properly is harder than loading YAML, and what a tool should expect from a parser."
 date: 2026-09-03
+last_modified_at: 2026-09-21
 image:
   path: /assets/images/guides/arazzo-document-parsing.png
   webp: /assets/images/guides/arazzo-document-parsing.webp
@@ -10,6 +11,8 @@ image:
   height: 630
   alt: "A document sheet with indented text lines feeding into two meshing gears, which turn it into a tree of rounded-square nodes fanning out from one root on the right"
   caption: "Parsing: a document goes in, the gears turn, a tree you can walk comes out."
+stylesheets:
+  - /assets/css/ast-tree.css
 toc:
   - id: the-end-result
     title: What a parsed document looks like
@@ -17,27 +20,18 @@ toc:
     title: Why parsing Arazzo is hard
   - id: by-hand
     title: Doing it by hand
+  - id: a-good-parse
+    title: What a good parser gives you
   - id: not-parsing
     title: Where parsing should stop
-  - id: with-the-parser
-    title: How @usearazzo/parser approaches it
   - id: next-steps
     title: Next steps
 faq:
-  - question: "How do I parse an Arazzo document in JavaScript or TypeScript?"
-    answer: |
-      Use `@usearazzo/parser`. Its `parseArazzo` function takes a file path, a URL, a YAML or JSON string, or a plain object, and returns the same kind of result for all four:
-
-      ```js
-      import { parseArazzo } from '@usearazzo/parser';
-
-      const { api, errors, warnings } = await parseArazzo('./adopt-a-pet.arazzo.yaml');
-      ```
-
-      `api` is a typed tree of the document, and `errors` and `warnings` are annotations collected while parsing. The parser checks that the input is Arazzo and detects the format before anything else runs. A plain YAML loader also works for scripts you run yourself, but it gives you no detection, no positions, and no parsing of the expressions inside strings. Every input, option, and result field is in the [API reference](/docs/parser/#parse-arazzo).
   - question: "Can Arazzo documents be written in JSON or YAML?"
     answer: |
-      Both. JSON is a subset of YAML 1.2, so one YAML parser reads either, but the relation only runs one way: a YAML parser also accepts a `.json` file with comments, single-quoted strings, or a trailing comma, none of which is JSON. A tool that writes the document back out, or hands it to a strict JSON consumer, has to know which format it really has. That is why `@usearazzo/parser` sniffs the content instead of trusting the file extension, and parses real JSON with the native, stricter JSON parser.
+      Both. JSON is a subset of YAML 1.2, so one YAML parser reads either. The relation only runs one way, though. A YAML parser also accepts a `.json` file with comments, single-quoted strings, or a trailing comma, and none of that is JSON.
+
+      A tool that writes the document back out, or hands it to a strict JSON consumer, has to know which format it really has. So a good parser detects the format from the content, not from the file extension, and reads real JSON with a strict JSON parser.
   - question: "Can I just load an Arazzo file with a YAML parser?"
     answer: |
       For a one-off script over documents you wrote, yes:
@@ -57,18 +51,9 @@ faq:
       - it stops at the file, while the workflow's meaning spans the OpenAPI, AsyncAPI, and Arazzo documents its source descriptions point at.
   - question: "How do I tell whether a file is an Arazzo document?"
     answer: |
-      Look for a top-level `arazzo` field holding a `1.x.y` version string. A YAML loader will happily load an OpenAPI description or a Kubernetes manifest, so something has to check for that field before any later stage runs. `parseArazzo` does this first and throws a `ParseError`, with a `cause` saying why, for anything that is not Arazzo:
+      Look for a top-level `arazzo` field holding a `1.x.y` version string. A YAML loader will happily load an OpenAPI description or a Kubernetes manifest, so something has to check for that field before any later stage runs.
 
-      ```js
-      try {
-        await parseArazzo('./petstore.openapi.yaml');
-      } catch (error) {
-        error.name;  // ParseError
-        error.cause; // why the input was refused
-      }
-      ```
-
-      By default the file resolver only reads paths ending in `.json`, `.yaml`, or `.yml`, so a `workflow.arazzo` with no extension is reported as unreadable. To read other names, pass your own `FileResolver` with a different `fileAllowList` through `resolve.resolvers`. The [Errors](/docs/parser/#errors) section of the reference lists what the message and `cause` say for each kind of input.
+      A parser should make this check first. Anything that is not Arazzo should be refused with an error that says why. Do not rely on the file name: `.arazzo.yaml` is a convention, not a rule.
   - question: "Which versions of the Arazzo specification exist?"
     answer: |
       Three releases so far:
@@ -78,26 +63,14 @@ faq:
       - **1.1.0**, May 2026: a minor release that adds AsyncAPI v3 source descriptions, Selector Objects, `$self` for document identity, step dependencies, and tightened evaluation semantics. It removes nothing, so a 1.0.1 document is a 1.1.0 document once the version string is bumped.
 
       A document says which one it targets in its top-level `arazzo` field. The blog post [I Diffed Every Arazzo Release So You Don't Have To](/blog/arazzo-specification-evolution/) walks through what each release changed.
-  - question: "Which Arazzo versions does @usearazzo/parser support?"
-    answer: |
-      Arazzo 1.0.0, 1.0.1, and 1.1.0. Any `1.x.y` version is read through the same code path, so a 1.0.0 document and a 1.1.0 document produce the same kind of tree. The fields 1.1.0 added, `$self`, `channelPath`, `action`, and `correlationId`, come through as typed getters. Fields the parser does not know, from a future release or an `x-` extension, are kept with their positions, never dropped. A `2.0.0` document is refused as not Arazzo.
-
-      Deciding what is valid *for* a version is a separate job that belongs to the Validator. The [reference](/docs/parser/#versions) keeps the current list.
   - question: "How do I get line numbers for steps and errors in an Arazzo document?"
     answer: |
-      Parse with `strict: false` and `sourceMap: true`:
+      A plain YAML or JSON loader throws positions away, so you need a parser that keeps them. Look for two things:
 
-      ```js
-      const { api, errors } = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
-        parse: { parserOpts: { strict: false, sourceMap: true } },
-      });
+      - **Source maps.** Every node in the tree carries its start and end position in the original text.
+      - **A tolerant mode.** The parser keeps going on damaged input and reports each syntax error as data, with its own position. A strict parser throws at the first error and returns no tree.
 
-      const step = api.workflows.get(0).steps.get(0);
-      step.startLine;      // 16, zero-based
-      step.startCharacter; // 8
-      ```
-
-      Every element then carries zero-based positions counted in UTF-16 code units, which is how the Language Server Protocol and JavaScript strings both count. The tolerant parser keeps going on damaged input and reports each syntax error as an annotation in `errors` that points at the damaged text. The default `strict: true` mode uses native JSON or a strict YAML parser and throws instead, which suits runners and CI checks. The reference covers [source maps](/docs/parser/#source-maps) and the related `style` option for round-tripping.
+      For editor tooling, positions should be zero-based and counted in UTF-16 code units. That is how the Language Server Protocol counts, and how JavaScript strings index.
   - question: "What is a source description in Arazzo?"
     answer: |
       A Source Description names an external document the workflow's steps run against, by URL and type:
@@ -114,66 +87,46 @@ faq:
     answer: |
       The specification does not pin an OpenAPI version: an `openapi` source can be any of 2.0, 3.0.x, 3.1.x, or 3.2.x, each with its own structure. An `asyncapi` source, allowed since Arazzo 1.1.0, is AsyncAPI v3 only. An `arazzo` source is another 1.x document.
 
-      What a tool can actually read is narrower. `@usearazzo/parser` parses OpenAPI 2.0, 3.0.x, and 3.1.x sources today. OpenAPI 3.2.x and AsyncAPI sources are not yet parsed: a `type: asyncapi` source comes back with an error annotation saying no parser could read it, and the main document still parses.
+      What a given tool can read is usually narrower. Check which source versions your parser supports, and what it does with one it cannot read. The right behaviour is a problem reported on that source, with the main document still parsed.
   - question: "How do I parse an Arazzo runtime expression?"
     answer: |
-      Call `parseRuntimeExpression`: string in, AST out, no document needed and nothing evaluated.
+      With a parser for the runtime expression grammar. Runtime expressions such as `$inputs.petId` or `$response.body#/pets/0/id` are a small language, embedded in ordinary strings. The specification defines it in ABNF, so you can generate a parser from the grammar or use an existing one, such as [`@swaggerexpert/arazzo-runtime-expression`](https://github.com/swaggerexpert/arazzo-runtime-expression) for JavaScript.
 
-      ```js
-      import { parseRuntimeExpression } from '@usearazzo/parser';
-
-      parseRuntimeExpression('$steps.find-pet.outputs.name').tree;
-      // { type: 'StepsExpression', stepId: 'find-pet', field: 'outputs', outputName: 'name' }
-
-      const { result } = parseRuntimeExpression('$steps.find-pet.outputs');
-      result.success;    // false: an outputs reference needs an output name
-      result.maxMatched; // 15, the offset where parsing stopped
-      ```
-
-      Runtime expressions such as `$inputs.petId` or `$response.body#/pets/0/id` are a small language with their own ABNF grammar, embedded in ordinary strings. Invalid syntax never throws: `result.success` goes false and `result.maxMatched` is the offset a diagnostic should point at. The full result shape and the two cases that do throw are in the [reference](/docs/parser/#parse-runtime-expression).
+      Expect a syntax tree, not a value. `$steps.find-pet.outputs.name` should come back as a steps expression with a step id, a field, and an output name. Nothing is evaluated, and no document is needed. For invalid input, such as `$steps.find-pet.outputs` with no output name, a good parser does not throw. It reports failure and the offset where the grammar gave up, which is where a diagnostic should point.
   - question: "How do I parse an Arazzo success criterion condition?"
     answer: |
-      Call `parseCriterionCondition` with the condition string:
+      With a parser for the `simple` criterion grammar. A condition such as `$response.body#/status == 'available' && $statusCode == 200` is a tiny expression language: comparisons, boolean operators, negation, literals, and the `.field` and `[0]` accessors. [`@swaggerexpert/arazzo-criterion`](https://github.com/swaggerexpert/arazzo-criterion) is a standalone JavaScript parser for it.
 
-      ```js
-      import { parseCriterionCondition } from '@usearazzo/parser';
+      The specification defines this language in prose only, with no ABNF, so tools can disagree on edge cases such as operator precedence. Pick a parser that publishes its grammar. [Arazzo-Specification#518](https://github.com/OAI/Arazzo-Specification/issues/518) proposes a normative one.
 
-      const { tree } = parseCriterionCondition("$response.body#/status == 'available' && $statusCode == 200");
-      tree.type;                 // LogicalExpression
-      tree.left.type;            // BinaryExpression
-      tree.left.left.type;       // RuntimeExpression, the sub-AST from parseRuntimeExpression
-      tree.left.right;           // { type: 'Literal', valueType: 'string', value: 'available' }
-      ```
-
-      It covers the `simple` criterion type: comparisons, boolean operators, negation, literals, and the `.field` and `[0]` accessors, with each runtime expression operand parsed into its own sub-AST. JSONPath, XPath, and regular expression criteria are left to their own libraries. See [`parseCriterionCondition`](/docs/parser/#parse-criterion-condition) in the reference.
+      The syntax tree should carry each runtime expression operand as its own parsed sub-tree, not as a string. JSONPath, XPath, and regular expression criteria are not part of this grammar. Hand those to their own libraries.
   - question: "Does parsing an Arazzo document also validate it?"
     answer: |
-      No. A step that references a workflow that does not exist is still a well-formed document, and validity depends on rules that change with every Arazzo release. The UseArazzo toolkit keeps the jobs apart:
+      No. A step that references a workflow that does not exist is still a well-formed document, and validity depends on rules that change with every Arazzo release. Good tooling keeps four jobs apart:
 
-      - `@usearazzo/parser` reads the document;
-      - `@usearazzo/resolver` dereferences `$ref`s and reusable references;
-      - the Validator judges whether the document is correct;
-      - the Runner evaluates expressions during a run.
+      - a parser reads the document;
+      - a resolver dereferences `$ref`s and reusable references;
+      - a validator judges whether the document is correct;
+      - a runner evaluates expressions during a run.
   - question: "Can an Arazzo parser follow source descriptions to other Arazzo and OpenAPI documents?"
     answer: |
-      Yes. In `@usearazzo/parser` it is off by default, because it means file system and network access, and switched on per call:
+      It can, and the caller should decide when. Following source descriptions means file system and network access, so it should be off by default and switched on per call, for all sources, for some by name, and to a maximum depth.
 
-      ```js
-      const parseResult = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
-        parse: { parserOpts: { sourceDescriptions: true, sourceDescriptionsMaxDepth: 2 } },
-      });
-      ```
+      A parser that follows them has to get five things right:
 
-      `sourceDescriptions` can also be an array of names to parse only some. Each source becomes its own parse result, appended after the main document. Every link is resolved to a canonical URI first, a document already on the chain of ancestors is reported as a cycle and skipped, a document shared by two parents is parsed once, and an unreachable file becomes an error annotation rather than an exception. For inline strings and objects, which have no location of their own, pass `resolve.baseURI` so relative URLs have something to resolve against. The reference documents the [result structure](/docs/parser/#result-structure), the [annotations](/docs/parser/#annotations), and [shared documents](/docs/parser/#cycles).
+      - resolve every link to a canonical URI first, so one file under two spellings counts once;
+      - report a document already on the chain of ancestors as a cycle, and skip it;
+      - parse a document shared by two parents once, and not mistake it for a cycle;
+      - turn an unreachable file into a reported problem, not an exception;
+      - accept a base URI for inline strings and objects, which have no location of their own.
 ---
-
-You are building something that reads Arazzo documents. An editor plugin, a linter, a generator, an agent that turns workflows into tools, or just a script that lists every step in a repository's workflows. Before any of that can start, the document has to be read. This guide is about that reading step: why it is more than a YAML loader, what a tool actually needs from a parser, and how UseArazzo's parser, `@usearazzo/parser`, answers those needs.
+Let's say you are building something that reads Arazzo documents. It might be an editor plugin, a linter, a generator, or an agent that turns workflows into tools. It might be just a script that lists every step in a repository's workflows. Before any of that can start, the document has to be read. This guide is about that reading step. We'll look at why it is more than a YAML loader, and at what a tool should expect from a parser. The problems and the results are the same whichever parser you use, or build.
 
 If you only ever *write* Arazzo documents, you can skip this one. It is for the people building the tools that read them.
 
 ## What a parsed document looks like {#the-end-result}
 
-Here is the destination, so the rest of the guide has something to aim at. Every sample below runs against this small workflow, saved as `adopt-a-pet.arazzo.yaml` next to the OpenAPI description it names. Both files, plus the two variants used later, are [available to download]({{ '/assets/guides/arazzo-document-parsing/' | relative_url }}adopt-a-pet.arazzo.yaml) from the site.
+Here is the destination first, so the rest of the guide has something to aim at. Every sample below runs against this small workflow. It is saved as `adopt-a-pet.arazzo.yaml`, next to the OpenAPI description it names. Both files, plus the two variants we'll use later, are [available to download]({{ '/assets/guides/arazzo-document-parsing/' | relative_url }}adopt-a-pet.arazzo.yaml) from the site.
 
 ```yaml
 arazzo: 1.0.1
@@ -209,86 +162,129 @@ workflows:
             in: path
             value: $inputs.petId
 ```
+{: .numbered}
 
-A workflow document goes in, and a tree comes out that knows what every node is, where it came from in the source, and whether anything was wrong with it. For the sample, a good parse yields something like this, whichever parser produced it:
+A workflow document goes in and a tree comes out. The tree knows what every node is, where it came from in the source, and whether anything was wrong with it. For our sample, a good parse yields something like this, whichever parser produced it:
 
-```text
-adopt-a-pet.arazzo.yaml                                      lines 1 to 32
-├── arazzo: 1.0.1
-├── info
-├── sourceDescriptions
-│   └── petstore  (openapi)  ./petstore.openapi.yaml
-└── workflows
-    └── adopt-a-pet                                          lines 10 to 32
-        ├── inputs  (JSON Schema)
-        └── steps
-            ├── find-pet                                     lines 17 to 26
-            │   ├── operationId: getPetById
-            │   ├── parameter petId = $inputs.petId          (runtime expression)
-            │   ├── successCriteria: $statusCode == 200      (criterion condition)
-            │   └── output name = $response.body#/name       (runtime expression)
-            └── adopt                                        lines 27 to 32
-problems: none
-```
+<figure class="ast" aria-label="Tree from a good parse of adopt-a-pet.arazzo.yaml">
+<p class="ast-source">adopt-a-pet.arazzo.yaml</p>
+<div class="ast-scroll"><ul class="ast-tree ast-side"><li><span class="ast-node ast-doc"><small>document</small>arazzo 1.0.1<em>lines 1 to 32</em></span><ul><li><span class="ast-node ast-doc"><small>info</small>Pet adoption<em>lines 3 to 4</em></span></li><li><span class="ast-node ast-doc"><small>source description</small>petstore<em>openapi, lines 6 to 8</em></span></li><li><span class="ast-node ast-doc"><small>workflow</small>adopt-a-pet<em>lines 10 to 32</em></span><ul><li><span class="ast-node ast-doc"><small>inputs</small>JSON Schema<em>lines 12 to 15</em></span></li><li><span class="ast-node ast-doc"><small>step</small>find-pet<em>lines 17 to 26</em></span><ul><li><span class="ast-node ast-doc"><small>operationId</small>getPetById<em>line 18</em></span></li><li><span class="ast-node ast-rex"><small>parameter petId</small>$inputs.petId<em>lines 20 to 22</em></span></li><li><span class="ast-node ast-cond"><small>success criterion</small>$statusCode == 200<em>line 24</em></span></li><li><span class="ast-node ast-rex"><small>output name</small>$response.body#/name<em>line 26</em></span></li></ul></li><li><span class="ast-node ast-doc"><small>step</small>adopt<em>lines 27 to 32</em></span></li></ul></li></ul></li></ul></div>
+<p class="ast-problems"><b class="ast-ok">problems</b>none</p>
+<figcaption><span class="ast-key ast-doc">document node</span><span class="ast-key ast-rex">runtime expression</span><span class="ast-key ast-cond">criterion condition</span></figcaption>
+</figure>
 
-Three things in that picture matter for a tool author. The nodes are typed: `steps` is a list of step nodes, not a bag of maps, and the strings that are really expressions are known to be expressions. Every node carries its position in the original text, which is what a diagnostic, a hover, or a go-to-definition needs. And problems come back as data alongside the tree rather than as a thrown exception, so a half-broken document in someone's editor still yields a tree you can work with.
+Every node carries the lines it came from, so you can match the figure against the numbered source above. To stay readable, the figure leaves out the list nodes `sourceDescriptions`, `workflows`, and `steps`.
+
+Notice three things in that picture. First, the nodes are **typed**. `steps` is a list of step nodes, not a bag of maps, and the strings that are really expressions are known to be expressions. Second, every node carries its **position** in the original text. That is what a diagnostic, a hover, or a go-to-definition needs. And third, **problems come back as data** alongside the tree, not as a thrown exception. A half-broken document in someone's editor still yields a tree you can work with.
 
 Getting to that output is the hard part.
 
 ## Why parsing Arazzo is hard {#why-hard}
 
-An Arazzo document looks like one file in one format. It is really several languages layered on top of each other, inside one node of a network of documents, and a parser that stops after the first layer has not parsed the document.
+An Arazzo document looks like one file in one format. It is really several languages layered on top of each other, inside one node of a network of documents. A parser that stops after the first layer has not parsed the document. Let's go through the layers one by one.
 
 ### One document, two formats
 
-Arazzo documents are written in YAML or JSON. JSON is a subset of YAML 1.2, so one YAML parser can read both, but the relation only runs one way. A YAML parser also accepts a `.json` file with comments, single-quoted strings, or a trailing comma, none of which is JSON, so "it loaded" does not tell you which format you were given. A tool that hands the document on to a strict JSON consumer, or writes it back out, has to know. JSON also has a native parser that is faster and stricter, and its syntax errors and positions are worth reporting in JSON terms. That means two parsers, two ideas of what a "position" is, and two sets of syntax errors to report. It also means the first job is detection: given a string, is this Arazzo at all, and in which format, really? A YAML loader will happily load an OpenAPI description, a Kubernetes manifest, or a shopping list. Something has to check for the `arazzo` version field and refuse the rest before any later stage runs.
+Arazzo documents are written in YAML or JSON. JSON is a subset of YAML 1.2, so one YAML parser can read both. But the relation only runs one way. A YAML parser also accepts a `.json` file with comments, single-quoted strings, or a trailing comma, and none of that is JSON. So "it loaded" does not tell you which format you were given.
 
-### A grammar hidden in strings
+Why does it matter? A tool that hands the document on to a strict JSON consumer, or writes it back out, has to know. JSON also has a native parser that is faster and stricter, and its syntax errors and positions are worth reporting in JSON terms. So now we have two parsers, two ideas of what a "position" is, and two sets of syntax errors to report.
 
-Many values in the document are not values. `$inputs.petId`, `$steps.find-pet.outputs.name`, `$response.body#/pets/0/id`, `$sourceDescriptions.petstore.getPetById`: these are [runtime expressions](https://spec.openapis.org/arazzo/latest.html#runtime-expressions), a small language with its own ABNF grammar, embedded in ordinary strings. To a YAML loader they are strings. To a tool they are references that can be well-formed or not, that name a step which may or may not exist, and that carry a JSON Pointer in their tail. Checking any of that means parsing the expression, not the document.
-
-### A programming language inside a string inside the document
-
-The [Criterion Object](https://spec.openapis.org/arazzo/latest.html#criterion-object) goes one step further. A step's success criteria are conditions like `$statusCode == 200` or `$response.body#/status == 'available' && $response.header.X-Rate-Limit-Remaining > 0`. The `simple` criterion type is a tiny expression language: comparisons, boolean operators, negation, literals, and runtime expressions as operands. It also has its own way of reaching into a value. The specification's example, `$statusCode == 200 && $response.body.data != null`, navigates into the response body with a `.data` accessor, and `[0]` style index accessors work the same way. `$response.body#/pets/0/name` and `$response.body.pets[0].name` name the same value through two different grammars, and they do not mix: once a `#` pointer starts, dots and brackets are pointer text, not navigation. The other criterion types hand the condition to JSONPath, XPath, or a regular expression engine. So inside a single string you can have a condition grammar with its own accessors, which contains a runtime expression grammar, which contains a JSON Pointer. Three grammars deep, before you have left one field.
-
-### Documents that point at other documents
-
-An Arazzo document describes calls against APIs it does not contain. Each [Source Description](https://spec.openapis.org/arazzo/latest.html#source-description-object) names an external document by URL and declares its type: `openapi`, `arazzo`, and, since Arazzo 1.1.0, `asyncapi`. To resolve `operationId: getPetById`, or to know what `$response.body#/name` could contain, a tool has to fetch and parse those documents too. That opens several doors at once:
-
-- **More formats.** An `openapi` source can be any OpenAPI version, and 2.0, 3.0.x, 3.1.x, and 3.2 each have their own structure. An `asyncapi` source is AsyncAPI v3. Each one is again YAML or JSON.
-- **URI resolution.** A source description URL may be absolute, relative to the workflow document, a local file path, or a remote HTTP(S) URL. Relative URLs need a base URI, and Arazzo 1.1.0 lets the document override that base with the `$self` field.
-- **Partial failure.** One source description being unreachable should not make the workflow document unreadable. The tool needs the rest of the tree plus an accurate note about what was missing.
-
-### The document is a network
-
-The door that matters most is the `arazzo` source type. A source description can be another Arazzo document, and that document has its own source descriptions, which can be Arazzo documents in turn. Steps reach across the links: `workflowId: $sourceDescriptions.onboarding.create-account` calls a workflow that lives in a different file, and `dependsOn` can name one too. So the file you were handed is not the document. It is one node in a graph of documents, and the graph is what the workflow means.
-
-That graph has properties a single file does not:
-
-- **Its size is unknown until you have walked it.** Each Arazzo node can add any number of OpenAPI descriptions and further Arazzo nodes. A workflow library that composes shared sub-workflows across teams can pull in dozens of files from a mix of local paths and remote URLs.
-- **It can loop.** Document A lists B as a source. B lists C, and C lists A, or B lists A directly. Nothing in the specification forbids it, and a walker that follows links without remembering where it has been never terminates.
-- **The same file can be reached by different names.** `./shared/auth.arazzo.yaml` from one document and `../auth.arazzo.yaml` from another are the same file. Cycle detection and caching both depend on resolving every link to one canonical URI first.
-- **Depth is a policy decision.** A linter opening one file in an editor should probably not fetch the whole company's workflow graph on every keystroke. A runner probably should. The parser has to let the caller choose.
-
-A parser that handles a single file well and leaves the graph to the caller has left the hardest part to the caller.
-
-### Schemas and other niceties
-
-Workflow inputs are described with [JSON Schema 2020-12](https://json-schema.org/draft/2020-12), which is another language with its own reference and vocabulary semantics. Reusable Objects let a step reference a shared parameter, success action, or failure action by a runtime expression. Arazzo 1.1.0 adds Selector Objects to outputs and parameters. None of this is exotic on its own. Together, it means a "parsed" Arazzo document is a tree in which several nodes are the roots of further trees in other languages.
+It also means the first job is detection. Given a string, is this Arazzo at all? And in which format, really? A YAML loader will happily load an OpenAPI description, a Kubernetes manifest, or a shopping list. Something has to check for the `arazzo` version field and refuse the rest, before any later stage runs.
 
 ### The specification keeps moving
 
-Arazzo has shipped [three releases in two years]({{ '/blog/arazzo-specification-evolution/' | relative_url }}). A document written last year says `arazzo: 1.0.0`. One written this month may say `1.1.0` and use `$self`, `channelPath`, `action`, or a Selector Object, none of which existed before. A parser that hard-codes one version's field list has two ways to fail: reject the newer document outright, or load it and silently drop the fields it does not know, which is worse, because the tool downstream then reasons about a workflow that is missing parts. Reading has to be tolerant of versions. Deciding what is valid *for* a version is a separate job, and one that changes with every release.
+Arazzo has shipped [three releases in two years]({{ '/blog/arazzo-specification-evolution/' | relative_url }}). A document written last year says `arazzo: 1.0.0`. One written this month may say `1.1.0` and use `$self`, `channelPath`, `action`, or a Selector Object. None of these existed before.
+
+A parser that hard-codes one version's field list has two ways to fail. It can reject the newer document outright. Or it can load it and silently drop the fields it does not know. The second one is worse, because the tool downstream then reasons about a workflow that is missing parts.
+
+So reading has to be tolerant of versions. Deciding what is valid *for* a version is a separate job, and one that changes with every release.
+
+### Documents that point at other documents
+
+An Arazzo document describes calls against APIs it does not contain. Each [Source Description](https://spec.openapis.org/arazzo/v1.1.0.html#source-description-object) names an external document by URL and declares its type: `openapi`, `arazzo`, and, since Arazzo 1.1.0, `asyncapi`. To resolve `operationId: getPetById`, or to know what `$response.body#/name` could contain, a tool has to fetch and parse those documents too. That opens several doors at once:
+
+- **More formats.** An `openapi` source can be any OpenAPI version, and 2.0, 3.0.x, 3.1.x, and 3.2 each have their own structure. An `asyncapi` source is AsyncAPI v3. Each one is again YAML or JSON.
+- **URI resolution.** A source description URL may be absolute, relative to the workflow document, a local file path, or a remote HTTP(S) URL. Relative URLs need a base URI, and Arazzo 1.1.0 lets the document override that base with the `$self` field.
+- **Partial failure.** One unreachable source description should not make the workflow document unreadable. The tool needs the rest of the tree, plus an accurate note about what was missing.
+
+### The document is a network
+
+The door that matters most is the `arazzo` source type. A source description can be another Arazzo document. That document has its own source descriptions, which can be Arazzo documents in turn. Steps reach across the links. `workflowId: $sourceDescriptions.onboarding.create-account` calls a workflow that lives in a different file, and `dependsOn` can name one too.
+
+So the file you were handed is not the document. It is one node in a graph of documents, and the graph is what the workflow means. That graph has properties a single file does not have:
+
+- **Its size is unknown until you have walked it.** Each Arazzo node can add any number of OpenAPI descriptions and further Arazzo nodes. A workflow library that composes shared sub-workflows across teams can pull in dozens of files, from a mix of local paths and remote URLs.
+- **It can loop.** Document A lists B as a source. B lists C, and C lists A. Or B lists A directly. Nothing in the specification forbids it, and a walker that follows links without remembering where it has been never terminates.
+- **The same file can be reached by different names.** `./shared/auth.arazzo.yaml` from one document and `../auth.arazzo.yaml` from another are the same file. Cycle detection and caching both depend on resolving every link to one canonical URI first.
+- **Depth is a policy decision.** A linter in an editor should not fetch the whole company's workflow graph on every keystroke. A runner probably should. The parser has to let the caller choose.
+
+A parser that handles a single file well and leaves the graph to the caller has left the hardest part to the caller.
+
+### A grammar hidden in strings
+
+Now let's open the strings. Many values in the document are not really values. Take `$inputs.petId`, `$steps.find-pet.outputs.name`, `$response.body#/pets/0/id`, or `$sourceDescriptions.petstore.getPetById`. These are [runtime expressions](https://spec.openapis.org/arazzo/v1.1.0.html#runtime-expressions), a small language with its own ABNF grammar, embedded in ordinary strings.
+
+To a YAML loader they are just strings. To a tool they are references. A reference can be well-formed or not, it can name a step that does not exist, and it can carry a JSON Pointer in its tail. Checking any of that means parsing the expression, not the document.
+
+### A programming language inside a string inside the document
+
+The [Criterion Object](https://spec.openapis.org/arazzo/v1.1.0.html#criterion-object) goes one step further. A step's success criteria are conditions like `$statusCode == 200` or `$response.body#/status == 'available' && $response.header.X-Rate-Limit-Remaining > 0`. The `simple` criterion type is a tiny expression language: comparisons, boolean operators, negation, literals, and runtime expressions as operands.
+
+It also has its own way of reaching into a value. The specification's example is `$statusCode == 200 && $response.body.data != null`. Notice how it navigates into the response body with a `.data` accessor. `[0]` style index accessors work the same way. Now compare `$response.body#/pets/0/name` with `$response.body.pets[0].name`. They name the same value through two different grammars, and the two do not mix. Once a `#` pointer starts, dots and brackets are pointer text, not navigation.
+
+The other criterion types hand the condition to JSONPath, XPath, or a regular expression engine. So what do we have inside a single string? A condition grammar with its own accessors, which contains a runtime expression grammar, which contains a JSON Pointer. Three grammars deep, and we have not left one field yet.
+
+### A grammar the specification never wrote down
+
+Runtime expressions have an ABNF grammar in the specification. `simple` conditions do not. The specification gives us a table of literals, a table of operators, and prose. Every tool has to answer the rest alone:
+
+- Where does a runtime expression end and an operator begin? The two languages share characters: `.`, `=`, `<`, and `>`.
+- Which binds tighter, `&&` or `||`?
+- Is a chained comparison such as `$statusCode > 199 < 300` allowed?
+- Do `.data` and `[0]` belong to the condition language or to the runtime expression? In `$inputs.pet.name`, is that an input named `pet.name`, or the `name` member of an input named `pet`?
+
+This is an **interoperability** problem, not a style problem. Two tools that answer differently read the same condition differently. The same workflow then passes in one runner and fails in another.
+
+The first question runs deeper than it looks. A name in a runtime expression may contain `=`, `<`, `&`, and even spaces. So may a JSON Pointer token, and a pointer has no terminator at all. Read as a whole, the ordinary `$response.body#/status == 200` is also one valid runtime expression, with the pointer `/status == 200`. Nobody means that. But only a boundary rule can say so, and the specification has none.
+
+A sensible rule, "an operand ends at whitespace or at an operator character", settles the ordinary conditions. It also leaves a whole family with no right answer: any name or key that contains one of those characters.
+
+- In `$request.query.a=b == 1`, is the first `=` part of the parameter name, or the start of the operator?
+- In `$response.body#/a=b == 1`, is it part of the pointer? The `#/` form is no escape, for the reason above.
+
+Both readings are legal each time, and nothing in the specification picks one.
+
+The full story is in [The one Arazzo condition no tool can evaluate safely](https://vladimirgorej.com/blog/the-one-arazzo-condition-no-tool-can-evaluate-safely/). [Arazzo-Specification#518](https://github.com/OAI/Arazzo-Specification/issues/518) asks the specification for a normative grammar, and proposes one in ABNF.
+
+### Schemas and other niceties
+
+Workflow inputs are described with [JSON Schema 2020-12](https://json-schema.org/draft/2020-12), which is another language with its own reference and vocabulary semantics. [Reusable Objects](https://spec.openapis.org/arazzo/v1.1.0.html#reusable-object) let a step reference a shared parameter, success action, or failure action by a runtime expression. Arazzo 1.1.0 adds [Selector Objects](https://spec.openapis.org/arazzo/v1.1.0.html#selector-object) to outputs and parameters.
+
+None of this is exotic on its own. Together, it means that a "parsed" Arazzo document is a tree in which several nodes are the roots of further trees, in other languages.
 
 ### Positions, for everything above
 
-Every piece of tooling worth having reports where a problem is. That means line and column for the document nodes, but also offsets inside an expression string when the expression is what is wrong, and which file in the graph the problem came from. The [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) counts positions in UTF-16 code units, which is also how JavaScript strings index, so a parser aimed at editor tooling has to count the same way.
+Every piece of tooling worth having reports *where* a problem is. For us that means three things:
 
-Put together, this is the real scope of "parsing an Arazzo document": detect the format, parse it tolerantly with positions, recognise the Arazzo structure, parse the expression grammars inside the strings, resolve every referenced document to a canonical URI and parse it in its own format, walk the graph of Arazzo sources without looping and to a depth the caller chose, and report all of it as data.
+- line and column for the document nodes;
+- offsets inside an expression string, when the expression is what is wrong;
+- the file in the graph that the problem came from.
+
+There is one more catch. The [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) counts positions in UTF-16 code units, and JavaScript strings index the same way. A parser aimed at editor tooling has to count the same way too.
+
+So what is the real scope of "parsing an Arazzo document"? Let's put it together:
+
+- detect the format;
+- parse it tolerantly, with positions;
+- recognise the Arazzo structure in any 1.x version;
+- resolve every referenced document to a canonical URI, and parse it in its own format;
+- walk the graph of Arazzo sources without looping, to a depth the caller chose;
+- parse the expression grammars inside the strings;
+- report all of it as data.
 
 ## Doing it by hand {#by-hand}
 
-It is worth seeing how far a plain loader gets, because that is where most first attempts start.
+How far does a plain loader get? It is worth seeing, because that is where most first attempts start.
 
 ```js
 import { readFile } from 'node:fs/promises';
@@ -304,100 +300,124 @@ for (const workflow of doc.workflows ?? []) {
 }
 ```
 
-For a script you run yourself against documents you wrote, this is fine, and you should not feel bad about it. The trouble starts as soon as the tool has to serve other people or other documents:
+For a script you run yourself, against documents you wrote, this is fine. You should not feel bad about it. The trouble starts as soon as the tool has to serve other people, or other documents:
 
-- **No detection.** `YAML.parse` returns an object for any YAML, and since JSON is a subset of YAML 1.2, for any JSON too, including JSON with comments in it that no JSON parser would accept. Whether what came back is Arazzo, and whether the file was really the format its extension claims, is now your problem.
-- **No positions.** The object has no idea which line `step.stepId` came from. Most YAML libraries can expose a concrete syntax tree with positions, but then you are walking that tree yourself and mapping it back to the Arazzo structure.
-- **Strings stay strings.** `$steps.find-pet.outputs.name` is a string. To tell it apart from `$steps.find-pet.outputs`, which is not a valid expression, you need the runtime expression grammar. To check a success criterion you need the condition grammar as well. Both grammars are published as standalone packages, [Arazzo Runtime Expression](https://github.com/swaggerexpert/arazzo-runtime-expression) and [Arazzo Criterion](https://github.com/swaggerexpert/arazzo-criterion), and they are the same ones `@usearazzo/parser` wraps, so you can wire them into your own loader if that is all you need.
-- **Source descriptions are URLs, nothing more.** You write the fetch, the relative URL resolution against the document's directory, the format detection for each OpenAPI version, and the error reporting when one of them is unreachable.
-- **The graph is yours to walk.** Recursion into Arazzo sources, canonical URIs so the same file is not fetched twice under two names, an ancestor check so real cycles terminate without a shared file being mistaken for one, a depth limit so an editor does not fetch the world. Get any of these wrong and the failure mode is a hang, not an error.
-- **Damaged input throws.** A document with one bad indent gives you an exception and no tree, which is exactly the situation an editor is in most of the time.
+- **No detection.** `YAML.parse` returns an object for any YAML. JSON is a subset of YAML 1.2, so it does the same for any JSON, including JSON with comments that no JSON parser would accept. Is what came back really Arazzo? Was the file really the format its extension claims? That is now your problem.
+- **No positions.** The object has no idea which line `step.stepId` came from. Most YAML libraries can expose a concrete syntax tree with positions. But then you are walking that tree yourself, and mapping it back to the Arazzo structure.
+- **Strings stay strings.** `$steps.find-pet.outputs.name` is a string. To tell it apart from `$steps.find-pet.outputs`, which is not a valid expression, you need the runtime expression grammar. To check a success criterion, you need the condition grammar as well. Both grammars are published as standalone packages: [`@swaggerexpert/arazzo-runtime-expression`](https://github.com/swaggerexpert/arazzo-runtime-expression) and [`@swaggerexpert/arazzo-criterion`](https://github.com/swaggerexpert/arazzo-criterion). You can wire them into your own loader, if that is all you need.
+- **Source descriptions are URLs, nothing more.** You write the fetch, and the relative URL resolution against the document's directory. You write the format detection for each OpenAPI version. You write the error reporting for a source that is unreachable.
+- **The graph is yours to walk.** You need recursion into Arazzo sources. You need canonical URIs, so the same file is not fetched twice under two names. You need an ancestor check, so real cycles terminate and a shared file is not mistaken for one. You need a depth limit, so an editor does not fetch the world. Get any of these wrong, and the failure mode is a hang, not an error.
+- **Damaged input throws.** A document with one bad indent gives you an exception and no tree. An editor is in exactly that situation most of the time.
 
-Each of these is a solved problem somewhere. The cost is assembling and maintaining the set, across two formats and five or six document types, for a specification that is still adding features. If you would rather not, other parsers in the ecosystem have done some of this assembly: [php-arazzo](https://github.com/Mohammed-Alama/php-arazzo) in PHP, [roas](https://github.com/sv-tools/roas) in Rust, and the Arazzo support inside [Redocly CLI](https://github.com/Redocly/redocly-cli). The [Ecosystem page]({{ '/ecosystem/#tools' | relative_url }}) keeps the full list. Whichever you pick, or build, there is one more question to settle before you can judge it: where parsing ends.
+Each of these is a solved problem somewhere. The cost is in assembling the set and maintaining it, across two formats and five or six document types, for a specification that is still adding features.
 
-## Where parsing should stop {#not-parsing}
+If you would rather not, other parsers have done some of this assembly already. There is [php-arazzo](https://github.com/Mohammed-Alama/php-arazzo) in PHP, [roas](https://github.com/sv-tools/roas) in Rust, and the Arazzo support inside [Redocly CLI](https://github.com/Redocly/redocly-cli). The [Ecosystem page]({{ '/ecosystem/#tools' | relative_url }}) keeps the full list. Whichever you pick, or build, the next section is what to judge it by.
 
-Knowing where a parser stops is as useful as knowing what it does, and the line is the same whichever parser you use. Four things look like parsing and are not:
+## What a good parser gives you {#a-good-parse}
 
-- **Dereferencing.** `$ref` inside a source description's JSON Schema, or a Reusable Object's `reference`, point at content that may live in another file. Following them is resolution, a separate walk with its own caching and cycle rules.
-- **Validation.** A step that references a workflow that does not exist is a well-formed document. Whether it is a correct one depends on rules that change with every release, so a parser that also validated would be wrong about validity each time the specification moved.
-- **Evaluation.** An expression AST is structure. What `$steps.find-pet.outputs.name` is worth exists only during a run, so evaluation belongs to whatever runs the workflow.
-- **JSONPath, XPath, and regular expressions.** General-purpose languages with their own ecosystems. A parser that bundled them would be maintaining three more grammars.
+Now let's turn the problems around. This section takes them in the same order and gives the result to expect for each. It describes results, not an API. Use it as a checklist, for a parser you pick or one you build. One note about the figures: they are illustrations. Node names differ from parser to parser. The shape is what matters.
 
-The UseArazzo toolkit draws exactly these lines: `@usearazzo/parser` reads, [`@usearazzo/resolver`]({{ '/docs/#packages' | relative_url }}) dereferences, the [Validator]({{ '/validator/' | relative_url }}) judges, and the [Runner]({{ '/runner/' | relative_url }}) evaluates. A parser you build or pick should draw them somewhere too. The one that does everything is the one nobody can keep up to date.
+### A format you can be sure of
 
-## How @usearazzo/parser approaches it {#with-the-parser}
+- The parser checks that the input is Arazzo before anything else runs. It looks for the `arazzo` field and its `1.x.y` version.
+- It works out whether the text is really JSON or YAML from the content, not from the file extension.
+- Anything else is refused, with an error that says why. An OpenAPI description passed by mistake is the common case.
+- It reads text that has no file behind it. An editor buffer that was never saved is still a document.
 
-`@usearazzo/parser` is the reading layer of the [UseArazzo toolkit](https://github.com/usearazzo/arazzo-toolkit). It covers the three syntaxes the specification defines: documents, runtime expressions, and criterion conditions. It produces a [SpecLynx ApiDOM](https://github.com/speclynx/apidom) data model, which is what gives it typed nodes and positions.
+### Every 1.x version, nothing dropped
 
-```bash
-npm install @usearazzo/parser
-```
+- A 1.0.0 document and a 1.1.0 document produce the same kind of tree.
+- The fields that 1.1.0 added, such as `$self`, `channelPath`, `action`, and `correlationId`, are typed like the rest.
+- Fields the parser does not know, from a future release or an `x-` extension, are kept with their positions. They are never dropped.
 
-Its [API reference]({{ '/docs/parser/' | relative_url }}) documents every option. This section takes the problems above in order and gives the parser's answer to each.
+And what about the things that 1.0.1 allows and 1.1.0 does not? That is a validation question. The parser does not answer it.
 
-### Detection and input shapes
+### Source descriptions, read in their own format
 
-`parseArazzo` takes any of four shapes and returns the same kind of result for all of them:
+- Each source description is parsed as what it is: an OpenAPI description in its own version, an AsyncAPI document, or another Arazzo document. Each one is again JSON or YAML.
+- Relative URLs resolve against the location of the document that names them, honouring the `$self` field. Text with no location needs a base URI from the caller.
+- One bad source does not spoil the rest. An unreachable file, or a format the parser cannot read, becomes a problem on that entry. The main document still parses.
+- Following sources means file system and network access, so the caller decides. A good parser lets the caller follow none, some by name, or all.
 
-```js
-await parseArazzo({ arazzo: '1.0.1', info: { title: 'Pets', version: '1.0.0' }, workflows: [] });
-await parseArazzo('arazzo: 1.0.1\ninfo:\n  title: Pets\n  version: 1.0.0\nworkflows: []\n');
-await parseArazzo('./adopt-a-pet.arazzo.yaml');
-await parseArazzo('https://example.com/workflows/adopt-a-pet.arazzo.json');
-```
+A word of caution here. Few tools read every legal source format. Check which OpenAPI and AsyncAPI versions a parser supports before you depend on it.
 
-Detection runs first: the parser looks for the `arazzo` field and sniffs JSON or YAML, and only treats a string as a URI when it is not recognisable as inline content. The result is a `ParseResultElement`:
+### A graph walk that terminates
 
-- `api`: the document, as a typed `ArazzoSpecification1Element`
-- `errors` and `warnings`: annotations collected while parsing
-- `meta.get('retrievalURI')`: where the document came from, for file and URL input
+- The caller sets how deep the walk goes. An editor wants one level, a runner wants everything.
+- Every link is made canonical before it is followed. Two spellings of one path count as one file.
+- A document reached twice is fetched and parsed once.
+- A cycle ends the walk on that branch, with a warning. It never ends in a hang.
 
-`api` is a typed tree with getters named after the specification's fields, and `toValue` from `@speclynx/apidom-core` unwraps any node to a plain value. Walking the sample:
+The last two are easy to confuse, so here is an example. Take a second document, [`onboarding.arazzo.yaml`]({{ '/assets/guides/arazzo-document-parsing/' | relative_url }}onboarding.arazzo.yaml). It lists `adopt-a-pet.arazzo.yaml` as an `arazzo` source and `petstore.openapi.yaml` as an `openapi` one. Now list `onboarding` back from `adopt-a-pet`. A parse of `adopt-a-pet` that follows sources should walk A, then B, and stop exactly where B points back at A:
 
-```js
-import { parseArazzo } from '@usearazzo/parser';
-import { toValue } from '@speclynx/apidom-core';
+<figure class="ast">
+<div class="ast-scroll"><svg viewBox="0 0 720 320" role="img" aria-labelledby="cycle-title cycle-desc"><title id="cycle-title">Walk of adopt-a-pet.arazzo.yaml with source descriptions followed</title><desc id="cycle-desc">adopt-a-pet.arazzo.yaml, the root of the walk, points at onboarding.arazzo.yaml as onboarding and at petstore.openapi.yaml as petstore. onboarding.arazzo.yaml points at petstore.openapi.yaml too, which is a shared document and is parsed once. It also points back at adopt-a-pet.arazzo.yaml as adoption. That edge is a cycle: it is drawn dashed, reported as a warning, and not followed.</desc><defs><marker id="cycle-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280"/></marker><marker id="cycle-arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#B91C1C"/></marker></defs><g font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"><line x1="330" y1="78" x2="205" y2="238" stroke="#6B7280" stroke-width="2" marker-end="url(#cycle-arrow)"/><line x1="400" y1="78" x2="545" y2="238" stroke="#6B7280" stroke-width="2" marker-end="url(#cycle-arrow)"/><line x1="262" y1="268" x2="458" y2="268" stroke="#6B7280" stroke-width="2" marker-end="url(#cycle-arrow)"/><path d="M 90 238 C 90 120, 150 50, 248 50" fill="none" stroke="#B91C1C" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#cycle-arrow-red)"/><rect x="230.0" y="148" width="84" height="17" rx="3" fill="#FAFCF6"/><text x="272" y="160" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="11.5" fill="#374151">onboarding</text><rect x="443.0" y="148" width="70" height="17" rx="3" fill="#FAFCF6"/><text x="478" y="160" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="11.5" fill="#374151">petstore</text><rect x="325.0" y="260" width="70" height="17" rx="3" fill="#FAFCF6"/><text x="360" y="272" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="11.5" fill="#374151">petstore</text><text x="176" y="106" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="11.5" fill="#B91C1C">adoption</text><text x="176" y="122" font-size="11" fill="#B91C1C">cycle, not followed</text><text x="360" y="292" text-anchor="middle" font-size="11" fill="#4B5563">shared, not a cycle</text><rect x="250" y="22" width="220" height="56" rx="8" fill="#F0F5E7" stroke="#3A6B1F" stroke-width="2"/><text x="360" y="46" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="13" fill="#17210D">adopt-a-pet.arazzo.yaml</text><text x="360" y="64" text-anchor="middle" font-size="11" fill="#4B5563">Arazzo, root of the walk</text><rect x="40" y="240" width="220" height="56" rx="8" fill="#F0F5E7" stroke="#3A6B1F" stroke-width="2"/><text x="150" y="264" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="13" fill="#17210D">onboarding.arazzo.yaml</text><text x="150" y="282" text-anchor="middle" font-size="11" fill="#4B5563">Arazzo</text><rect x="460" y="240" width="220" height="56" rx="8" fill="#FFFFFF" stroke="#17210D" stroke-width="2"/><text x="570" y="264" text-anchor="middle" font-family="'Fira Code', Monaco, Consolas, monospace" font-size="13" fill="#17210D">petstore.openapi.yaml</text><text x="570" y="282" text-anchor="middle" font-size="11" fill="#4B5563">OpenAPI, parsed once</text></g></svg></div>
+<figcaption><span class="ast-key ast-edge">source description, followed and parsed</span><span class="ast-key ast-cycle">cycle, skipped with a warning</span></figcaption>
+</figure>
 
-const parseResult = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
-  parse: { parserOpts: { sourceMap: true, strict: false } },
-});
+Two things in that figure are deliberate:
 
-const workflow = parseResult.api.workflows.get(0);
-console.log(toValue(workflow.workflowId)); // adopt-a-pet
+- **Only true cycles are cycles.** A document is a cycle only when it is already on the chain of ancestors being parsed. `adopt-a-pet` is the root of this walk, so B's reference back to it is one. That entry gets a warning and no tree.
+- **Shared documents are not cycles.** Both A and B name `petstore.openapi.yaml`. Nothing in that file points back at either of them. Reaching it a second time is a shared dependency, a diamond, not a loop. A blunt "seen it before" check would wrongly skip it.
 
-workflow.steps.forEach((step) => {
-  console.log(`${toValue(step.stepId)} at line ${step.startLine + 1}`);
-});
-// find-pet at line 17
-// adopt at line 27
+### Runtime expressions as trees
 
-console.log(parseResult.errors.length, parseResult.warnings.length); // 0 0
-```
+A string that holds a runtime expression comes back as a syntax tree, not as a string. Nothing is evaluated, and no document is needed.
 
-Input that cannot be read as Arazzo at all, an OpenAPI description passed by mistake or a file that is not there, throws a `ParseError` whose `cause` says why. By default the file resolver only reads paths ending in `.json`, `.yaml`, or `.yml`, so a `workflow.arazzo` with no extension is reported as unreadable. The allowlist is a `FileResolver` option, and `resolve.resolvers` accepts your own resolver with a different one.
+<figure class="ast" aria-label="Syntax tree of the runtime expression $steps.find-pet.outputs.name">
+<p class="ast-source">$steps.find-pet.outputs.name</p>
+<div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-rex"><small>steps expression</small>$steps</span><ul><li><span class="ast-node ast-rex"><small>step id</small>find-pet</span></li><li><span class="ast-node ast-rex"><small>field</small>outputs</span></li><li><span class="ast-node ast-rex"><small>output name</small>name</span></li></ul></li></ul></div>
+<figcaption><span class="ast-key ast-rex">runtime expression</span></figcaption>
+</figure>
 
-### Versions
+<figure class="ast" aria-label="Syntax tree of the runtime expression $response.body#/pets/0/id">
+<p class="ast-source">$response.body#/pets/0/id</p>
+<div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-rex"><small>response expression</small>$response</span><ul><li><span class="ast-node ast-rex"><small>body reference</small>body</span><ul><li><span class="ast-node ast-ptr"><small>JSON Pointer</small>/pets/0/id</span><ul><li><span class="ast-node ast-ptr"><small>token</small>pets</span></li><li><span class="ast-node ast-ptr"><small>token</small>0</span></li><li><span class="ast-node ast-ptr"><small>token</small>id</span></li></ul></li></ul></li></ul></li></ul></div>
+<figcaption><span class="ast-key ast-rex">runtime expression</span><span class="ast-key ast-ptr">JSON Pointer</span></figcaption>
+</figure>
 
-- Any `1.x.y` version string is accepted and read through the same code path, so a 1.0.0 document and a 1.1.0 document produce the same kind of tree.
-- Fields that 1.1.0 added, `$self`, `channelPath`, `action`, `correlationId`, come through as typed getters.
-- Fields the parser does not know, from a future release or an `x-` extension, are kept as ordinary members with their positions, never dropped.
-- A `2.0.0` document is refused as not Arazzo.
+- The tree names the kind of expression and its parts. A tool can then ask whether step `find-pet` exists, without any string slicing.
+- The JSON Pointer in the tail is parsed too, down to its reference tokens.
+- Invalid syntax is reported, not thrown. `$steps.find-pet.outputs` is not a valid expression, because an outputs reference needs an output name. The result says that parsing failed, and gives the offset where the grammar gave up. That offset is where a diagnostic should point.
 
-Drawing the line between what 1.0.1 allows and what 1.1.0 allows is left to the [Validator]({{ '/validator/' | relative_url }}), which is where a per-version rule belongs.
+### Criterion conditions as trees
 
-### Tolerance and positions
+A `simple` condition is a small expression language, so its result is an expression tree. In the figures, the colour of a node tells you which grammar it belongs to.
 
-The `strict` option picks between two parsers with different jobs:
+<figure class="ast" aria-label="Syntax tree of the condition $response.body#/status == 'available' &amp;&amp; $statusCode == 200">
+<p class="ast-source">$response.body#/status == 'available' &amp;&amp; $statusCode == 200</p>
+<div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-cond"><small>logical and</small>&amp;&amp;</span><ul><li><span class="ast-node ast-cond"><small>comparison</small>==</span><ul><li><span class="ast-node ast-rex"><small>response expression</small>$response.body</span><ul><li><span class="ast-node ast-ptr"><small>JSON Pointer</small>/status</span></li></ul></li><li><span class="ast-node ast-lit"><small>string</small>'available'</span></li></ul></li><li><span class="ast-node ast-cond"><small>comparison</small>==</span><ul><li><span class="ast-node ast-rex"><small>status code expression</small>$statusCode</span></li><li><span class="ast-node ast-lit"><small>number</small>200</span></li></ul></li></ul></li></ul></div>
+<figcaption><span class="ast-key ast-cond">criterion condition</span><span class="ast-key ast-rex">runtime expression</span><span class="ast-key ast-ptr">JSON Pointer</span><span class="ast-key ast-lit">literal</span></figcaption>
+</figure>
 
-| | `strict: true` (default) | `strict: false` |
-|---|---|---|
-| Parser | Native `JSON.parse` or a strict YAML parser | [tree-sitter](https://tree-sitter.github.io/) grammar |
-| On damaged input | Throws | Keeps going, reports damage as annotations |
-| Source maps | Not available | `sourceMap: true` puts zero-based, UTF-16 positions on every element |
-| Made for | Runners, CI checks | Editors, linters, anything that shows a diagnostic |
+As you can see, there are three colours in one tree. Here is what to expect from a parser that produces it:
 
-Damage the sample so the second step's `operationId` sits one space to the left of its siblings, which takes it out of the step's mapping:
+- **The grammar is published.** The specification has no ABNF for conditions yet. So the parser says which grammar it follows, in ABNF, where anyone can read it. Two tools can only agree on a condition if they can compare grammars, and a grammar hidden in a hand-written tokenizer cannot be compared with anything. The [grammar of `@swaggerexpert/arazzo-criterion`](https://github.com/swaggerexpert/arazzo-criterion/blob/main/src/grammar.bnf) is one published example. It is the one proposed in [Arazzo-Specification#518](https://github.com/OAI/Arazzo-Specification/issues/518).
+- **Operators have a stated precedence.** The usual choice is that `&&` binds tighter than `||`. Parentheses and `!` negation are nodes of their own. A chained comparison such as `$statusCode > 199 < 300` does not parse.
+- **The operand boundary is a stated rule.** The usual rule is that an operand ends at whitespace or at an operator character. That rule is what makes `$response.body#/status == 200` a comparison and not one long pointer.
+- **The runtime expression grammar checks the operand.** The condition parser does not copy the runtime expression rules. It hands the operand over, and the longest prefix that is a valid runtime expression wins. The rest is `.member` and `[0]` navigation. This way the two grammars cannot drift apart. It also settles `$inputs.pet.name`: a name may contain dots, so that is an input named `pet.name`, with no navigation.
+- **What the rule cannot express is refused, not guessed.** Under that rule, a name or key that contains an operator character cannot be written. `$request.query.a=b == 1` fails to parse, with an offset. So does `$response.body#/a=b == 1`. A silent wrong guess would be worse. The way out for such a key is a `jsonpath` criterion, because JSONPath quotes member names: `$.pets[?@['a=b'] == 1]`.
+- **Literals are typed.** A string, a number, a boolean, and `null` are different nodes. `200` and `'200'` do not compare the same way, so a tool has to see the difference.
+- **Each runtime expression operand is parsed.** The condition tree holds the expression's own tree, which holds its JSON Pointer. This is the three-grammars-deep field from earlier, unpacked.
+- **Accessors are navigation steps, not pointer text.** The two ways of reaching into a value stay apart in the tree:
+
+<figure class="ast" aria-label="Syntax tree of the condition $response.body.pets[0].name == 'Rex'">
+<p class="ast-source">$response.body.pets[0].name == 'Rex'</p>
+<div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-cond"><small>comparison</small>==</span><ul><li><span class="ast-node ast-cond"><small>navigation</small>.pets[0].name</span><ul><li><span class="ast-node ast-rex"><small>response expression</small>$response.body</span></li><li><span class="ast-node ast-cond"><small>member</small>pets</span></li><li><span class="ast-node ast-cond"><small>index</small>0</span></li><li><span class="ast-node ast-cond"><small>member</small>name</span></li></ul></li><li><span class="ast-node ast-lit"><small>string</small>'Rex'</span></li></ul></li></ul></div>
+<figcaption><span class="ast-key ast-cond">criterion condition</span><span class="ast-key ast-rex">runtime expression</span><span class="ast-key ast-lit">literal</span></figcaption>
+</figure>
+
+- **Failure works as it does for expressions.** A condition that does not parse gives a failed result and an offset, not an exception.
+- **Only `simple` conditions are parsed.** The Criterion Object's `type` says which language the condition is in. For `jsonpath`, `xpath`, and `regex`, the parser keeps the string as it is and records the type. The tool can then hand it to the right library.
+
+### Positions and problems, even for damaged input
+
+- Every node carries its position in the original text. For editor tooling that means zero-based lines and characters, counted in UTF-16 code units.
+- A problem inside an expression points inside the string, not at the whole field.
+- A problem in a source description says which document it came from.
+- Problems come back as data, next to the tree. A runner can still ask the parser to fail fast. An editor cannot work that way, because the document in an editor is broken most of the time.
+
+To see it, damage the sample so that the second step's `operationId` sits one space to the left of its siblings. That takes it out of the step's mapping, and the lines after it no longer fit anywhere. The damaged file is [available to download]({{ '/assets/guides/arazzo-document-parsing/' | relative_url }}adopt-a-pet.broken.arazzo.yaml) too.
 
 ```yaml
       - stepId: adopt
@@ -405,106 +425,33 @@ Damage the sample so the second step's `operationId` sits one space to the left 
         parameters:
           - name: petId
 ```
+{: .numbered data-start="27"}
 
-Then parse it in tolerant mode:
+A plain loader throws here and returns nothing. A good parse gives you this:
 
-```js
-const parseResult = await parseArazzo('./adopt-a-pet.arazzo.yaml', {
-  parse: { parserOpts: { strict: false, sourceMap: true } },
-});
+<figure class="ast" aria-label="Tree from a tolerant parse of the damaged document, with the problem it reported">
+<p class="ast-source">adopt-a-pet.broken.arazzo.yaml</p>
+<div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-doc"><small>document</small>arazzo 1.0.1</span><ul><li><span class="ast-node ast-doc"><small>workflow</small>adopt-a-pet<em>from line 10</em></span><ul><li><span class="ast-node ast-doc"><small>step</small>find-pet<em>lines 17 to 26</em></span></li><li><span class="ast-node ast-doc"><small>step</small>adopt<em>from line 27</em></span><ul><li><span class="ast-node ast-gone"><small>dropped fields</small>operationId, parameters<em>lines 28 to 32</em></span></li></ul></li></ul></li></ul></li></ul></div>
+<p class="ast-problems"><b>error</b>YAML syntax error<span>lines 27 to 32</span></p>
+<figcaption><span class="ast-key ast-doc">parsed node, with its position</span><span class="ast-key ast-gone">damaged, dropped from the tree</span></figcaption>
+</figure>
 
-parseResult.api.element;          // arazzoSpecification1: still a tree
-parseResult.errors.map(toValue);  // [ '(Error YAML syntax error)' ]
+The tree survives. The damage costs us the rest of that one step, and nothing else. The document, the workflow, the first step, and the second step's `stepId` are all intact, with their positions. And the problem points at the damaged text, not at the whole document.
 
-const step = parseResult.api.workflows.get(0).steps.get(1);
-toValue(step.stepId);      // adopt
-step.startLine;            // 26
-step.startCharacter;       // 8
-toValue(step.operationId); // undefined: the damaged line was dropped, the rest of the step kept
+## Where parsing should stop {#not-parsing}
 
-const problem = parseResult.errors.get(0);
-problem.startLine;      // 26
-problem.startCharacter; // 21: the annotation points at the damage, not at the document
-```
+That was a long checklist, so it is worth saying what is *not* on it. Knowing where a parser stops is as useful as knowing what it does, and the line is the same whichever parser you use. Four things look like parsing and are not:
 
-The tree survives, the damage is localised to one field, and the diagnostic knows where to point. One limit worth knowing: detection needs enough intact text to recognise the document, so an inline string too damaged to detect falls through to the URI path and fails there. Hand badly broken documents over as a file path and you get the tolerant tree.
+- **Dereferencing.** `$ref` inside a source description's JSON Schema, or a Reusable Object's `reference`, point at content that may live in another file. Following them is resolution, a separate walk with its own caching and cycle rules.
+- **Validation.** A step that references a workflow that does not exist is a well-formed document. Whether it is a correct one depends on rules that change with every release. A parser that also validated would be wrong about validity each time the specification moved.
+- **Evaluation.** An expression AST is structure. What `$steps.find-pet.outputs.name` is worth exists only during a run, so evaluation belongs to whatever runs the workflow.
+- **JSONPath, XPath, and regular expressions.** These are general-purpose languages with their own ecosystems. A parser that bundled them would be maintaining three more grammars.
 
-### The embedded grammars
-
-`parseRuntimeExpression` and `parseCriterionCondition` are pure syntax parsers: string in, AST out, nothing evaluated, no document needed.
-
-```js
-import { parseRuntimeExpression, parseCriterionCondition } from '@usearazzo/parser';
-
-parseRuntimeExpression('$steps.find-pet.outputs.name').tree;
-// { type: 'StepsExpression', stepId: 'find-pet', field: 'outputs', outputName: 'name' }
-
-parseRuntimeExpression('$response.body#/pets/0/id').tree;
-// { type: 'ResponseExpression',
-//   source: { type: 'Source',
-//     reference: { type: 'BodyReference',
-//       jsonPointer: { type: 'JsonPointer', value: '/pets/0/id', referenceTokens: [...] } } } }
-
-const { result, tree } = parseRuntimeExpression('$steps.find-pet.outputs');
-result.success;    // false: an outputs reference needs an output name
-result.maxMatched; // 15, the offset where parsing stopped
-tree;              // undefined
-
-const condition = parseCriterionCondition("$response.body#/status == 'available' && $statusCode == 200").tree;
-condition.type;                       // LogicalExpression
-condition.left.type;                  // BinaryExpression
-condition.left.left.type;             // RuntimeExpression
-condition.left.left.expression.type;  // ResponseExpression: the sub-AST from parseRuntimeExpression
-condition.left.right;                 // { type: 'Literal', valueType: 'string', value: 'available' }
-
-parseCriterionCondition("$response.body.pets[0].name == 'Rex'").tree.left;
-// { type: 'RuntimeExpressionNavigation',
-//   expression: { type: 'RuntimeExpression', text: '$response.body', ... },
-//   navigation: [ { type: 'MemberAccess', name: 'pets' },
-//                 { type: 'IndexAccess', value: 0 },
-//                 { type: 'MemberAccess', name: 'name' } ] }
-```
-
-- Invalid syntax never throws. `result.success` goes false and `result.maxMatched` is the offset where the grammar gave up, which is the offset a diagnostic should point at.
-- A condition's AST carries the parsed runtime expression of each operand, which in turn carries its JSON Pointer's reference tokens: the three-grammars-deep field from earlier, unpacked.
-- Only the `simple` criterion grammar is covered. JSONPath, XPath, and regular expressions are left to their own libraries.
-
-### The network
-
-Source description parsing is off by default, because it means file system and network access, and a caller opening one file should not pay for the whole graph.
-
-- `sourceDescriptions: true` turns it on. An array of names turns it on for some. `sourceDescriptionsMaxDepth` caps how many Arazzo levels the walk descends.
-- Each source description becomes its own `ParseResultElement`, parsed into the namespace for its own type, appended after the main document and also attached to the `SourceDescriptionElement` that named it under `meta.get('parseResult')`.
-- Relative URLs resolve against the location the document was parsed from, honouring the `$self` field. An object or inline string has no location of its own, so tell the parser where to treat it as coming from with `resolve.baseURI`, an absolute path or URL that is never read itself. Without it, a relative source in inline input comes back as an error annotation. Absolute source URLs and an absolute `$self` field on the document work too.
-- Nothing in the walk throws. An unreachable file becomes an error annotation on that entry, and the main document still parses.
-- Arazzo sources recurse, and cycle detection is what makes the recursion terminate.
-
-To see cycle detection at work, add a second document, `onboarding.arazzo.yaml`, that lists `adopt-a-pet.arazzo.yaml` as an `arazzo` source and `petstore.openapi.yaml` as an `openapi` one, and list `onboarding` back from `adopt-a-pet`. Parsing `adopt-a-pet` with source descriptions on then walks A, then B, then stops exactly where B points back at A:
-
-```text
-ParseResultElement
-├── api: arazzoSpecification1                     adopt-a-pet.arazzo.yaml
-├── ParseResultElement  petstore    (openapi)
-│   └── api: openApi3_1
-└── ParseResultElement  onboarding  (arazzo)
-    ├── api: arazzoSpecification1                 onboarding.arazzo.yaml
-    ├── ParseResultElement  petstore  (openapi)
-    │   └── api: openApi3_1                       the same document, parsed once
-    └── ParseResultElement  adoption  (arazzo)    no api
-        └── warning: Source description ".../adopt-a-pet.arazzo.yaml" has already been visited. Skipping to prevent cycle
-```
-
-Two things in that tree are deliberate, and they are the difference between cycle detection and a blunt "seen it before" check:
-
-- **Only true cycles are detected.** A document is a cycle only when it is already on the chain of ancestors being parsed. `adopt-a-pet` is the root of this walk, so B's reference back to it is one, and that entry gets the warning and no `api`. Embedding it would make the tree loop.
-- **Shared documents are not cycles.** Both A and B name `petstore.openapi.yaml`. Nothing in that file points back at either of them, so reaching it a second time is a shared dependency, a diamond, not a loop. It is fetched and parsed once and every source description that names it gives you the same parsed document.
-
-Underneath both, every link is canonicalised before it is followed, so two spellings of one path count as one file, and the bookkeeping is shared across the JSON and YAML parsers, so a cycle that crosses formats still terminates.
-
-Today the parser reads OpenAPI 2.0, 3.0.x, and 3.1.x sources. AsyncAPI sources, which Arazzo 1.1.0 allows, are not yet parsed: Arazzo requires AsyncAPI v3, and the data model underneath the parser covers AsyncAPI 2.x only, so a `type: asyncapi` source currently comes back with an error annotation saying no parser could read it.
+So there are four jobs: a parser reads, a resolver dereferences, a validator judges, and a runner evaluates. A parser you build or pick should draw these lines somewhere. The one that does everything is the one nobody can keep up to date.
 
 ## Next steps {#next-steps}
 
-- The parser's [API reference]({{ '/docs/parser/' | relative_url }}) documents every option, including style preservation for round-tripping a document back to its original formatting.
-- [`@usearazzo/resolver`]({{ '/docs/#packages' | relative_url }}) picks up where parsing stops: it dereferences the `$ref`s, JSON Schema references, and `$components` reusable references that the parser leaves in place, and it does the same for the OpenAPI documents the source descriptions point at.
-- The [Validator]({{ '/validator/' | relative_url }}) is the next layer up: what it means for a parsed document to be correct.
+- UseArazzo's own answer to this checklist is [`@usearazzo/parser`]({{ '/docs/parser/' | relative_url }}), for JavaScript and TypeScript. Its API reference documents every function and option.
+- The tutorial [List Every Document an Arazzo Workflow Depends On]({{ '/docs/tutorials/list-arazzo-workflow-dependencies/' | relative_url }}) walks the network of source descriptions with it, end to end.
+- Resolution is the next layer up. [`@usearazzo/resolver`]({{ '/docs/resolver/' | relative_url }}) dereferences the `$ref`s, JSON Schema references, and `$components` reusable references that a parser leaves in place.
+- The [Validator]({{ '/validator/' | relative_url }}) is the layer after that: what it means for a parsed document to be correct.

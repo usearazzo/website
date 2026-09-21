@@ -91,6 +91,17 @@ faq:
   - question: "What happens when a source description is a URL rather than a file?"
     answer: |
       The parser fetches it over HTTP or HTTPS, with a 15 second timeout and up to five redirects, and the script works unchanged. Relative URLs resolve against where the parent document was read from, so a parent fetched from `https://example.com/flows/onboarding.arazzo.yaml` with a source description of `./petstore.openapi.yaml` fetches `https://example.com/flows/petstore.openapi.yaml`.
+  - question: "How do I parse an Arazzo document in JavaScript or TypeScript?"
+    answer: |
+      Use `@usearazzo/parser`. Its `parseArazzo` function takes a file path, a URL, a YAML or JSON string, or a plain object, and returns the same kind of result for all four:
+
+      ```js
+      import { parseArazzo } from '@usearazzo/parser';
+
+      const { api, errors, warnings } = await parseArazzo('./adopt-a-pet.arazzo.yaml');
+      ```
+
+      `api` is a typed tree of the document. `errors` and `warnings` are annotations collected while parsing. Every input, option, and result field is in the [API reference](/docs/parser/#parse-arazzo).
 ---
 
 An Arazzo document rarely stands alone. Its `sourceDescriptions` name the OpenAPI descriptions its steps call, and since a step can also call a workflow in another Arazzo document, the list can name other workflow documents too, each with source descriptions of its own. A run reads all of them. Before you commit a workflow to CI, review someone else's, or hand one to an agent, it helps to know what that network is: which documents will be fetched, from where, what kind and version each one is, and which ones cannot be read.

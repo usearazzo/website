@@ -199,7 +199,26 @@ assets/
   css/tailwind.css               # GENERATED, committed. Do not edit by hand; regenerate (see above)
   css/docs.css                   # Docs hub only (bands, cards, placeholders); loaded via front matter
   css/main.css                   # Custom CSS + CSS variables
-  js/main.js                     # Mobile menu, lightbox, heading anchors, guide FAQ toggles.
+  css/ast-tree.css               # Tree and graph figures (<figure class="ast">), used by the parsing
+                                 # guide, which has no ASCII trees left. Real text, no JS, no images;
+                                 # a wide figure scrolls sideways inside itself on phones. Three forms:
+                                 # (1) .ast-tree, a nested <ul> drawn top-down with CSS connectors, for
+                                 # syntax trees; (2) .ast-tree.ast-side, the same list drawn left to
+                                 # right, for document outlines (deep and leafy); (3) an inline SVG in
+                                 # .ast-scroll, for documents that point at each other (the cycle
+                                 # graph). Node colour names what a node is: ast-cond / ast-rex /
+                                 # ast-ptr / ast-lit (grammars), ast-doc (document node), ast-gone
+                                 # (dropped field, red dashed). <em> in a node is its position line;
+                                 # .ast-problems is the strip of reported problems under a tree.
+                                 # Loaded via `stylesheets` front matter. Kramdown passes the block
+                                 # through only if the HTML has no blank lines inside it
+                                 # No `role` on these figures: the Nu checker rejects a role on a
+                                 # <figure> that has a <figcaption>; `aria-label` alone is fine
+  js/main.js                     # Mobile menu, lightbox, heading anchors, guide FAQ toggles, line
+                                 # numbers for code blocks (put `{: .numbered}` on the line after a
+                                 # fenced block; an excerpt adds `data-start="27"`. The gutter is a
+                                 # separate element beside <code>, styled in main.css, so Prism and
+                                 # copy-paste ignore it; no Prism plugin is loaded for this).
                                  # Loaded ONCE, deferred, from head.html. A second synchronous
                                  # include in footer.html ran every DOMContentLoaded handler
                                  # twice (two FAQ click listeners cancelled each other out);
@@ -313,9 +332,39 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   behaviour.
 - Guides follow the blog authorship rule: prose is the founders'. AI may build scaffolding,
   outline, and first drafts from site copy and package READMEs, but final text is theirs.
-- The parsing guide shows `npm install @usearazzo/parser`. That was an owner-approved exception
-  (2026-09-03) while the package was about to publish; since 2026-09-08 the registry returns 200
-  for it, so the instruction is simply true and the guide is no longer `Draft`.
+- **Guides are vendor-neutral** (owner decision 2026-09-20). A guide describes the problems and the
+  ideal results, whichever tool produces them. UseArazzo packages appear only in "Next steps" (and
+  never in the guide's FAQ). The parsing guide was rewritten this way: its old
+  "How @usearazzo/parser approaches it" section (install line, `parseArazzo` samples, strict/tolerant
+  code, grammar ASTs, the cycle tree) became the neutral checklist "What a good parser gives you"
+  (`#a-good-parse`), and the two package-specific FAQ entries ("How do I parse an Arazzo document in
+  JavaScript or TypeScript?", "Which Arazzo versions does @usearazzo/parser support?") were removed.
+  The removed material is the seed for tutorials, recoverable from `git show d461165:_guides/arazzo-document-parsing.md`:
+  (1) parse a document from a file, URL, string, or object (plus versions), (2) report problems in a
+  broken document with line numbers (tolerant mode, source maps; uses
+  `adopt-a-pet.broken.arazzo.yaml`), (3) check every runtime expression and criterion in a workflow.
+  "The network" is already the dependencies tutorial. The two dropped FAQ questions belong on
+  tutorial (1); until it exists, "How do I parse an Arazzo document in JavaScript or TypeScript?"
+  is parked as the last FAQ entry of the dependencies tutorial. Move it when tutorial (1) ships.
+  The broken-sample figure was checked against the published parser on 2026-09-20 (tolerant mode,
+  source maps): the error annotation spans lines 27 to 32 (one-based), and the `adopt` step keeps
+  only `stepId`; `operationId` AND `parameters` are lost. The old guide's claim that only the
+  damaged line was dropped was wrong. The AST figures are illustrative and the guide says so: node
+  names are not any parser's types.
+  The opening figure's line ranges were checked against the published parser on 2026-09-21. The
+  parser reports the document, the workflow, and the last step as ending at line 33, character 0
+  (the position after the final newline of a 32-line file); the figure says "to 32", which is the
+  last line a reader sees.
+  Condition claims were run against `@usearazzo/parser` and `@swaggerexpert/arazzo-criterion` 1.0.1
+  the same day: a chained comparison fails, `$request.query.a=b == 1` fails, `&&` binds tighter
+  than `||`. `$response.body#/a=b == 1` ALSO fails (the grammar's operand excludes `=`), although
+  the owner's article and Arazzo-Specification#518 say the pointer form works; a pointer token may
+  itself contain ` == 1`: `@swaggerexpert/arazzo-runtime-expression` accepts the whole string as one
+  expression with pointer `/a=b == 1`, so the pointer form is exactly as ambiguous as the query form
+  and the library is right to refuse it. The guide says so (2026-09-21), and names the verified way
+  out: a `jsonpath` criterion, since RFC 9535 quotes member names (`$.pets[?@['a=b'] == 1]`, checked
+  with `@swaggerexpert/jsonpath`). The article and both issues were corrected the same day. The guide's sample files stay under `assets/guides/arazzo-document-parsing/`; copy
+  what a tutorial needs into its own `assets/tutorials/<slug>/`.
 - **No concrete versions on the site** (owner decision 2026-09-08). Product pages, the parser
   reference, `llms.txt`, and blog posts say "alpha" or "published", never `1.0.1-alpha.1`: a number
   goes stale with the next release and the npm page already carries it. The reference layout has

@@ -58,7 +58,7 @@ toc:
     title: Supported versions
 ---
 
-`@usearazzo/parser` reads the three languages an Arazzo document is written in. `parseArazzo` and `parseOpenAPI` turn a document into a typed [SpecLynx ApiDOM](https://github.com/speclynx/apidom) tree. `parseRuntimeExpression` and `parseCriterionCondition` turn the two grammars embedded in its strings, runtime expressions and `simple` criterion conditions, into syntax trees. For the reasoning behind that split, and for a walk through a real document, read the [Parsing Arazzo Documents](/docs/guides/arazzo-document-parsing/) guide. This page is the reference.
+`@usearazzo/parser` reads the three languages an Arazzo document is written in. `parseArazzo` and `parseOpenAPI` turn a document into a typed [SpecLynx ApiDOM](https://github.com/speclynx/apidom) tree. `parseRuntimeExpression` and `parseCriterionCondition` turn the two grammars embedded in its strings, runtime expressions and `simple` criterion conditions, into syntax trees. For the reasoning behind that split, and for what a tool should expect from a parser, read the [Parsing Arazzo Documents](/docs/guides/arazzo-document-parsing/) guide. This page is the reference.
 
 ## Installation {#install}
 
