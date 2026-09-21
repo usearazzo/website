@@ -288,6 +288,23 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   date and file name before pushing). It names the release in the title and first paragraph, then the field
   notes (why the parser shipped first, the five bugs the docs turned up, what alpha means), and
   links the tutorial as the next step. Publish it a few days after the tutorial, never before.
+- The resolver release announcement, `_posts/2026-09-21-arazzo-resolver-on-npm.md`, was DRAFTED by AI
+  on 2026-09-21 at the owner's request, on the parser post's template (same title pattern, same five
+  sections). Angle: resolving is three jobs, a schema's identity (`$id`) is not its location (which
+  bites dereferencing and bundling alike: five of the issues are bundle-only, #536 #540 #541 sit in
+  the `$id` lookup both share, #550 #551 #554 #555 are dereference-only), and the ten
+  speclynx/apidom issues (#530 #531 #535 #536 #537 #540 #541 #546 in 5.2.5, #550 #551 in 5.2.6; #554
+  #555 still open) it took, starting from a review comment on toolkit#157 that found the bundle fixture
+  enshrining the bug (toolkit#158). Every claim is sourced from those issues, the toolkit PRs, and the
+  resolver reference; the prose is the owner's to rewrite before publishing. An early draft confessed
+  that the resolver has no tutorial yet; the owner cut it ("why would I market this"). Lead with what
+  the reader can do: the post points at the API reference as the place to start and says nothing about
+  what is missing. Hero is a sibling of
+  the parser hero (two slabs lit), exported through the hero skill's own Chrome pipeline. (Headless
+  Chrome hung for a while mid-session because of stray headless processes; resvg via
+  `@resvg/resvg-js` rendered the same SVG to within 95 differing pixels and is a usable fallback.)
+  The parser post's "a tutorial the day it lands" sentence is about the Validator and the Runner
+  ("Each"), not the resolver, so the resolver post owes no apology for having no tutorial.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
@@ -420,8 +437,11 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   the same way the tutorial assumed toolkit#148: it says source descriptions work through the
   `Element` and resolve functions (the set then also holds the documents behind them) and that
   `continueOnError` skips unresolvable Reusable Objects too. None of that is true of the
-  published 1.0.1-alpha.2. When a resolver alpha ships on the fixed ApiDOM, re-run the probes,
-  correct any wording the real behaviour contradicts, and bump `last_modified_at`.
+  published 1.0.1-alpha.2. **Resolved 2026-09-21:** `1.0.1-alpha.4` (published 2026-09-19) carries ApiDOM
+  5.2.6 with both fixes, and both reproductions were re-run against the npm copy: `continueOnError`
+  collects the unresolvable Reusable Object, and `resolveArazzo` with `sourceDescriptions: true`
+  returns the Arazzo document plus `petstore.openapi.yaml` as `openApi3_1`. The page's wording now
+  matches the published package.
 - Unpublished packages keep their reference in the README on GitHub. The docs hub links to it; do
   not mirror README content onto the site ahead of publishing.
 - No search box and no newsletter on the docs hub. Both are speculative UI for a hub this size.
