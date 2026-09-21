@@ -67,4 +67,4 @@ The feedback I want most is from people building their own Arazzo tooling: what 
 
 The Validator and the Runner are both in development and both unpublished. Each will get the same treatment: docs written against the code, samples run before release, a tutorial the day it lands, and a post like this one saying what it took.
 
-Until then, the parser is there to be used. Start with the [tutorial]({{ '/docs/tutorials/list-arazzo-workflow-dependencies/' | relative_url }}), read the [guide]({{ '/docs/guides/arazzo-document-parsing/' | relative_url }}) if you want to know why it is shaped the way it is, and tell me what breaks.
+Until then, the parser is there to be used. Start with the [tutorial]({{ '/docs/tutorials/list-arazzo-workflow-dependencies/' | relative_url }}), read the [guide]({{ '/docs/guides/arazzo-document-parsing/' | relative_url }}) if you want to know what a parser has to get right, and tell me what breaks.
