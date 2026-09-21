@@ -340,6 +340,15 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   code, grammar ASTs, the cycle tree) became the neutral checklist "What a good parser gives you"
   (`#a-good-parse`), and the two package-specific FAQ entries ("How do I parse an Arazzo document in
   JavaScript or TypeScript?", "Which Arazzo versions does @usearazzo/parser support?") were removed.
+  Its reference-worthy FACTS (not its walkthrough) were folded into `/docs/parser/` on 2026-09-21,
+  each re-run against `@usearazzo/parser` 1.0.1-alpha.4: "Tolerant parsing" (`#tolerant`, the
+  strict/tolerant table and the broken sample), "Other file extensions" (`#file-extensions`, a
+  `resolve.resolverOpts.fileAllowList`, a list of regexes that replaces the default and also governs source descriptions; ApiDOM assigns `resolverOpts` onto every resolver, so no custom `FileResolver` is needed), the criterion AST node table plus the two
+  operand-boundary rules, how versions are read, and the not-yet-parsed sources (OpenAPI 3.2.x and
+  AsyncAPI give a result with no `api` and an `error` annotation "Could not find a parser..."). Not
+  A Markdown table whose corner header cell is empty fails Lighthouse's `td-has-header` audit; name
+  the corner cell ("Behaviour"). Not folded because not verified: the old claim that a badly damaged inline string falls through to
+  the URI path (a damaged inline string parsed fine in tolerant mode).
   The removed material is the seed for tutorials, recoverable from `git show d461165:_guides/arazzo-document-parsing.md`:
   (1) parse a document from a file, URL, string, or object (plus versions), (2) report problems in a
   broken document with line numbers (tolerant mode, source maps; uses

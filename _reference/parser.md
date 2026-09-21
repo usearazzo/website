@@ -2,6 +2,7 @@
 title: "Arazzo Parser API Reference: @usearazzo/parser"
 description: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, result shape, and error of @usearazzo/parser."
 date: 2026-09-08
+last_modified_at: 2026-09-21
 status: Published
 package:
   name: "@usearazzo/parser"
@@ -25,6 +26,8 @@ toc:
         title: Errors
       - id: result
         title: Result
+      - id: tolerant
+        title: Tolerant parsing
       - id: source-maps
         title: Source maps
       - id: style
@@ -98,7 +101,7 @@ One function, four kinds of input. The parser decides which it has been given, i
 
 1. **A plain object.** Serialized to pretty-printed JSON with two-space indentation and parsed from that.
 2. **A string that detects as Arazzo.** Inline JSON or YAML, sniffed from the content rather than from a file extension.
-3. **A file system path.** Read from disk. Only `.json`, `.yaml`, and `.yml` files are accepted.
+3. **A file system path.** Read from disk. Only `.json`, `.yaml`, and `.yml` files are accepted by default. See [other file extensions](#file-extensions) below.
 4. **An HTTP or HTTPS URL.** Fetched with a 15 second timeout and up to five redirects.
 
 ```js
@@ -120,13 +123,27 @@ await parseArazzo('https://example.com/adopt-a-pet.arazzo.yaml');
 
 A string that is neither Arazzo content nor a readable location fails with a `ParseError`.
 
+#### Other file extensions {#file-extensions}
+
+A path such as `workflow.arazzo` is refused, with an `UnmatchedResolverError` as the `cause`. To read it, replace the file resolver's allowlist through `resolve.resolverOpts`:
+
+```js
+import { parseArazzo } from '@usearazzo/parser';
+
+await parseArazzo('/path/to/workflow.arazzo', {
+  resolve: { resolverOpts: { fileAllowList: [/\.arazzo$/i, /\.json$/i, /\.ya?ml$/i] } },
+});
+```
+
+The list replaces the default one, and it applies to source descriptions too. Keep the `.json` and `.ya?ml` patterns in it, or a `./petstore.openapi.yaml` source comes back with an `error` annotation.
+
 ### Options {#options}
 
 The second argument is a deep-partial [ApiDOM reference options](https://github.com/speclynx/apidom/blob/main/packages/apidom-reference/src/options/index.ts) object, merged over `defaultParseArazzoOptions`. The keys you will actually set live under `parse.parserOpts`:
 
 | Option | Default | Effect |
 |---|---|---|
-| `strict` | `true` | Only accept content the Arazzo parsers positively detect. Must be `false` for `sourceMap` and `style`. |
+| `strict` | `true` | Only accept content the Arazzo parsers positively detect, and throw on a syntax error. Must be `false` for `sourceMap` and `style`. See [Tolerant parsing](#tolerant). |
 | `sourceMap` | `false` | Record the start and end position of every element. See [Source maps](#source-maps). |
 | `style` | `false` | Record formatting detail for round-trip output. See [Style preservation](#style). |
 | `sourceDescriptions` | `false` | Fetch and parse the documents the `sourceDescriptions` array points at. Accepts `true` or an array of names. See [Source descriptions](#source-descriptions). |
@@ -227,6 +244,48 @@ toValue(parseResult.meta.get('retrievalURI')); // '/path/to/adopt-a-pet.arazzo.y
 To turn `api` into a plain object, JSON, or YAML, see [Working with the tree](#apidom).
 
 When source descriptions are parsed, the same element also holds their results as further top-level members. See [Result structure](#result-structure).
+
+### Tolerant parsing {#tolerant}
+
+`strict` picks between two parsers with different jobs:
+
+| Behaviour | `strict: true` (default) | `strict: false` |
+|---|---|---|
+| Parser | Native `JSON.parse`, or the `yaml` library | A [tree-sitter](https://tree-sitter.github.io/) grammar |
+| On a syntax error | Throws a `ParseError` | Keeps going, and reports the damage as an `error` annotation |
+| `sourceMap` and `style` | Not available | Available |
+| Made for | Runners, CI checks | Editors, linters, anything that shows a diagnostic |
+
+Take a document whose second step has `operationId` indented one space too few:
+
+```yaml
+      - stepId: adopt
+       operationId: adoptPet   # seven spaces instead of eight
+        parameters:
+          - name: petId
+```
+
+```js
+import { parseArazzo } from '@usearazzo/parser';
+import { toValue } from '@speclynx/apidom-core';
+
+const parseResult = await parseArazzo('/path/to/adopt-a-pet.broken.arazzo.yaml', {
+  parse: { parserOpts: { strict: false, sourceMap: true } },
+});
+
+parseResult.api.element; // 'arazzoSpecification1': still a tree
+parseResult.errors.map(toValue); // [ '(Error YAML syntax error)' ]
+
+const problem = parseResult.errors.get(0);
+problem.startLine; // 26, zero-based: where the damage starts
+problem.endLine; // 31
+
+const step = parseResult.api.workflows.get(0).steps.get(1);
+toValue(step.stepId); // 'adopt'
+[...step.keys()]; // [ 'stepId' ]: the damaged lines were dropped
+```
+
+Everything before the damage survives with its positions: the document, the workflow, the first step, and the second step's `stepId`. The same call with the default `strict: true` throws. Inline strings behave the same way, in JSON and in YAML.
 
 ### Source maps {#source-maps}
 
@@ -418,7 +477,7 @@ Problems while parsing source descriptions never throw. They become annotation e
 
 | Class | Meaning | Examples |
 |---|---|---|
-| `error` | That source description could not be parsed. | File not found, unparseable document, depth limit reached, relative URL under an inline parent. |
+| `error` | That source description could not be parsed. | File not found, unparseable document, a format with no parser yet ([OpenAPI 3.2.x, AsyncAPI](#versions)), depth limit reached, relative URL under an inline parent. |
 | `warning` | Parsed, with something to know. | A cycle was cut, or the declared `type` does not match the document found. |
 | `info` | Nothing went wrong. | A shared document was reused instead of parsed again. |
 
@@ -512,6 +571,31 @@ invalid.result.success; // false
 invalid.tree; // undefined
 ```
 
+The AST is made of these node types:
+
+| Node | Fields | Stands for |
+|---|---|---|
+| `LogicalExpression` | `operator` (`&&`, <code>&#124;&#124;</code>), `left`, `right` | `&&` binds tighter than <code>&#124;&#124;</code> |
+| `UnaryExpression` | `operator` (`!`), `argument` | Negation |
+| `BinaryExpression` | `operator` (`==`, `!=`, `<`, `<=`, `>`, `>=`), `left`, `right` | A comparison. Chained comparisons do not parse |
+| `Literal` | `valueType` (`string`, `number`, `boolean`, `null`), `value` | A literal |
+| `RuntimeExpression` | `text`, `expression` | An operand. `expression` is the AST from `parseRuntimeExpression` |
+| `RuntimeExpressionNavigation` | `expression`, `navigation` | An operand followed by accessors, each a `MemberAccess` (`name`) or an `IndexAccess` (`value`) |
+
+```js
+parseCriterionCondition("$response.body.pets[0].name == 'Rex'").tree.left;
+// { type: 'RuntimeExpressionNavigation',
+//   expression: { type: 'RuntimeExpression', text: '$response.body', expression: { type: 'ResponseExpression', ... } },
+//   navigation: [ { type: 'MemberAccess', name: 'pets' },
+//                 { type: 'IndexAccess', value: 0 },
+//                 { type: 'MemberAccess', name: 'name' } ] }
+```
+
+Two rules decide where an operand ends. The specification states neither, so other tools may differ:
+
+- An operand ends at whitespace or at an operator character. A name or key that contains one cannot be written, so `$request.query.a=b == 1` and `$response.body#/a=b == 1` do not parse. `result.maxMatched` is the offset of the offending character.
+- Within an operand, the longest prefix that is a valid runtime expression wins, and the rest is navigation. A name may contain dots, so `$inputs.pet.name` is an input named `pet.name`, with no navigation.
+
 It throws a `TypeError` for a non-string `condition` and an `ArazzoCriterionParseError` on an unexpected internal error. The function wraps [@swaggerexpert/arazzo-criterion](https://www.npmjs.com/package/@swaggerexpert/arazzo-criterion); `CriterionConditionAST` and `ParseCriterionConditionResult` are its types.
 
 [JSONPath](https://datatracker.ietf.org/doc/html/rfc9535) and [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901), which can appear inside expressions, are general-purpose syntaxes with their own ecosystems and are out of scope here. Use `@swaggerexpert/jsonpath` or a JSON Pointer library directly for those.
@@ -573,3 +657,17 @@ OpenAPI documents, as source descriptions or through `parseOpenAPI`:
 - [OpenAPI 3.1.x](https://spec.openapis.org/oas/v3.1.2)
 
 Both JSON and YAML are accepted for every version. The format is detected from the content, not the file extension.
+
+How versions are read:
+
+- Any `1.x.y` version string is accepted and read through the same code path. A 1.0.0 document and a 1.1.0 document produce the same kind of tree.
+- The fields that 1.1.0 added, such as `$self`, come through as typed getters.
+- Fields the parser does not know, from a future release or an `x-` extension, are kept as ordinary members with their positions. They are never dropped.
+- A `2.0.0` document is refused with a `ParseError`.
+
+Not parsed yet, as source descriptions:
+
+- OpenAPI 3.2.x
+- AsyncAPI, which Arazzo 1.1.0 allows as `type: asyncapi`
+
+The main document still parses. The source description gets its own result with no `api` and an `error` annotation: `Could not find a parser that can parse the file "..."`. See [Annotations](#annotations).
