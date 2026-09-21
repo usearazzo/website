@@ -72,6 +72,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Line numbers for code blocks marked {: .numbered} in Markdown (an excerpt adds
+  // data-start="27" to begin at its real line): a gutter element beside
+  // the <code>, so Prism (which only rewrites the <code>) leaves it alone and a copy of the
+  // code does not pick the numbers up. Without JS the block just has no numbers.
+  document.querySelectorAll('pre.numbered').forEach(function(pre) {
+    const code = pre.querySelector('code');
+    if (!code) return;
+    const count = code.textContent.replace(/\n$/, '').split('\n').length;
+    const gutter = document.createElement('span');
+    gutter.className = 'line-gutter';
+    gutter.setAttribute('aria-hidden', 'true');
+    const start = parseInt(pre.getAttribute('data-start'), 10) || 1;
+    gutter.textContent = Array.from({ length: count }, function(_, i) { return i + start; }).join('\n');
+    pre.insertBefore(gutter, code);
+  });
+
   function addAnchor(heading, id) {
     const anchor = document.createElement('a');
     anchor.href = '#' + id;

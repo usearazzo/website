@@ -615,6 +615,27 @@ h4:hover .heading-anchor {
     border-radius: 0;
 }
 
+/* Line-number gutter that main.js adds to <pre class="numbered">. */
+.post-content pre.numbered {
+    display: flex;
+}
+
+.post-content pre .line-gutter {
+    flex: none;
+    margin-right: 1em;
+    padding-right: 0.75em;
+    border-right: 1px solid #4B5563;
+    color: #9CA3AF;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875em;
+    /* The code's line boxes take the <pre>'s height (1.5 x 1em), not the smaller code font's,
+       so the gutter needs that same height expressed in its own 0.875em. */
+    line-height: calc(1.5em / 0.875);
+    text-align: right;
+    white-space: pre;
+    user-select: none;
+}
+
 .post-content img {
     max-width: 100%;
     height: auto;

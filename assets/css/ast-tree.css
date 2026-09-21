@@ -1,0 +1,353 @@
+/* Syntax tree figures: a nested <ul> drawn top-down with CSS connectors. Real text, no
+   images, no JavaScript. Node colour names the grammar a node belongs to, which is the
+   point of the figure: .ast-cond (criterion condition), .ast-rex (runtime expression),
+   .ast-ptr (JSON Pointer), .ast-lit (literal). Load via the page's `stylesheets` front
+   matter. Markup:
+     <figure class="ast">
+       <p class="ast-source">source string</p>
+       <div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-cond">
+         <small>type</small>value</span><ul>...</ul></li></ul></div>
+       <figcaption>...</figcaption>
+     </figure> */
+
+.ast {
+    margin: 0 0 1.5rem;
+    border: 1px solid #DDE6CC;
+    border-radius: 0.5rem;
+    background: #FAFCF6;
+}
+
+.ast-source {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #DDE6CC;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    color: var(--color-primary-dark);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.ast-scroll {
+    overflow-x: auto;
+    padding: 1.25rem 1rem;
+}
+
+.post-content .ast-tree,
+.post-content .ast-tree ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.post-content .ast-tree {
+    width: max-content;
+    min-width: 100%;
+}
+
+.post-content .ast-tree ul {
+    padding-top: 1.25rem;
+}
+
+.post-content .ast-tree li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin: 0;
+    padding: 1.25rem 0.375rem 0;
+}
+
+/* Connectors: each child draws half a horizontal rail to either side plus its own drop
+   line; the parent's <ul> draws the stem down to the rail. */
+.ast-tree li::before,
+.ast-tree li::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 1.25rem;
+    border-top: 2px solid #B9C9A0;
+}
+
+.ast-tree li::before {
+    right: 50%;
+}
+
+.ast-tree li::after {
+    left: 50%;
+    border-left: 2px solid #B9C9A0;
+    margin-left: -1px;
+}
+
+.ast-tree li:first-child::before,
+.ast-tree li:last-child::after {
+    border-top: 0;
+}
+
+.ast-tree ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 1.25rem;
+    border-left: 2px solid #B9C9A0;
+    margin-left: -1px;
+}
+
+.post-content .ast-tree > li {
+    padding-top: 0;
+}
+
+.ast-tree > li::before,
+.ast-tree > li::after {
+    display: none;
+}
+
+.ast-node {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.375rem 0.75rem 0.5rem;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.ast-node small {
+    font-family: inherit;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.ast-cond {
+    background: var(--color-primary-dark);
+    color: #fff;
+}
+
+.ast-rex {
+    background: var(--color-primary-light);
+    color: #fff;
+}
+
+/* Full-strength label here: faded white on this green computes to 5.1:1, too close to the
+   4.5 line that Chrome's renderer has undercut before (see Branding in CLAUDE.md). */
+.ast-rex small {
+    opacity: 1;
+}
+
+.ast-ptr {
+    background: #E1E9D3;
+    border-color: var(--color-moss);
+    color: var(--color-primary-dark);
+}
+
+.ast-lit {
+    background: #fff;
+    border-color: #9CA3AF;
+    color: var(--color-primary-dark);
+}
+
+.ast figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1rem;
+    margin: 0;
+    padding: 0.625rem 1rem;
+    border-top: 1px solid #DDE6CC;
+    font-size: 0.8125rem;
+    color: #4B5563;
+}
+
+.ast-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.ast-key::before {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid transparent;
+    border-radius: 0.1875rem;
+}
+
+.ast-key.ast-cond,
+.ast-key.ast-rex,
+.ast-key.ast-ptr,
+.ast-key.ast-lit {
+    background: none;
+    color: inherit;
+}
+
+.ast-key.ast-cond::before { background: var(--color-primary-dark); }
+.ast-key.ast-rex::before { background: var(--color-primary-light); }
+.ast-key.ast-ptr::before { background: #E1E9D3; border-color: var(--color-moss); }
+.ast-key.ast-lit::before { background: #fff; border-color: #9CA3AF; }
+
+/* Document trees: .ast-doc is a node of the parsed document, .ast-gone a field the parser
+   had to drop. <em> inside a node is its position line. .ast-problems lists what the
+   parser reported, under the tree. */
+.ast-doc {
+    background: #fff;
+    border-color: var(--color-primary-dark);
+    color: var(--color-primary-dark);
+}
+
+.ast-gone {
+    background: #FEF2F2;
+    border-color: #B91C1C;
+    border-style: dashed;
+    color: #7F1D1D;
+}
+
+.ast-node em {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    font-style: normal;
+    opacity: 0.8;
+}
+
+.post-content .ast-problems {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.75rem;
+    margin: 0;
+    padding: 0.625rem 1rem;
+    border-top: 1px solid #DDE6CC;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.8125rem;
+    color: var(--color-primary-dark);
+}
+
+.ast-problems b {
+    padding: 0.0625rem 0.5rem;
+    border-radius: 9999px;
+    background: #B91C1C;
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ast-problems span {
+    color: #4B5563;
+}
+
+.ast-key.ast-doc,
+.ast-key.ast-gone {
+    background: none;
+    border: 0;
+    color: inherit;
+}
+
+.ast-key.ast-doc::before { background: #fff; border-color: var(--color-primary-dark); }
+.ast-key.ast-gone::before { background: #FEF2F2; border-color: #B91C1C; border-style: dashed; }
+
+/* Graph figures: an inline SVG inside .ast-scroll, for documents that point at each other.
+   The min-width keeps the labels readable on a phone, where the figure scrolls sideways. */
+.ast-scroll svg {
+    display: block;
+    width: 100%;
+    min-width: 35rem;
+    max-width: 45rem;
+    height: auto;
+    margin: 0 auto;
+}
+
+.ast-key.ast-edge::before,
+.ast-key.ast-cycle::before {
+    width: 1.5rem;
+    height: 0;
+    border: 0;
+    border-top: 2px solid #6B7280;
+    border-radius: 0;
+}
+
+.ast-key.ast-cycle::before {
+    border-top: 2px dashed #B91C1C;
+}
+
+/* Sideways variant (.ast-tree.ast-side): root on the left, children stacked to its right.
+   For document outlines, which are deep and leafy and would run off the page top-down. */
+.post-content .ast-side,
+.post-content .ast-side ul {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.post-content .ast-side ul {
+    padding: 0 0 0 1.25rem;
+}
+
+.post-content .ast-side li {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+}
+
+.ast-side li::before,
+.ast-side li::after {
+    left: 0;
+    right: auto;
+    width: 1.25rem;
+    height: 50%;
+    margin: 0;
+    border-top: 0;
+    border-left: 2px solid #B9C9A0;
+}
+
+.ast-side li::before {
+    top: 0;
+}
+
+.ast-side li::after {
+    top: 50%;
+    border-top: 2px solid #B9C9A0;
+    margin-top: -1px;
+}
+
+.ast-side li:first-child::before,
+.ast-side li:last-child::after {
+    border-left-color: transparent;
+}
+
+/* The top-down rules drop the rail on a last child by removing border-top; sideways the
+   rail is border-left, and border-top is the stub into the node, so put it back. */
+.ast-side li:last-child::after {
+    border-top: 2px solid #B9C9A0;
+}
+
+.ast-side ul::before {
+    top: 50%;
+    left: 0;
+    width: 1.25rem;
+    height: 0;
+    margin: -1px 0 0;
+    border-left: 0;
+    border-top: 2px solid #B9C9A0;
+}
+
+.post-content .ast-side > li {
+    padding: 0;
+}
+
+.ast-side .ast-node {
+    align-items: flex-start;
+}
+
+.ast-problems b.ast-ok {
+    background: var(--color-primary-light);
+}
