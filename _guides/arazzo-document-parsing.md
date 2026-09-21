@@ -119,6 +119,19 @@ faq:
       - parse a document shared by two parents once, and not mistake it for a cycle;
       - turn an unreachable file into a reported problem, not an exception;
       - accept a base URI for inline strings and objects, which have no location of their own.
+  - question: "How do I parse an Arazzo document in JavaScript or TypeScript?"
+    answer: |
+      With an Arazzo parser. A plain YAML loader is enough for a script you run yourself, but it gives you no detection, no positions, and no parsing of the expressions inside strings. The checklist in [What a good parser gives you](/docs/guides/arazzo-document-parsing/#a-good-parse) says what to look for.
+
+      One option is `@usearazzo/parser`. Its `parseArazzo` function takes a file path, a URL, a YAML or JSON string, or a plain object, and returns the same kind of result for all four:
+
+      ```js
+      import { parseArazzo } from '@usearazzo/parser';
+
+      const { api, errors, warnings } = await parseArazzo('./adopt-a-pet.arazzo.yaml');
+      ```
+
+      `api` is a typed tree of the document. `errors` and `warnings` are annotations collected while parsing. Every input, option, and result field is in the [API reference](/docs/parser/#parse-arazzo).
 ---
 Let's say you are building something that reads Arazzo documents. It might be an editor plugin, a linter, a generator, or an agent that turns workflows into tools. It might be just a script that lists every step in a repository's workflows. Before any of that can start, the document has to be read. This guide is about that reading step. We'll look at why it is more than a YAML loader, and at what a tool should expect from a parser. The problems and the results are the same whichever parser you use, or build.
 

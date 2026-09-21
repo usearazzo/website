@@ -333,8 +333,9 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - Guides follow the blog authorship rule: prose is the founders'. AI may build scaffolding,
   outline, and first drafts from site copy and package READMEs, but final text is theirs.
 - **Guides are vendor-neutral** (owner decision 2026-09-20). A guide describes the problems and the
-  ideal results, whichever tool produces them. UseArazzo packages appear only in "Next steps" (and
-  never in the guide's FAQ). The parsing guide was rewritten this way: its old
+  ideal results, whichever tool produces them. UseArazzo packages appear only at the end: in
+  "Next steps", and in the last FAQ entry, whose answer leads with the neutral advice and then names
+  the package as "one option" (owner, 2026-09-21: Next steps already names it, so the FAQ may too). The parsing guide was rewritten this way: its old
   "How @usearazzo/parser approaches it" section (install line, `parseArazzo` samples, strict/tolerant
   code, grammar ASTs, the cycle tree) became the neutral checklist "What a good parser gives you"
   (`#a-good-parse`), and the two package-specific FAQ entries ("How do I parse an Arazzo document in
@@ -344,8 +345,9 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   broken document with line numbers (tolerant mode, source maps; uses
   `adopt-a-pet.broken.arazzo.yaml`), (3) check every runtime expression and criterion in a workflow.
   "The network" is already the dependencies tutorial. The two dropped FAQ questions belong on
-  tutorial (1); until it exists, "How do I parse an Arazzo document in JavaScript or TypeScript?"
-  is parked as the last FAQ entry of the dependencies tutorial. Move it when tutorial (1) ships.
+  tutorial (1) too. "How do I parse an Arazzo document in JavaScript or TypeScript?" went back into
+  the guide as its last FAQ entry (it was parked on the dependencies tutorial for a day); the
+  "Which Arazzo versions does @usearazzo/parser support?" entry stays out.
   The broken-sample figure was checked against the published parser on 2026-09-20 (tolerant mode,
   source maps): the error annotation spans lines 27 to 32 (one-based), and the `adopt` step keeps
   only `stepId`; `operationId` AND `parameters` are lost. The old guide's claim that only the
