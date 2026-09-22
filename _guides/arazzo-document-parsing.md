@@ -466,5 +466,5 @@ So there are four jobs: a parser reads, a resolver dereferences, a validator jud
 
 - UseArazzo's own answer to this checklist is [`@usearazzo/parser`]({{ '/docs/parser/' | relative_url }}), for JavaScript and TypeScript. Its API reference documents every function and option.
 - The tutorial [List Every Document an Arazzo Workflow Depends On]({{ '/docs/tutorials/list-arazzo-workflow-dependencies/' | relative_url }}) walks the network of source descriptions with it, end to end.
-- Resolution is the next layer up. [`@usearazzo/resolver`]({{ '/docs/resolver/' | relative_url }}) dereferences the `$ref`s, JSON Schema references, and `$components` reusable references that a parser leaves in place.
+- Resolution is the next layer up: what it takes to follow the `$ref`s and `$components` references a parser leaves in place is the subject of [Resolving Arazzo Documents]({{ '/docs/guides/arazzo-document-resolving/' | relative_url }}), and [`@usearazzo/resolver`]({{ '/docs/resolver/' | relative_url }}) is UseArazzo's answer to it.
 - The [Validator]({{ '/validator/' | relative_url }}) is the layer after that: what it means for a parsed document to be correct.
