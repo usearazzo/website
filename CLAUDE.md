@@ -338,8 +338,13 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - **Every guide has a hero image**, same rules and pipeline as blog posts (`blog-hero-image`
   skill, brand greens, no photography, no logo), saved in `assets/images/guides/`. The layout and
   the hub card both assume `image` is set.
-- Guide audience, per the owner: any developer building their own Arazzo tooling (editor plugins,
-  linters, generators, agents). Not people merely writing Arazzo documents; that is blog territory.
+- Guide audience (redefined by the owner 2026-09-22, on stoplight.io/guides' precedent, where
+  "What is OpenAPI?" is a guide): **a guide is evergreen reading for either audience.** Problem-space
+  guides for tool builders (editor plugins, linters, generators, agents) and definitional guides for
+  practitioners ("What is an API workflow?") both belong in `_guides/`. What decides guide versus
+  blog post is shelf life, not audience: a piece that should stay current, carry an "Updated" date,
+  and be landed on for years is a guide; a piece tied to a moment (a release, a finding) is a post.
+  The old rule ("not people merely writing Arazzo documents; that is blog territory") is withdrawn.
 - The parsing guide's three formerly-pending toolkit changes have all landed on the toolkit's
   `main` and are in the published `@usearazzo/parser` 1.0.1-alpha.0: shared source descriptions are
   parsed once and distinguished from true cycles (usearazzo/arazzo-toolkit#139, merged as #142),
@@ -393,6 +398,33 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   out: a `jsonpath` criterion, since RFC 9535 quotes member names (`$.pets[?@['a=b'] == 1]`, checked
   with `@swaggerexpert/jsonpath`). The article and both issues were corrected the same day. The guide's sample files stay under `assets/guides/arazzo-document-parsing/`; copy
   what a tutorial needs into its own `assets/tutorials/<slug>/`.
+- **The resolving guide** (`_guides/arazzo-document-resolving.md`, drafted by AI 2026-09-22 at the
+  owner's request; prose is theirs) is the parsing guide's sibling and, on the owner's instruction,
+  names `@usearazzo/resolver` exactly once, as the first Next steps bullet (the parser guide's
+  pattern), and nowhere else, not in the body or the FAQ (the owner first asked for no mention at
+  all, then added the Next steps line). Angle: an Arazzo document looks like one file and stops being self-contained as soon as its
+  `inputs` use the JSON Schema `$ref` keyword ("compound document" means only the ONE bundled file
+  that embeds several schemas, never files spread about; the owner caught that misuse). **Terms are
+  the toolkit's taxonomy** (owner, 2026-09-22): resolve = compute the reference set, the graph of
+  files the workflow consists of; bundle; dereference (also inlining, inline bundling); URI
+  resolution is the mechanical step under all three, not a job. "Resolving" is called out as the
+  loose word and used only in the title. The word "resolver" does not appear (it is as loose as
+  "resolving" and echoes the package name). Identity (`$id`) is not location; a bundle is only a
+  bundle if you can move it. Samples under
+  `assets/guides/arazzo-document-resolving/` (`adopt-a-pet.arazzo.yaml` with `inputs: $ref:
+  ./schemas/adoption.yaml`, `schemas/adoption.yaml` pointing at `schemas/adopter.yaml`, which points
+  at itself; `petstore.openapi.yaml` only so the source description resolves;
+  `adopt-a-pet.identities.arazzo.yaml`, the same workflow with schemas embedded under
+  `components.inputs` carrying `$id`s, one nested and relative, showing lookup by identity with no
+  fetch: its reference set is one file, verified against the published resolver). Every output was
+  produced by running the samples through the published resolver 1.0.1-alpha.4 in scratch: the
+  resolve set is three files (the source description is not in it), the bundle hoists both schemas
+  into `components.inputs` with relative `$id`s and `$ref`s unchanged, and a schema given
+  `$id: https://example.com/schemas/adoption.yaml` makes `./adopter.yaml` fail with
+  `Error while reading file "https://example.com/schemas/adopter.yaml"`. The hand-rolled
+  dereferencer in "Doing it by hand" was run too: on the self-referencing schema it never returns
+  (async recursion, no stack overflow). The dereferenced YAML in the guide is illustrative (a comment
+  marks the loop) because the exact rendering of a cycle is tool-specific.
 - **No concrete versions on the site** (owner decision 2026-09-08). Product pages, the parser
   reference, `llms.txt`, and blog posts say "alpha" or "published", never `1.0.1-alpha.1`: a number
   goes stale with the next release and the npm page already carries it. The reference layout has
@@ -475,6 +507,10 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   expressions or criteria, and needs no dereferencing, so `@usearazzo/resolver` is never in the
   path. Rejected candidates: an `operationId` cross-check (needs dereferenced OpenAPI and is the
   Validator's job) and a step dependency graph (expression parsing, not document parsing).
+- **A tutorial's headline must be something people search for before they know the package
+  exists** (owner, 2026-09-22). A parser getting-started tutorial was drafted and cut that day for
+  failing this; readers who already hold the package have the README and the reference. Tutorials
+  are planned from `CONCEPT-CATALOG.md`'s Parsing backlog, not from the reference's table of contents.
 - **The tutorial's "The end result" is a micro-app** (built 2026-09-09 at the owner's request). The
   static graph, Mermaid text, and stderr for the samples sit in three tabs (Graph / Mermaid source /
   Standard error) inside a form with a URL input. Submitting a URL loads the parser's UMD browser

@@ -51,9 +51,12 @@ Are Still Improvised"), which asserts the problem without fully defining
 the term.
 
 **Backlog / candidate topics:**
-- A definitional piece: what an API workflow is, worked through with a
-  concrete multi-step example (e.g., create a resource, then use its ID in
-  a follow-up call), contrasted with a single API call.
+- **A definitional guide, "What is an API workflow?"** (`_guides/`, not a
+  post: evergreen, per the guide rule redefined 2026-09-22): worked through
+  with a concrete multi-step example (e.g., create a resource, then use its
+  ID in a follow-up call), contrasted with a single API call. Passes the
+  search test, needs no package, publishable today. Pairs with the first
+  blog post, which asserts the problem without defining the term.
 - **A landscape piece on pre-Arazzo API workflow tooling**: list the
   approaches people used to orchestrate multi-step API calls before a
   format like Arazzo existed (Postman/Newman collections chaining
@@ -85,9 +88,56 @@ and Runner are all built on, and the one package other people building
 their own tooling would reach for directly.
 
 **Existing pieces:** the parsing guide (`_guides/`), the "List Every
-Document an Arazzo Workflow Depends On" tutorial (`_tutorials/`), the
-parser reference page (`_reference/`), the npm announcement field-notes
-post.
+Document an Arazzo Workflow Depends On" tutorial (`_tutorials/`, problem 2
+of the three above), the parser reference page (`_reference/`), the npm
+announcement field-notes post. A getting-started tutorial (problem 1 as an
+outline script) was drafted and cut on 2026-09-22: it did not pass the
+test below.
+
+**Tutorial backlog** (one tutorial per problem, never per function; a
+tutorial is planned from this list, not from the reference's table of
+contents. **The test, owner 2026-09-22: the headline is something people
+search for before they know the package exists.** A getting-started page
+fails it by definition; the README and the reference serve that reader):
+- **Problem 1, with a purpose:** "Render an Arazzo workflow as Markdown."
+  Reviewers, README readers, and the people who own the API do not read
+  workflow YAML. Parse with defaults, walk the tree, emit a table per
+  workflow (step, what it calls, success criteria, outputs). Unproven
+  search demand; check before drafting.
+- **Problem 3:** "Report every problem in an Arazzo document with line
+  numbers." Strict parsing throws on the first syntax error; a linter or
+  editor plugin needs a diagnostic with a line and a column and the rest
+  of the tree intact. Tolerant mode plus source maps. Seed material:
+  `git show d461165:_guides/arazzo-document-parsing.md`, "Tolerance and
+  positions"; sample `adopt-a-pet.broken.arazzo.yaml` under
+  `assets/guides/arazzo-document-parsing/`.
+- **Problem 1, the strings (next up):** "Check every expression in an Arazzo
+  workflow before you run it." A typo in `$steps.find-pet.outputs.petId`
+  or a criterion written `$statusCode = 200` surfaces only when a run
+  fails against a live API. Walk the document, parse every runtime
+  expression and every `simple` condition, report the ones that fail with
+  the step they sit in. `parseRuntimeExpression` and
+  `parseCriterionCondition` appear because the problem needs both; neither
+  is the headline. Keep it to "does it parse": whether `find-pet` is a
+  real step is the Validator's job, and the tutorial says so.
+- Not a tutorial: "parse from a URL", "parse from a string", or any other
+  input-shape variant. With default options the only difference is the
+  argument; the reference's Inputs section covers all four.
+- **Not parser-only (owner, 2026-09-22):** "What does this workflow
+  actually call?" (resolve each step's `operationId` to method and path in
+  the OpenAPI document its source description names). The Arazzo version
+  of OpenAPI's most-asked "list all endpoints" question, but a path item
+  and anything under it can be a `$ref`, so the lookup needs a
+  dereferenced OpenAPI tree: parser plus resolver. Park it under Resolving
+  until the resolver has content of its own.
+
+**Mindhunting note (2026-09-22):** OpenAPI's parsing questions transfer to
+Arazzo almost one to one and are the better source of evidence than the
+toolkit's own issues, since few people parse Arazzo yet. "List all
+endpoints" has no parser-only answer (see the parked item above); "circular / relative
+`$ref`" maps to source descriptions (done); "which line is the error on"
+and "is it valid" map to the expression-check and line-number tutorials;
+YAML gotchas (`version: 1.0` as a number, `yes`/`no`) are FAQ material.
 
 **Backlog / candidate topics:**
 - **"Build Your Own Arazzo Parser" series** — the strongest DIY-instinct
@@ -194,7 +244,14 @@ fix tracked in usearazzo/arazzo-toolkit#147/#148.
 page conventions; content here is closer to engineering notes than to a
 pitch.
 
+**Existing pieces:** the resolver reference page (`_reference/`), the
+resolver npm announcement post, and the "Resolving Arazzo Documents" guide
+(`_guides/`, drafted 2026-09-22; vendor-neutral, names no package).
+
 **Backlog / candidate topics:**
+- "What does this workflow actually call?" (parked here from Parsing, see
+  above): resolve each step's `operationId` to method and path through a
+  dereferenced OpenAPI source description. Parser plus resolver tutorial.
 - A field-notes style piece on the relative-path resolution bug and fix
   (#147/#148), in the same honest, technical voice as the parser's own
   field-notes post.
