@@ -79,7 +79,7 @@ layout: base
           <h1 class="text-4xl font-extrabold text-primary-dark">{{ page.title | escape }}</h1>
           {% if page.status %}<span class="badge badge-secondary">{{ page.status | escape }}</span>{% endif %}
         </div>
-        <p class="text-xl text-gray-600 mb-4">{{ page.description | escape }}</p>
+        <p class="page-lead text-xl text-gray-600 mb-4">{% if page.lead %}{{ page.lead | markdownify | remove: "<p>" | remove: "</p>" | strip }}{% else %}{{ page.description | escape }}{% endif %}</p>
         <p class="text-gray-500 text-sm">
           <a href="{{ page.author_link | relative_url }}" class="text-primary-light underline hover:no-underline">{{ page.author }}</a>
           <span class="mx-1" aria-hidden="true">&middot;</span>

@@ -580,6 +580,14 @@ h4:hover .heading-anchor {
     font-size: 0.875em;
 }
 
+/* Expressions in the lead paragraph under a title (front matter `lead`, Markdown): monospace and
+   ink, no background, so they read as code without shouting next to the large grey text. */
+.page-lead code {
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875em;
+    color: var(--color-primary-dark);
+}
+
 /* Inline code is ink on light grey wherever it sits, including white-on-dark table
    headers; scoped to :not(pre) so Prism keeps colouring the text inside code blocks. */
 .post-content :not(pre) > code {
@@ -773,6 +781,24 @@ h4:hover .heading-anchor {
     margin: 0 auto;
 }
 
+/* Runtime expression playground on /docs/tutorials/parse-arazzo-runtime-expressions/. */
+.rex-demo [hidden] {
+    display: none !important;
+}
+.rex-demo .ast {
+    margin: 0;
+    background: #fff;
+}
+.post-content .rex-demo pre.rex-demo-caret {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    color: var(--color-primary-dark);
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre;
+}
 .post-content .dep-demo pre {
     margin: 0;
 }

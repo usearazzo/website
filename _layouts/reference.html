@@ -71,7 +71,7 @@ layout: base
           <h1 class="text-4xl font-extrabold text-primary-dark">{{ page.package.name | escape }}</h1>
           {% if page.status %}<span class="badge badge-primary">{{ page.status | escape }}</span>{% endif %}
         </div>
-        <p class="text-xl text-gray-600 mb-4">{{ page.description | escape }}</p>
+        <p class="page-lead text-xl text-gray-600 mb-4">{% if page.lead %}{{ page.lead | markdownify | remove: "<p>" | remove: "</p>" | strip }}{% else %}{{ page.description | escape }}{% endif %}</p>
         <p class="text-gray-500 text-sm">
           Updated <time datetime="{{ page.last_modified_at | default: page.date | date_to_xmlschema }}">{{ page.last_modified_at | default: page.date | date: "%-d %B %Y" }}</time>
           <span class="mx-1" aria-hidden="true">&middot;</span>
