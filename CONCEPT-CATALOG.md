@@ -89,7 +89,9 @@ their own tooling would reach for directly.
 
 **Existing pieces:** the parsing guide (`_guides/`), the "List Every
 Document an Arazzo Workflow Depends On" tutorial (`_tutorials/`, problem 2
-of the three above), the parser reference page (`_reference/`), the npm
+of the three above), the "Parse and Validate Arazzo Runtime Expressions"
+tutorial (`_tutorials/`, drafted 2026-09-30; the strings problem below,
+narrowed by the owner to runtime expressions only and to one thing), the parser reference page (`_reference/`), the npm
 announcement field-notes post. A getting-started tutorial (problem 1 as an
 outline script) was drafted and cut on 2026-09-22: it did not pass the
 test below.
@@ -111,15 +113,16 @@ fails it by definition; the README and the reference serve that reader):
   `git show d461165:_guides/arazzo-document-parsing.md`, "Tolerance and
   positions"; sample `adopt-a-pet.broken.arazzo.yaml` under
   `assets/guides/arazzo-document-parsing/`.
-- **Problem 1, the strings (next up):** "Check every expression in an Arazzo
-  workflow before you run it." A typo in `$steps.find-pet.outputs.petId`
-  or a criterion written `$statusCode = 200` surfaces only when a run
-  fails against a live API. Walk the document, parse every runtime
-  expression and every `simple` condition, report the ones that fail with
-  the step they sit in. `parseRuntimeExpression` and
-  `parseCriterionCondition` appear because the problem needs both; neither
-  is the headline. Keep it to "does it parse": whether `find-pet` is a
-  real step is the Validator's job, and the tutorial says so.
+- **Problem 1, the strings (DONE 2026-10-01 for runtime expressions):**
+  "Parse and Validate Arazzo Runtime Expressions"
+  (`_tutorials/parse-arazzo-runtime-expressions.md`). One thing only:
+  parse an expression into a tree, tell valid from invalid with the exact
+  offset, run that over a document, and end on where parsing stops and
+  Arazzo document validation begins. The end result is a playground
+  micro-app. Follow-ups this leaves open: criterion conditions
+  (`parseCriterionCondition`), and, once the Validator publishes, the
+  "which expression belongs in which field" rules that were cut from this
+  tutorial as document validation.
 - Not a tutorial: "parse from a URL", "parse from a string", or any other
   input-shape variant. With default options the only difference is the
   argument; the reference's Inputs section covers all four.

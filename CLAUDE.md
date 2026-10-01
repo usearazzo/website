@@ -325,7 +325,8 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 - Guide front matter: `title`, `description`, optional `summary` (one sentence for the docs hub
   card; the card falls back to `description`), `date`, `image` (`path`/`width`/`height`/`alt`,
   optional `caption`), optional `last_modified_at`, optional `status` (rendered as a badge, e.g.
-  `Draft`), and `toc` (list of `{id, title}`) which drives the sidebar. Heading IDs in the Markdown
+  `Draft`), optional `lead` (Markdown for the paragraph under the title, so an expression can be
+  inline code there; `description` stays plain text for meta and cards), and `toc` (list of `{id, title}`) which drives the sidebar. Heading IDs in the Markdown
   must match the `toc` ids (`## Heading {#id}`). Optional `faq` (list of `{question, answer}`;
   answers are Markdown block scalars and may carry inline code, lists, and short fenced examples,
   rendered with the `.post-content` styles; front matter is not run through Liquid, so write
@@ -507,6 +508,54 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   expressions or criteria, and needs no dereferencing, so `@usearazzo/resolver` is never in the
   path. Rejected candidates: an `operationId` cross-check (needs dereferenced OpenAPI and is the
   Validator's job) and a step dependency graph (expression parsing, not document parsing).
+- **The second tutorial, "Parse and Validate Arazzo Runtime Expressions"**
+  (`_tutorials/parse-arazzo-runtime-expressions.md`, drafted 2026-09-30, reshaped through
+  2026-10-01 from the catalog's "the strings" item). The owner wanted a SIMPLE tutorial teaching
+  ONE thing, runtime expressions, with an end result that is "a heureka moment". Final shape:
+  - **End result = a playground micro-app** modelled on the dependencies one
+    (`assets/js/tutorials/parse-arazzo-runtime-expressions.js`, `.rex-demo` rules in `main.css`): a
+    text field, any runtime expression in, its syntax tree out in the site's tree-figure markup
+    (built generically from the AST: one node per object, label = type, body = `value` or the field
+    it hangs from, one leaf per scalar field, Pointer/Token nodes `ast-ptr`), or a caret with
+    `does not parse from offset N`. Browser build from unpkg on first use, pinned to
+    `1.0.1-alpha.5` with SRI (byte-identical to the alpha.2 build the first tutorial pins). Static
+    initial content is the tree of `$steps.find-pet.outputs.petId`, identical to what the JS
+    renders. The page copy does not mention unpkg (owner).
+  - **Steps:** parse one expression (tree figure repeated under the JSON output), tell valid from
+    invalid (`result.maxMatched` caret, broken-expression figure), run it on a document (four h3
+    parts), then **Where parsing ends** (`#where-parsing-ends`), the only place document validation
+    appears, opening with the owner's point that a valid expression is not automatically one that
+    belongs where it sits: line 36 of the sample, `$response.body#/id` as a parameter value, parses
+    and is wrong. That is "Arazzo document validation", the
+    Validator's job (owner's wording rule: never bare "validation" for the whole-document kind).
+  - **The script** (`check-expressions.mjs`, 34 lines): typed tree with
+    `sourceMap: true, strict: false`, reports `adopt-a-pet.arazzo.yaml:30:17  invalid runtime
+    expression` / the expression / a caret line, ends `1 problem` or `no problems`. It walks ONE
+    position, step `outputs`, and says so ("this is a demonstration"; owner, 2026-10-01: "limit it
+    to single, it is for demonstration only"). Outputs are always expressions, so the script has
+    no constant-or-expression logic. If parameter values or operationIds ever come back, decide
+    with the parser, never `startsWith('$')` (owner: "stupid when we have a parser"): parses =
+    expression, `maxMatched === 0` = constant, starts then breaks = mistake.
+  - **Sample:** Arazzo 1.1.0, rendered `{: .numbered}`; line 30 `#name` (reported), line 36
+    (a parameter, never visited; the closing section sends the reader to paste it into the
+    playground to see that it parses). The published grammar is 1.1.0's (`$self`, `$message.*` parse; ids
+    are `identifier-strict`). Every output was captured from real runs against 1.0.1-alpha.5.
+  - **Cut along the way, do not bring back:** a 98-line whole-document walker; a four-position
+    walk with a constants rule; an allow-list
+    "position" step with a before/after-request diagram (owner agreed that mixing document
+    validation into a parsing tutorial was the weak point; an agent review of that step is why its
+    prose was first tightened, then the step removed); a quoted-source-line codeframe (fs read,
+    "heavy"); a tracing aside and an `expected` strip from `trace.inferExpectations()` (the engine
+    abbreviates terminals, `"$me..."`; filed as swaggerexpert/arazzo-runtime-expression#192, add the
+    strip back to the playground when fixed); a nine-node outline figure; plain-text reports as the
+    end result.
+  - **Prose** is in the owner's voice from his 2017 posts (question bridges, "Let's", "Well,",
+    "Notice", "So there it is", we/you, no first person singular), still his to edit. The lead
+    paragraph uses the optional Markdown `lead` front matter so the expression is quiet inline
+    code (`.page-lead code`).
+- **A tutorial talks about our tools, not the tools they are built on** (owner, 2026-10-01). No
+  upstream package names, repositories, or issues on a tutorial page; the API reference is where a
+  wrapped package is credited.
 - **A tutorial's headline must be something people search for before they know the package
   exists** (owner, 2026-09-22). A parser getting-started tutorial was drafted and cut that day for
   failing this; readers who already hold the package have the README and the reference. Tutorials
