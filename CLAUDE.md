@@ -536,6 +536,14 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
     no constant-or-expression logic. If parameter values or operationIds ever come back, decide
     with the parser, never `startsWith('$')` (owner: "stupid when we have a parser"): parses =
     expression, `maxMatched === 0` = constant, starts then breaks = mistake.
+  - **What `maxMatched` is, and how the page words it** (owner caught this after publishing,
+    2026-10-01): it is where the last fully matched piece ended, NOT the character that differs.
+    The grammar reads `.outputs.` as one literal, so `$steps.find-pet.output.petId`,
+    `...outputz.petId`, and `$steps.find-pet.outputs` all report 15, the dot. Only when the failing
+    piece is one character (`$response.body#name`, a stray `}`) does the caret sit on it. So the
+    page never says "exact spot/character" or "first character the grammar could not accept"; it
+    says "where it stops parsing" and "where the part that does not parse begins", and the step
+    has a paragraph explaining why the caret is under the dot.
   - **Sample:** Arazzo 1.1.0, rendered `{: .numbered}`; line 30 `#name` (reported), line 36
     (a parameter, never visited; the closing section sends the reader to paste it into the
     playground to see that it parses). The published grammar is 1.1.0's (`$self`, `$message.*` parse; ids
