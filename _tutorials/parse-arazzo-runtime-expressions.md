@@ -1,8 +1,8 @@
 ---
 title: "Parse and Validate Arazzo Runtime Expressions"
-description: "A runtime expression such as $steps.find-pet.outputs.petId is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one with the exact spot where it broke, and see where parsing ends and Arazzo document validation begins."
-lead: "A runtime expression such as `$steps.find-pet.outputs.petId` is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one with the exact spot where it broke, and see where parsing ends and Arazzo document validation begins."
-summary: "Parse a runtime expression into a syntax tree, find the exact spot where an invalid one breaks, and see where parsing ends and Arazzo document validation begins."
+description: "A runtime expression such as $steps.find-pet.outputs.petId is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one and find where it stops parsing, and see where parsing ends and Arazzo document validation begins."
+lead: "A runtime expression such as `$steps.find-pet.outputs.petId` is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one and find where it stops parsing, and see where parsing ends and Arazzo document validation begins."
+summary: "Parse a runtime expression into a syntax tree, find where an invalid one stops parsing, and see where parsing ends and Arazzo document validation begins."
 date: 2026-10-01
 image:
   path: /assets/images/tutorials/parse-arazzo-runtime-expressions.png
@@ -44,12 +44,12 @@ faq:
       The grammar is the [Runtime Expressions](https://spec.openapis.org/arazzo/latest.html#runtime-expressions) section of Arazzo 1.1.0, which also covers the 1.0.x forms.
   - question: "How do I validate an Arazzo runtime expression?"
     answer: |
-      Parse it. `parseRuntimeExpression` never throws on bad syntax. Instead `result.success` is `false` and `result.maxMatched` is the offset of the first character the grammar could not accept:
+      Parse it. `parseRuntimeExpression` never throws on bad syntax. Instead `result.success` is `false` and `result.maxMatched` is the offset where the part that does not parse begins:
 
       ```js
       const { result } = parseRuntimeExpression('$steps.find-pet.output.petId');
       result.success; // false
-      result.maxMatched; // 15, the offset of "output"
+      result.maxMatched; // 15, where ".output." begins
       ```
 
       That is syntax. Whether the expression is the right kind for where it sits, and whether the step and output it names exist, are Arazzo document validation, not parsing.
@@ -80,7 +80,7 @@ faq:
       The ones whose value exists before the request is sent: `$inputs.<name>`, `$outputs.<name>`, `$steps.<stepId>.outputs.<name>`, `$workflows.<workflowId>.inputs.<name>` or `.outputs.<name>`, a source description's field such as `$sourceDescriptions.<name>.url`, and `$self`. A `$response.body#/id` in a parameter value parses fine, but there is no response yet when a parameter is evaluated, so it cannot mean what its author intended, which was usually the previous step's output, `$steps.<stepId>.outputs.<name>`. The specification implies this rule rather than stating it, and checking it is a validator's job.
   - question: "Why does my runtime expression not parse?"
     answer: |
-      Usually one of these, and `result.maxMatched` points at the first character that broke the grammar:
+      Usually one of these, and `result.maxMatched` points at where the part that does not parse begins:
 
       - A prefix that is almost right: `$input.` for `$inputs.`, `$output.` for `$outputs.`, or `$response.headers.` for `$response.header.`. When the prefix itself is unknown, `maxMatched` is `0`.
       - A JSON Pointer without its leading slash: `$response.body#name` instead of `$response.body#/name`.
@@ -98,11 +98,11 @@ An Arazzo workflow is a document. But a good part of what it says is written ins
 
 So what do we have inside such a string? A small language of its own. It is defined in ABNF in the [Runtime Expressions](https://spec.openapis.org/arazzo/latest.html#runtime-expressions) section of the specification, and a YAML loader has no opinion about it. `$steps.find-pet.output.petId`, with `output` where the grammar wants `outputs`, is a perfectly good string. So the typo waits for a run against a live API, and shows up at the step that uses it.
 
-This tutorial is about that small language, using `@usearazzo/parser` to tackle its complexities. We will parse an expression into a syntax tree. We will tell a valid one from an invalid one, with the exact spot where it broke. And we will see where parsing ends and Arazzo document validation begins. The script is under forty lines, and you will have it running in a few minutes.
+This tutorial is about that small language, using `@usearazzo/parser` to tackle its complexities. We will parse an expression into a syntax tree. We will tell a valid one from an invalid one, and find where it stops parsing. And we will see where parsing ends and Arazzo document validation begins. The script is under forty lines, and you will have it running in a few minutes.
 
 ## The end result {#the-end-result}
 
-Here is where we will end up. Type any runtime expression below. The parser takes it apart into a tree, or shows the exact character where it stops making sense.
+Here is where we will end up. Type any runtime expression below. The parser takes it apart into a tree, or shows where it stops making sense.
 
 <form id="rex-demo" class="rex-demo my-6 rounded-lg border border-gray-200 bg-[#F0F5E7] p-4 sm:p-6" data-parser-src="https://unpkg.com/@usearazzo/parser@1.0.1-alpha.5/dist/arazzo-parser.browser.min.js" data-parser-integrity="sha384-2EzdIMvhnZ/SAmCyAOtQH2E8DSt1l0hYE55Zz5L1Q+iw9zS0jNDJguObw2nbYoyC">
   <label for="rex-demo-input" class="block text-sm font-semibold text-primary-dark mb-2">A runtime expression</label>
@@ -116,7 +116,7 @@ Here is where we will end up. Type any runtime expression below. The parser take
   <div id="rex-demo-result" class="mt-4" aria-live="polite"><figure class="ast" aria-label="Syntax tree of $steps.find-pet.outputs.petId"><p class="ast-source">$steps.find-pet.outputs.petId</p><div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-rex"><small>StepsExpression</small>$steps</span><ul><li><span class="ast-node ast-rex"><small>stepId</small>find-pet</span></li><li><span class="ast-node ast-rex"><small>field</small>outputs</span></li><li><span class="ast-node ast-rex"><small>outputName</small>petId</span></li></ul></li></ul></div><p class="ast-problems"><b class="ast-ok">result.success</b>true</p><figcaption><span class="ast-key ast-rex">runtime expression node</span></figcaption></figure></div>
 </form>
 
-That is the whole idea in one picture. A runtime expression looks like a string, and to a YAML loader it is one. To the parser it is a small program with parts: what it reads from, which step or input, which field, which pointer into a body. A tool can act on the parts, and it can report the exact stopping point.
+That is the whole idea in one picture. A runtime expression looks like a string, and to a YAML loader it is one. To the parser it is a small program with parts: what it reads from, which step or input, which field, which pointer into a body. A tool can act on the parts, and it can report where the parsing stopped.
 
 Now let's build the same thing as a Node script, and then run it over a real document.
 
@@ -226,7 +226,7 @@ The grammar is Arazzo 1.1.0's. It covers the 1.0.x forms too, with one tightenin
 
 ## Tell valid from invalid {#valid-or-not}
 
-So what happens when the expression is wrong? Nothing is thrown. `parseRuntimeExpression` reports bad syntax through its result: `result.success` is `false`, and `result.maxMatched` is the offset up to which parsing succeeded. That is the first character the grammar could not accept, and it is an error message on its own: a caret under the spot.
+So what happens when the expression is wrong? Nothing is thrown. `parseRuntimeExpression` reports bad syntax through its result: `result.success` is `false`, and `result.maxMatched` is the offset up to which parsing succeeded. Whatever starts there is the part that does not parse, and the offset is an error message on its own: a caret under the spot.
 
 Let's see it. Replace the script with a `check` function and three calls, one valid and two typical typos:
 
@@ -254,6 +254,8 @@ $response.body#name
 
 The valid one printed nothing. The first typo parsed as far as `$steps.find-pet`, then met `.output.` where the grammar wants `.outputs.`. The second parsed `$response.body#` and then found `n`, where a JSON Pointer has to start with `/`.
 
+Notice where the first caret sits. Not under the missing `s`, but under the dot that starts `.output.`. Why? Because the grammar reads `.outputs.` as one piece, and a piece either matches whole or not at all. So the caret marks where the piece that failed begins. When that piece is a single character, as in the second typo, the caret is on the very character.
+
 <figure class="ast" aria-label="How far the parser got into $steps.find-pet.output.petId before it stopped">
 <p class="ast-source">$steps.find-pet.output.petId</p>
 <div class="ast-scroll"><ul class="ast-tree"><li><span class="ast-node ast-rex"><small>StepsExpression</small>$steps</span><ul><li><span class="ast-node ast-rex"><small>stepId</small>find-pet</span></li><li><span class="ast-node ast-gone"><small>not accepted</small>.output.petId<em>from offset 15</em></span></li></ul></li></ul></div>
@@ -261,7 +263,7 @@ The valid one printed nothing. The first typo parsed as far as `$steps.find-pet`
 <figcaption><span class="ast-key ast-rex">matched</span><span class="ast-key ast-gone">not accepted, no tree is returned</span></figcaption>
 </figure>
 
-So there it is: valid or not, and if not, exactly where.
+So there it is: valid or not, and if not, where it stopped.
 
 ## Run it on a document {#run}
 
