@@ -9,9 +9,11 @@
     --color-bg-light: #F9FAFB;
 }
 
-/* Prevent horizontal scroll */
+/* Prevent horizontal scroll. clip, not hidden: hidden on html and body turns body
+   into its own scroll container, so the page itself never scrolls (mobile toolbars
+   stay expanded, window scroll events never fire, sticky breaks) */
 html, body {
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* Smooth scroll for internal links */
@@ -24,10 +26,92 @@ html {
     scroll-margin-top: 82px;
 }
 
-/* Sidebar nav: scroll when taller than viewport */
-aside > nav.sticky {
-    max-height: calc(100vh - 82px);
-    overflow-y: auto;
+/* Page sidebar (product, ApiDOM, and guide pages).
+   Desktop: sticky left column that scrolls when taller than the viewport.
+   Mobile: a sticky "On this page" bar under the header that expands into the same nav. */
+/* Section currently in view */
+.page-sidebar-nav a[aria-current="location"] {
+    color: var(--color-primary-light);
+    font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+    .page-sidebar-nav {
+        max-height: calc(100vh - 82px);
+        overflow-y: auto;
+    }
+
+    .page-sidebar-toggle {
+        display: none;
+    }
+}
+
+@media (max-width: 1023.98px) {
+    .page-sidebar {
+        position: sticky;
+        top: 82px;
+        z-index: 40;
+        background-color: white;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .page-sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-primary-dark);
+    }
+
+    .page-sidebar-label {
+        display: flex;
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    /* Section currently in view (or current ApiDOM page), set by main.js */
+    .page-sidebar-current {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+        color: #4b5563;
+    }
+
+    .page-sidebar-current::before {
+        content: "\203A";
+        margin: 0 0.5rem;
+        color: #9ca3af;
+    }
+
+    .page-sidebar-toggle svg {
+        flex-shrink: 0;
+        transition: transform 0.2s;
+    }
+
+    .page-sidebar.open .page-sidebar-toggle svg {
+        transform: rotate(180deg);
+    }
+
+    .page-sidebar-nav {
+        display: none;
+        max-height: calc(100vh - 82px - var(--page-sidebar-bar, 3rem));
+        max-height: calc(100dvh - 82px - var(--page-sidebar-bar, 3rem));
+        overflow-y: auto;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .page-sidebar.open .page-sidebar-nav {
+        display: block;
+    }
+
+    /* Anchors land below both the header and the sidebar bar (height measured by main.js) */
+    body:has(.page-sidebar) [id] {
+        scroll-margin-top: calc(82px + var(--page-sidebar-bar, 3rem));
+    }
 }
 
 /* Anchor link on heading hover */

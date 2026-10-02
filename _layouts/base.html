@@ -2,7 +2,7 @@
 <html lang="{{ page.lang | default: site.lang | default: 'en' }}" class="h-full">
   {%- include head.html -%}
 
-  <body class="font-sans antialiased bg-gray-50 text-gray-900 flex flex-col h-full">
+  <body class="font-sans antialiased bg-gray-50 text-gray-900 flex flex-col min-h-full">
     {%- include nav.html -%}
 
     {{ content }}

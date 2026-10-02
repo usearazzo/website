@@ -23,14 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
       lightboxImg.src = this.currentSrc || this.src;
       lightboxImg.alt = this.alt;
       lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     });
   });
 
   // Close lightbox
   function closeLightbox() {
     lightbox.classList.remove('active');
-    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
   }
 
   lightboxClose.addEventListener('click', closeLightbox);
@@ -57,6 +57,89 @@ document.addEventListener('DOMContentLoaded', function() {
     if (heading && !heading.querySelector('.heading-anchor')) {
       addAnchor(heading, section.id);
     }
+  });
+
+  // Page sidebar: on mobile it collapses into a toggleable bar under the header
+  document.querySelectorAll('.page-sidebar').forEach(function(sidebar) {
+    const toggle = sidebar.querySelector('.page-sidebar-toggle');
+    if (!toggle) return;
+
+    function setOpen(open) {
+      sidebar.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setOpen(!sidebar.classList.contains('open'));
+    });
+    sidebar.querySelectorAll('.page-sidebar-nav a').forEach(function(link) {
+      link.addEventListener('click', function() { setOpen(false); });
+    });
+    document.addEventListener('click', function(e) {
+      if (!sidebar.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Bar height feeds the CSS that keeps anchors and the open menu clear of it
+    function measureBar() {
+      if (toggle.offsetHeight) {
+        document.documentElement.style.setProperty('--page-sidebar-bar', (toggle.offsetHeight + 1) + 'px');
+      }
+    }
+    measureBar();
+    window.addEventListener('resize', measureBar);
+
+    // The bar names the section in view (in-page sidebars) or the current page (ApiDOM)
+    const current = sidebar.querySelector('.page-sidebar-current');
+    function showCurrent(link) {
+      if (!current) return;
+      current.textContent = link ? link.textContent.trim() : '';
+      current.hidden = !link;
+    }
+
+    const sections = Array.prototype.slice.call(sidebar.querySelectorAll('.page-sidebar-nav a[href^="#"]'))
+      .map(function(link) {
+        return { link: link, target: document.getElementById(link.getAttribute('href').slice(1)) };
+      })
+      .filter(function(section) { return section.target; });
+
+    if (!sections.length) {
+      showCurrent(sidebar.querySelector('.page-sidebar-nav a[aria-current="page"]'));
+      return;
+    }
+
+    let active = null;
+    function updateActive() {
+      const offset = 82 + (toggle.offsetHeight ? toggle.offsetHeight + 1 : 0) + 8;
+      let next = null;
+      sections.forEach(function(section) {
+        if (section.target.getBoundingClientRect().top <= offset) next = section.link;
+      });
+      // Short last sections never reach the offset; at the page bottom, the last one is in view
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        next = sections[sections.length - 1].link;
+      }
+      if (next === active) return;
+      if (active) active.removeAttribute('aria-current');
+      if (next) next.setAttribute('aria-current', 'location');
+      active = next;
+      showCurrent(next);
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() { ticking = false; updateActive(); });
+    }, { passive: true });
+    window.addEventListener('resize', updateActive);
+    updateActive();
   });
 
   // Collapsible FAQ: <dt><button aria-controls> toggles the matching <dd>.

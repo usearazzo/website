@@ -247,6 +247,10 @@ llms.txt                         # LLM crawler discovery file
   cropping can be done in Python; ImageMagick and rsvg-convert are still absent.) `favicon.ico` is a hand-built PNG-in-ICO container (Python stdlib `struct`).
 - No LaunchList/newsletter widget — SpecLynx's site had one, UseArazzo's doesn't.
 
+## Page sidebars on mobile
+
+Ported from speclynx.com (website#27). Every sidebar (product pages, ecosystem, guide, tutorial, reference layouts) is `<aside class="page-sidebar">` with a `.page-sidebar-toggle` button and `nav#page-sidebar-nav.page-sidebar-nav`, inside a `flex flex-col lg:flex-row` wrapper. From `lg` up it is the sticky left column. Below `lg` it is a sticky "On this page" bar under the header that expands into the same nav and names the section in view; `main.js` handles toggling, `aria-current="location"`, closing on link click, outside click, or Escape, and sets `--page-sidebar-bar` for anchor offsets. Never hide a sidebar with `hidden lg:block` again. `html, body` use `overflow-x: clip`, not `hidden` (hidden makes body its own scroller and breaks window scroll events and sticky); body is `min-h-full`, and the lightbox locks scrolling on `<html>`.
+
 ## Inline Links in Body Text
 
 Use `class="text-primary-light underline hover:no-underline"` for links inside paragraphs. This ensures links are distinguishable by more than color alone (Lighthouse accessibility requirement).
