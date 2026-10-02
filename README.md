@@ -1,18 +1,9 @@
 <div align="center">
+    <a href="https://usearazzo.com"><img width="96" alt="UseArazzo" src="assets/images/logos/usearazzo-logo.svg" /></a>
     <h1>UseArazzo Website</h1>
 </div>
 
-Source code for the [UseArazzo website](https://usearazzo.com/): run Arazzo workflows, and see what happened at each step.
-
-## Products
-
-- **[CLI](https://usearazzo.com/cli/)**: one command-line interface across the toolchain: validate and run workflows on your machine and in CI (in development)
-- **[Validator](https://usearazzo.com/validator/)**: `@usearazzo/validator`, semantic validation and linting for Arazzo documents (in development)
-- **[Runner](https://usearazzo.com/runner/)**: `@usearazzo/runner`, step-by-step execution of Arazzo workflows against live APIs (in development)
-
-All packages are pre-1.0 and none is published to npm yet.
-
-Source: [usearazzo/arazzo-toolkit](https://github.com/usearazzo/arazzo-toolkit)
+Source code for the [UseArazzo website](https://usearazzo.com/): a JavaScript/TypeScript toolkit for Arazzo workflows.
 
 ## Development
 
@@ -26,7 +17,7 @@ The site will be available at `http://localhost:4000/`.
 ## Tech Stack
 
 - [Jekyll](https://jekyllrb.com/) static site generator
-- [Tailwind CSS](https://tailwindcss.com/) via CDN
+- [Tailwind CSS](https://tailwindcss.com/) as a generated stylesheet (regenerate command in `tailwind.config.js`)
 - [Prism.js](https://prismjs.com/) for syntax highlighting
 - Hosted on [GitHub Pages](https://pages.github.com/)
 
