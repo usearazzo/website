@@ -1,6 +1,6 @@
 ---
 title: "Parse and Validate Arazzo Runtime Expressions"
-description: "A runtime expression such as $steps.find-pet.outputs.petId is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one and find where it stops parsing, and see where parsing ends and Arazzo document validation begins."
+description: "Parse an Arazzo runtime expression into a syntax tree, find where an invalid one stops parsing, and see where Arazzo document validation begins."
 lead: "A runtime expression such as `$steps.find-pet.outputs.petId` is a small language inside an Arazzo document, and a YAML loader cannot check it. Parse one into a syntax tree, tell a valid one from an invalid one and find where it stops parsing, and see where parsing ends and Arazzo document validation begins."
 summary: "Parse a runtime expression into a syntax tree, find where an invalid one stops parsing, and see where parsing ends and Arazzo document validation begins."
 date: 2026-10-01

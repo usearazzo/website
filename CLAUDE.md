@@ -441,7 +441,8 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   @usearazzo/parser", which with the ` | UseArazzo` suffix stays under 60 characters; website#21: a bare
   package name made a poor Google result. The H1, sidebar heading, breadcrumb JSON-LD, and the
   `llms.txt` loop render `package.name` instead), `description` (leads with what the package does,
-  then "Every function, option, result shape, and error of <package>"), `date`,
+  then "Every function, option, and error of <package>", within 160 characters; the longer intro
+  sits in `lead`), `date`,
   optional `last_modified_at`, `status` (`Published`), `package` (`name`, `version`, `npm`,
   `github`), and `toc` (list of `{id, title, children?}`). Heading IDs use `{#id}` and must match.
   The reference is the site's copy, edited from the package README, not mirrored: when the two
@@ -629,6 +630,14 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 
 ## Writing style
 
+- **`description` front matter is at most 160 characters** (2026-10-02; Bing Webmaster Tools flags
+  longer ones as an SEO error, and Google truncates them). It becomes the meta description and the
+  JSON-LD `description`. On guides, tutorials, and reference pages the layout also shows it as the
+  intro paragraph unless `lead` is set, so a page whose intro is longer than 160 characters keeps
+  that text in `lead` and a short `description`. Quote a value that contains `: ` or YAML breaks
+  and the page silently drops out of the build (the Runner page did). Blog posts were left over
+  the limit because their copy is the owner's: parser post 175, resolver post 191, evolution post 162.
+  Measure every page with the live sitemap before calling it done.
 - **No em dashes or en dashes in site copy.** `pages/`, `_includes/`, `_layouts/`, `llms.txt`, and
   `README.md` were swept clean of all 58 occurrences. Rephrase with a colon, comma, semicolon,
   parentheses, or a sentence split. Hyphens inside compound words ("command-line", "step-by-step")

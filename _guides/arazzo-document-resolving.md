@@ -1,6 +1,7 @@
 ---
 title: "Resolving Arazzo Documents"
-description: "An Arazzo document looks like one self-contained file. As soon as its inputs use the JSON Schema $ref keyword, it is one file of several, and only bundling makes it a compound document again. What resolving, bundling, and dereferencing each do to those references, why a schema's identity is not its location, and what to expect from a good implementation of each."
+description: "Why an Arazzo document is rarely the one file it looks like, and what resolving, bundling, and dereferencing each do to its references."
+lead: "An Arazzo document looks like one self-contained file. As soon as its inputs use the JSON Schema $ref keyword, it is one file of several, and only bundling makes it a compound document again. What resolving, bundling, and dereferencing each do to those references, why a schema's identity is not its location, and what to expect from a good implementation of each."
 summary: "Why an Arazzo document is rarely the one file it looks like, and what resolving, bundling, and dereferencing each do about it."
 date: 2026-09-22
 image:

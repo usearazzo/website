@@ -1,6 +1,7 @@
 ---
 title: "Parsing Arazzo Documents"
-description: "An Arazzo document is several languages in one file, and one file in a network of documents. Why reading one properly is harder than loading YAML, what a tool needs from a parser, and what a good result looks like."
+description: "Why reading an Arazzo document properly is harder than loading YAML, and what a tool should expect from an Arazzo parser."
+lead: "An Arazzo document is several languages in one file, and one file in a network of documents. Why reading one properly is harder than loading YAML, what a tool needs from a parser, and what a good result looks like."
 summary: "Why reading an Arazzo document properly is harder than loading YAML, and what a tool should expect from a parser."
 date: 2026-09-03
 last_modified_at: 2026-09-21

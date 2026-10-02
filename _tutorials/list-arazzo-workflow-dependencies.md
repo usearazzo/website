@@ -1,6 +1,7 @@
 ---
 title: "List Every Document an Arazzo Workflow Depends On"
-description: "An Arazzo workflow names the APIs and other workflows it calls, and a run fetches all of them. Write a script that parses the entry document, follows every source description, and draws the graph of what each document is, which are shared, and which cannot be read."
+description: "Write a script that parses an Arazzo document, follows every source description, and draws the graph of the documents its workflows depend on."
+lead: "An Arazzo workflow names the APIs and other workflows it calls, and a run fetches all of them. Write a script that parses the entry document, follows every source description, and draws the graph of what each document is, which are shared, and which cannot be read."
 summary: "Write a script that parses an entry document, follows every source description, and draws the graph of documents the workflow reaches."
 date: 2026-09-08
 image:

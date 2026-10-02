@@ -1,6 +1,7 @@
 ---
 title: "Arazzo Parser API Reference: @usearazzo/parser"
-description: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, result shape, and error of @usearazzo/parser."
+description: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, and error of @usearazzo/parser."
+lead: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, result shape, and error of @usearazzo/parser."
 date: 2026-09-08
 last_modified_at: 2026-09-21
 status: Published
