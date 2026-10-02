@@ -44,7 +44,7 @@ stylesheets:
         <p class="text-xl text-gray-600 max-w-3xl">Every <strong>external Arazzo resource</strong>, in one place: the specification, tools, articles, videos, and examples in the wild.</p>
         <p class="text-gray-600 max-w-3xl mt-3">Arazzo is the <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Initiative's specification</a> for describing multi-step API workflows, and a real ecosystem is forming around it. This page keeps track: hand-curated, reviewed regularly, and open to submissions from any vendor.</p>
         <p class="text-sm text-gray-500 mt-4">
-          Last reviewed: 26 September 2026
+          Last reviewed: 2 October 2026
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
           <a href="https://github.com/usearazzo/website/issues/new?template=submit-a-resource.yml" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Submit a resource</a>
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
@@ -151,6 +151,11 @@ stylesheets:
       <div class="ecosystem-group">
         <h3>Author &amp; visualise</h3>
         <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/randallcmark/arazzo-builder" target="_blank" rel="noopener noreferrer">Arazzo Builder</a>
+            <small>Mark Randall</small>
+            <span class="note">Local-first workspace for exploring and editing Arazzo documents, with graph, sequence, and YAML views.</span>
+          </li>
           <li>
             <a href="https://jentic.com/arazzo-editor" target="_blank" rel="noopener noreferrer">Arazzo Editor</a>
             <small>Jentic</small>
@@ -263,6 +268,11 @@ stylesheets:
       <div class="ecosystem-group">
         <h3>Run &amp; test</h3>
         <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/llotosl/arazzo-exec" target="_blank" rel="noopener noreferrer">arazzo-exec</a>
+            <small>llotosl</small>
+            <span class="note">SDK and CLI that parses, validates, inspects, and runs Arazzo workflows, with custom extension points.</span>
+          </li>
           <li>
             <a href="https://github.com/Mohammed-Alama/php-arazzo" target="_blank" rel="noopener noreferrer">php-arazzo</a>
             <small>Mohammed Alama</small>
@@ -411,6 +421,11 @@ stylesheets:
         <h3>Libraries &amp; SDKs</h3>
         <ul class="ecosystem-list">
           <li>
+            <a href="https://github.com/pactflow/arazzo-rs" target="_blank" rel="noopener noreferrer">arazzo-rs</a>
+            <small>Pactflow</small>
+            <span class="note">Rust crates with models for the objects described in the Arazzo specification.</span>
+          </li>
+          <li>
             <a href="https://speclynx.com/" target="_blank" rel="noopener noreferrer">SpecLynx</a>
             <small>SpecLynx</small>
             <span class="note">Parses, dereferences, resolves, and validates Arazzo alongside OpenAPI, AsyncAPI, Overlay, and JSON Schema.</span>
@@ -484,6 +499,11 @@ stylesheets:
           <a href="https://apievangelist.com/2026/09/16/arazzo-is-adding-soap-and-the-pull-request-needs-two-approvals/" target="_blank" rel="noopener noreferrer">Arazzo Is Adding SOAP, and the Pull Request Needs Two Approvals</a>
           <small>Kin Lane &middot; Sep 2026</small>
           <span class="note">Walks through the pull request that adds a WSDL source description type and an operationName field so Arazzo 1.2 steps can call SOAP operations.</span>
+        </li>
+        <li>
+          <a href="https://redocly.com/blog/generate-arazzo-with-ai" target="_blank" rel="noopener noreferrer">Generate Arazzo Workflows with AI</a>
+          <small>Dmytro Ananskyi, Redocly &middot; Sep 2026</small>
+          <span class="note">Covers the <code>--with-ai</code> option of Redocly CLI's <code>generate-arazzo</code>, which turns a mechanical skeleton into workflows that read like real API usage.</span>
         </li>
         <li>
           <a href="https://apievangelist.com/2026/09/02/the-deterministic-integration-layer-is-being-built-from-both-ends/" target="_blank" rel="noopener noreferrer">The Deterministic Integration Layer Is Being Built From Both Ends</a>
@@ -586,9 +606,19 @@ stylesheets:
           <span class="note">Why individually valid APIs still fail as real workflows, and what OpenAPI alone cannot catch.</span>
         </li>
         <li>
+          <a href="https://redocly.com/blog/arazzo-specification-1-1-release" target="_blank" rel="noopener noreferrer">Arazzo 1.1 Release</a>
+          <small>Dmytro Ananskyi, Redocly &middot; May 2026</small>
+          <span class="note">What 1.1 adds: AsyncAPI support, workflow composition, selectors, identity-based references, and clearer runtime behavior.</span>
+        </li>
+        <li>
           <a href="https://zuplo.com/blog/openapi-arazzo-overlay-specifications-guide" target="_blank" rel="noopener noreferrer">OpenAPI Arazzo &amp; Overlay: Workflows and Spec Management</a>
           <small>Zuplo &middot; Apr 2026</small>
           <span class="note">Where Arazzo and Overlay fit around the core OpenAPI specification.</span>
+        </li>
+        <li>
+          <a href="https://jentic.com/blog/arazzo-editor" target="_blank" rel="noopener noreferrer">Announcing Arazzo Editor</a>
+          <small>Frank Kilcommins, Jentic &middot; Apr 2026</small>
+          <span class="note">Introduces the browser-based editor: form-based editing with a live diagram, and a code editor that stays in sync.</span>
         </li>
         <li>
           <a href="https://apiscout.dev/guides/openapi-arazzo-workflow-spec-2026" target="_blank" rel="noopener noreferrer">Arazzo 1.0: Multi-Step API Workflows Spec</a>
@@ -624,6 +654,11 @@ stylesheets:
           <a href="https://nordicapis.com/how-arazzo-could-help-mcp-servers-orchestrate-apis-for-ai-consumers/" target="_blank" rel="noopener noreferrer">How Arazzo Could Help MCP Servers Orchestrate APIs for AI Consumers</a>
           <small>Janet Wagner, Nordic APIs &middot; Nov 2025</small>
           <span class="note">Argues Arazzo gives MCP servers a deterministic way to sequence the API calls behind a tool, and names the adoption challenges.</span>
+        </li>
+        <li>
+          <a href="https://jentic.com/blog/building-reliable-api-workflows-with-arazzo" target="_blank" rel="noopener noreferrer">Building Reliable API Workflows with Arazzo</a>
+          <small>Rod Rivera, Jentic &middot; Sep 2025</small>
+          <span class="note">Recap of an AMA on how Arazzo handles multi-step workflows that OpenAPI alone cannot, with implementation examples and migration strategies.</span>
         </li>
         <li>
           <a href="https://smartbear.com/blog/from-endpoints-to-intent-rethinking-agent-api-workflows-with-arazzo/" target="_blank" rel="noopener noreferrer">From Endpoints to Intent: Rethinking Agent API Workflows with Arazzo</a>
@@ -719,6 +754,16 @@ stylesheets:
           <a href="https://www.workflows.guru/blogs/what-is-arazzo" target="_blank" rel="noopener noreferrer">What is Arazzo Workflow Specification?</a>
           <small>Workflows Guru</small>
           <span class="note">Tutorial covering the structure and validation of Arazzo documents.</span>
+        </li>
+        <li>
+          <a href="https://docs.bump.sh/arazzo/v1.0/" target="_blank" rel="noopener noreferrer">Arazzo Specification Complete Guide</a>
+          <small>Phil Sturgeon, Bump.sh</small>
+          <span class="note">Step-by-step guide to the Arazzo 1.0 specification, from what it is to runtime expressions, with a cheat sheet.</span>
+        </li>
+        <li>
+          <a href="https://liblab.com/docs/tutorials/customizations/sdk-workflows" target="_blank" rel="noopener noreferrer">SDK Workflows</a>
+          <small>liblab</small>
+          <span class="note">Tutorial on writing an Arazzo file and generating SDK methods for multi-step use cases with the liblab CLI.</span>
         </li>
       </ul>
     </div>
