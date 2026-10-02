@@ -21,7 +21,7 @@ jobs:
       - name: Submit sitemap URLs to IndexNow
         env:
           HOST: usearazzo.com
-          KEY: 227bf2e21bb93cd14071e05f544d2135
+          KEY: 5167c20c
         run: |
           set -euo pipefail
 
