@@ -1,0 +1,37 @@
+name: IndexNow
+
+# Notifies IndexNow-participating search engines (Bing, Yandex, Seznam, Naver,
+# Yep) when the site changes. Triggers on `page_build`, which fires after GitHub
+# Pages finishes deploying, so the live sitemap and key file are already public
+# by the time we submit.
+on:
+  page_build:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    # On a Pages deploy, only proceed once the build actually succeeded — never
+    # submit after a failed/errored build. Manual runs have no build object.
+    if: github.event_name == 'workflow_dispatch' || github.event.build.status == 'built'
+    steps:
+      - name: Submit sitemap URLs to IndexNow
+        env:
+          HOST: usearazzo.com
+          KEY: 227bf2e21bb93cd14071e05f544d2135
+        run: |
+          set -euo pipefail
+
+          # IndexNow takes URLs, not a sitemap, so read the URLs from the live
+          # sitemap and ping one GET per URL. The key file at the site root is
+          # auto-discovered, so no JSON payload or keyLocation is needed.
+          curl -fsSL "https://${HOST}/sitemap.xml" \
+            | grep -o '<loc>[^<]*</loc>' \
+            | sed -e 's/<loc>//' -e 's#</loc>##' \
+            | while read -r url; do
+                echo "Submitting: $url"
+                curl -fsS "https://api.indexnow.org/indexnow?url=${url}&key=${KEY}"
+              done
