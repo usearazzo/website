@@ -638,6 +638,15 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
   and the page silently drops out of the build (the Runner page did). Blog posts were left over
   the limit because their copy is the owner's: parser post 175, resolver post 191, evolution post 162.
   Measure every page with the live sitemap before calling it done.
+- **`<title>` is at most 70 characters including the suffix** (` | UseArazzo`, ` | UseArazzo Blog`,
+  ` | UseArazzo Docs`); Bing's Site Scan flags longer ones (2026-10-03: /runner/ at 73 and the
+  Improvised post at 87). A post whose owner-written `title` is too long gets an optional
+  `seo_title` front matter key, used only in `<title>` by `head.html`; the H1, Open Graph, and
+  JSON-LD keep `title`.
+- **Every `<img>` has non-empty `alt`.** Bing counts `alt=""` as missing (14 of 15 pages flagged
+  2026-10-03). Card thumbnails sit in `aria-hidden` links, so they take the item's `image.alt` at no
+  cost to screen readers; the nav and footer logos carry `alt="UseArazzo logo"` plus
+  `aria-hidden="true"` so the link still reads as just "UseArazzo".
 - **No em dashes or en dashes in site copy.** `pages/`, `_includes/`, `_layouts/`, `llms.txt`, and
   `README.md` were swept clean of all 58 occurrences. Rephrase with a colon, comma, semicolon,
   parentheses, or a sentence split. Hyphens inside compound words ("command-line", "step-by-step")

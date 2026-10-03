@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   {% if page.collection == "posts" %}
   {%- seo title=false -%}
-  <title>{{ page.title | escape }} | UseArazzo Blog</title>
+  <title>{{ page.seo_title | default: page.title | escape }} | UseArazzo Blog</title>
   {% elsif page.collection == "guides" or page.collection == "tutorials" %}
   {%- seo title=false -%}
   <title>{{ page.title | escape }} | UseArazzo Docs</title>

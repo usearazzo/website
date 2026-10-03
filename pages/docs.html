@@ -47,7 +47,7 @@ stylesheets:
         {% for tutorial in site.tutorials %}
         <article class="docs-card">
           <a href="{{ tutorial.url | relative_url }}" aria-hidden="true" tabindex="-1">
-            <img loading="lazy" src="{{ tutorial.image.webp | default: tutorial.image.path | relative_url }}" width="{{ tutorial.image.width }}" height="{{ tutorial.image.height }}" alt="" class="docs-card-thumb">
+            <img loading="lazy" src="{{ tutorial.image.webp | default: tutorial.image.path | relative_url }}" width="{{ tutorial.image.width }}" height="{{ tutorial.image.height }}" alt="{{ tutorial.image.alt | escape }}" class="docs-card-thumb">
           </a>
           <div class="docs-card-body">
             {% if tutorial.status %}
@@ -90,7 +90,7 @@ stylesheets:
         {% for guide in site.guides %}
         <article class="docs-card">
           <a href="{{ guide.url | relative_url }}" aria-hidden="true" tabindex="-1">
-            <img loading="lazy" src="{{ guide.image.webp | default: guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="" class="docs-card-thumb">
+            <img loading="lazy" src="{{ guide.image.webp | default: guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="{{ guide.image.alt | escape }}" class="docs-card-thumb">
           </a>
           <div class="docs-card-body">
             {% if guide.status %}

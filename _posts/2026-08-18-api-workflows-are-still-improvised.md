@@ -1,5 +1,6 @@
 ---
 title: "API Workflows Are Still Improvised. Here Is What We Are Doing About It"
+seo_title: "API Workflows Are Still Improvised"
 description: "OpenAPI describes endpoints, not the order you call them in. Arazzo fixes that on paper. UseArazzo is building the tooling that makes it real, in the open."
 date: 2026-08-18
 image:
