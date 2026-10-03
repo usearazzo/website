@@ -37,6 +37,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 - [Validator product page]({{ site.url }}{{ site.baseurl }}/validator/): semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
 - [Validator source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator): the package in the monorepo, with its README
+- [@usearazzo/validator API reference]({{ site.url }}{{ site.baseurl }}/docs/validator/): every function, option, diagnostic, error, and rule, checked against the package source
 - Opt-in JSON Schema (AJV) validation
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Pre-1.0, not yet published to npm, under heavy development
@@ -88,7 +89,7 @@ UseArazzo is built end to end on [SpecLynx](https://github.com/speclynx): the se
 
 ## Docs
 
-- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each published package, and links to the README of each unpublished one in the monorepo
+- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each package that has one, and links to the README of each other package in the monorepo
 {% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
 {% endfor %}{% for guide in site.guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
 {% endfor %}{% for ref in site.reference %}- [API reference: {{ ref.package.name }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}

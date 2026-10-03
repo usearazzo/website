@@ -474,6 +474,40 @@ h4:hover .heading-anchor {
     color: var(--color-text-dark);
 }
 
+/* Diagnostic severities in the validator rules tables; the word stays in the badge,
+   so the colour only reinforces it. Written as a word, not shouted like a status. */
+.badge-error,
+.badge-warning,
+.badge-hint {
+    text-transform: none;
+}
+
+.badge-error {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.badge-warning {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-hint {
+    background: #E5E7EB;
+    color: var(--color-text-dark);
+}
+
+/* Arazzo version a rule is limited to, in the validator rules tables: an outline, so severity
+   stays the only colour in a row. */
+.badge-version {
+    background: white;
+    border: 1px solid #D1D5DB;
+    color: #4B5563;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-weight: 500;
+    text-transform: none;
+}
+
 /* Team cards */
 .team-card {
     text-align: center;
@@ -678,6 +712,15 @@ h4:hover .heading-anchor {
     color: var(--color-primary-dark);
 }
 
+/* A rule's ApilintCodes name under its code in the validator rules tables: secondary detail,
+   so no box (it would push the name off the code's left edge), small, and grey. */
+.post-content code.rule-name {
+    background: none;
+    padding: 0;
+    font-size: 0.7rem;
+    color: #9CA3AF;
+}
+
 /* Reference pages are dense lookup tables: smaller text, and a row highlight (as on the homepage
    compatibility table) so the eye stays on one row across the columns. The header stays dark like
    every other docs table. */
@@ -687,6 +730,30 @@ h4:hover .heading-anchor {
 
 .reference-content table tr:hover td {
     background: #F0F5E7;
+}
+
+/* One card per Arazzo object in the validator rules section, so a reader can tell where one
+   object's rules end and the next begin. */
+.reference-content .rules-card {
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.25rem 0.25rem;
+    margin: 0 0 1.5rem;
+    background: #FAFAFA;
+}
+
+.reference-content .rules-card h3 {
+    margin-top: 0;
+}
+
+.reference-content .rules-card table {
+    background: white;
+}
+
+/* Short, fixed values ("Only in" and its versions): the message column takes the slack instead. */
+.post-content table.rules-table th:nth-child(4),
+.post-content table.rules-table td:nth-child(4) {
+    white-space: nowrap;
 }
 
 .post-content .post-callout {

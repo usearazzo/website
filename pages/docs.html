@@ -127,7 +127,7 @@ stylesheets:
     <div class="max-w-6xl mx-auto px-6 py-14">
       <div class="text-center mb-10">
         <h2 class="text-3xl font-bold text-primary-dark mb-3">Package reference</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">A published package gets its API reference here. Until a package publishes, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
+        <p class="text-gray-600 max-w-2xl mx-auto">Each package gets its API reference here. Until it has one, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
       </div>
       <div class="docs-grid">
         <article class="docs-card">
@@ -158,13 +158,13 @@ stylesheets:
         </article>
         <article class="docs-card">
           <div class="docs-card-body">
-            <p class="docs-card-meta"><span class="badge badge-secondary">In development</span></p>
-            <h3 class="docs-card-title">@usearazzo/validator</h3>
-            <p class="docs-card-text">Semantic validation and linting with LSP-compatible diagnostics. The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator page</a> introduces it.</p>
-            <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator#readme" target="_blank" rel="noopener noreferrer" class="docs-card-cta docs-card-cta-secondary">
-              README on GitHub
+            <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
+            <h3 class="docs-card-title"><a href="{{ '/docs/validator/' | relative_url }}">@usearazzo/validator</a></h3>
+            <p class="docs-card-text">Validates and lints Arazzo documents, and reports every problem as a Language Server Protocol diagnostic with its location, severity, and rule code.</p>
+            <a href="{{ '/docs/validator/' | relative_url }}" class="docs-card-cta">
+              API reference
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
             </a>
           </div>
