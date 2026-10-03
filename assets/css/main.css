@@ -678,6 +678,17 @@ h4:hover .heading-anchor {
     color: var(--color-primary-dark);
 }
 
+/* Reference pages are dense lookup tables: smaller text, and a row highlight (as on the homepage
+   compatibility table) so the eye stays on one row across the columns. The header stays dark like
+   every other docs table. */
+.reference-content table {
+    font-size: 0.875rem;
+}
+
+.reference-content table tr:hover td {
+    background: #F0F5E7;
+}
+
 .post-content .post-callout {
     background: #F0F5E7;
     border-left: 4px solid var(--color-primary-light);
