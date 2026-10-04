@@ -11,7 +11,7 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser and @usearazzo/resolver are on npm as alphas; the other packages are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser, @usearazzo/resolver, and @usearazzo/validator are on npm as alphas; the CLI and the Runner are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
 
 ## Compatibility
 
@@ -40,7 +40,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - [@usearazzo/validator API reference]({{ site.url }}{{ site.baseurl }}/docs/validator/): every function, option, diagnostic, error, and rule, checked against the package source
 - Opt-in JSON Schema (AJV) validation
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
-- Pre-1.0, not yet published to npm, under heavy development
+- Pre-1.0, on npm as an alpha: `npm install @usearazzo/validator`
 - Free, open source (Apache 2.0)
 
 ### Runner
@@ -52,7 +52,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
-- Pre-1.0, not yet published to npm, under heavy development in the open (as is every package in the toolkit)
+- Pre-1.0, not yet published to npm, under heavy development in the open
 - Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 

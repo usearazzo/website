@@ -12,9 +12,10 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
 - **CLI** — `@usearazzo/cli`, one command-line interface across the toolchain. **Not yet published**
   — the page at `/cli/` describes the planned `validate`/`run` interface honestly as in-development,
   built from the two libraries below. Do not present it as installable.
-- **Validator** — `@usearazzo/validator`, **not yet published**, under heavy development. Semantic
+- **Validator** — `@usearazzo/validator`, **published as an alpha** (2026-10-04). Semantic
   validation and linting for Arazzo documents, LSP-compatible diagnostics, opt-in JSON Schema
-  validation.
+  validation. Its product page sells the idea and hands the details to `/docs/validator/`, the API
+  reference; the page's terminal demo previews the unbuilt CLI and is labelled "Coming soon".
 - **Runner** — `@usearazzo/runner`, **not yet published**, under heavy development. Its `package.json`
   carries `"private": true`, which is a publish guard, not secrecy: the source is public in the
   monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
@@ -188,7 +189,7 @@ pages/
                                  # own content is never listed; linked in nav and footer.
   cli.html                       # CLI product page — design sketch only, package does not exist
   runner.html                    # Runner product page, sidebar nav, inline SVG architecture + JS API
-  validator.html                 # Validator product page, sidebar nav, in-development framing + JS API
+  validator.html                 # Validator product page, sidebar nav, published; CLI preview demo + install
   about.html                     # Mission, team, track record, "Built on SpecLynx" credit
   privacy.html, terms.html       # Legal pages
 tailwind.config.js               # Content globs for the generated Tailwind file; regenerate command
@@ -608,7 +609,7 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 - Don't add commands, flags, or install instructions that don't exist in the actual package —
   check `arazzo-toolkit/packages/{validator,runner}/README.md` and `package.json` first.
 - Keep the "not yet published" framing on every product page until that package actually resolves
-  on the npm registry. `@usearazzo/cli` does not even exist in `arazzo-toolkit/packages/` yet.
+  on the npm registry. The Validator resolves (2026-10-04); the CLI and the Runner do not. `@usearazzo/cli` does not even exist in `arazzo-toolkit/packages/` yet.
 - Keep the Runner page's "not yet published" framing until `@usearazzo/runner`'s `package.json`
   drops `"private": true` and the package resolves on the npm registry.
 - **Package metadata does not belong on product pages.** Node engine floors, transitive dependency
@@ -662,14 +663,21 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 
 The three product pages share a shape. Keep them parallel when editing one.
 
-- **Status badge ladder**: `Published` / `In development` / `Idea`. Everything is currently
-  `In development`; `Idea` marks a single unbuilt command (`init`) inside an otherwise settled page.
+- **Status badge ladder**: `Published` / `In development` / `Idea`. The Validator is `Published`;
+  the CLI and the Runner are `In development`; `Idea` marks a single unbuilt command (`init`) inside
+  an otherwise settled page. `Coming soon` marks a preview of something unbuilt on a published
+  page (the Validator's CLI demo).
 - **Status callout** directly under the intro paragraph (`bg-[#F0F5E7] border-l-4 border-primary-light`),
   stating plainly what does not exist.
 - **CTA pair**: "View source on GitHub" (primary) and "Follow Discussions" (secondary), both
   pointing at real destinations, never npm.
 - **"Availability"**, not "Installation", while nothing is installable. An install heading promises
   a command that does not exist.
+- **A published product page** (the Validator since 2026-10-04) drops the status callout, pairs
+  "Read the API reference" (primary) with "View source on GitHub" (secondary), and has an
+  "Installation" section with the real `npm install` line. It sells the idea and hands every
+  option and edge case to its `/docs/<package>/` reference instead of repeating the README. The
+  rules above still apply to `/runner/` and `/cli/` until their packages publish.
 - **"Rest of the Toolkit"** for the sibling-product cards. "Built With" is only correct on `/cli/`,
   which genuinely will be built with the other two; on `/validator/` and `/runner/` it was backwards.
   Each of those pages ends with an "Under the hood, X uses ..." line naming the real dependency.

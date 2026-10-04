@@ -120,7 +120,7 @@ fails it by definition; the README and the reference serve that reader):
   offset, run that over a document, and end on where parsing stops and
   Arazzo document validation begins. The end result is a playground
   micro-app. Follow-ups this leaves open: criterion conditions
-  (`parseCriterionCondition`), and, once the Validator publishes, the
+  (`parseCriterionCondition`), and, now that the Validator is published, the
   "which expression belongs in which field" rules that were cut from this
   tutorial as document validation.
 - Not a tutorial: "parse from a URL", "parse from a string", or any other
@@ -163,7 +163,8 @@ YAML gotchas (`version: 1.0` as a number, `yes`/`no`) are FAQ material.
 
 ## Validating
 
-**Status:** Planning-only. `@usearazzo/validator` is not yet published.
+**Status:** Live. `@usearazzo/validator` is published as an alpha (2026-10-04), with an API
+reference at `/docs/validator/`.
 
 **Why it matters:** This is the point where a broken workflow document
 gets caught before it costs a failed run or a confused code reviewer, and
@@ -278,5 +279,5 @@ products, unlike Validator or Runner's pages (where that framing was
 backwards).
 
 **Backlog / candidate topics:** none yet — too early; revisit once
-Validator or Runner publishes and the CLI has something real underneath it
+the Runner publishes too and the CLI has something real underneath it
 to describe.
