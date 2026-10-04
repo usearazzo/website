@@ -393,6 +393,36 @@ h4:hover .heading-anchor {
 .t-msg { color: #E5E7EB; }
 .t-fail { color: #F87171; font-weight: 700; }
 .t-ok { color: #A3D977; font-weight: 700; }
+.t-dollar { color: #AEB6C2; }
+.t-arg { color: #E5E7EB; }
+.t-warn { color: #FBBF24; }
+.t-warnsum { color: #FBBF24; font-weight: 700; }
+
+/* Typewriter demo (ported from speclynx.com's hero). Long lines wrap instead of scrolling. While
+   animating, the panel holds a fixed height so the page does not jump as runs are typed and
+   cleared, and the script keeps the newest line in view; the static fallback (no JS, or reduced
+   motion) grows to show every run. */
+.terminal-panel {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.terminal-panel.is-animating {
+    height: 16rem;
+    overflow-y: auto;
+}
+
+.terminal-run { display: block; }
+.terminal-run + .terminal-run { margin-top: 0.7em; }
+.terminal-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    vertical-align: text-bottom;
+    background: #E5E7EB;
+    animation: terminal-blink 1s steps(2, start) infinite;
+}
+@keyframes terminal-blink { to { visibility: hidden; } }
 
 /* Tables */
 .spec-table {

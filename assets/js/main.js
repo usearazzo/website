@@ -181,3 +181,101 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
 });
+
+// Terminal demos (ported from speclynx.com's hero): type each command, reveal its output, hold,
+// then move to the next run, looping when a panel has several. Falls back to the static markup
+// under reduced motion or without JS.
+document.querySelectorAll('[data-terminal-typewriter]').forEach(function (panel) {
+  var runs = Array.prototype.slice.call(panel.querySelectorAll('.terminal-run'));
+  if (!runs.length) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  panel.classList.add('is-animating');
+
+  // Keep the real runs for assistive tech; animate a mirrored, aria-hidden copy.
+  var source = document.createElement('span');
+  source.className = 'sr-only';
+  runs.forEach(function (run) { source.appendChild(run); });
+  var live = document.createElement('span');
+  live.setAttribute('aria-hidden', 'true');
+  panel.appendChild(source);
+  panel.appendChild(live);
+
+  var TYPE_MS = 25, LINE_MS = 40, AFTER_TYPE_MS = 300, HOLD_MS = 4000, BETWEEN_MS = 600;
+
+  // Pause while the tab is in the background instead of racing through runs unseen.
+  function wait(ms, cb) {
+    setTimeout(function () {
+      if (document.hidden) { wait(400, cb); return; }
+      cb();
+    }, ms);
+  }
+
+  // Clone `el` keeping only its first `n` characters of text, so coloured tokens inside the
+  // prompt survive the character-by-character reveal.
+  function clipClone(el, n) {
+    var clone = el.cloneNode(true);
+    var walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+    var remaining = n, node, doomed = [];
+    while ((node = walker.nextNode())) {
+      if (remaining <= 0) { doomed.push(node); continue; }
+      if (node.data.length > remaining) node.data = node.data.slice(0, remaining);
+      remaining -= node.data.length;
+    }
+    doomed.forEach(function (d) { d.parentNode.removeChild(d); });
+    return clone;
+  }
+
+  function showRun(index) {
+    var run = runs[index];
+    var promptEl = run.querySelector('.terminal-prompt');
+    var command = promptEl.textContent;
+    var lines = run.innerHTML.split('\n').slice(1); // everything after the prompt line
+
+    live.innerHTML = '';
+    panel.scrollTop = 0;
+    var typed = clipClone(promptEl, 0);
+    var cursor = document.createElement('span');
+    cursor.className = 'terminal-cursor';
+    live.appendChild(typed);
+    live.appendChild(cursor);
+
+    var pos = 0;
+    function typeNext() {
+      if (pos < command.length) {
+        var next = clipClone(promptEl, ++pos);
+        live.replaceChild(next, typed);
+        typed = next;
+        wait(TYPE_MS, typeNext);
+        return;
+      }
+      wait(AFTER_TYPE_MS, function () {
+        cursor.remove();
+        var i = 0;
+        function revealNext() {
+          if (i < lines.length) {
+            live.insertAdjacentHTML('beforeend', '\n' + lines[i++]);
+            panel.scrollTop = panel.scrollHeight; // keep the newest line in view on narrow screens
+            wait(LINE_MS, revealNext);
+            return;
+          }
+          // Idle at a fresh prompt, like a real shell.
+          var idle = document.createElement('span');
+          idle.className = 'terminal-prompt';
+          idle.innerHTML = '<span class="t-dollar">$</span> ';
+          live.appendChild(document.createTextNode('\n'));
+          live.appendChild(idle);
+          live.appendChild(cursor);
+          panel.scrollTop = panel.scrollHeight;
+          if (runs.length < 2) return; // single run: stay at the prompt
+          wait(HOLD_MS, function () {
+            wait(BETWEEN_MS, function () { showRun((index + 1) % runs.length); });
+          });
+        }
+        revealNext();
+      });
+    }
+    typeNext();
+  }
+
+  showRun(0);
+});

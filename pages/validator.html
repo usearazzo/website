@@ -2,7 +2,7 @@
 prism: true
 layout: base
 title: UseArazzo Validator - Validate and Lint Arazzo Documents
-description: Semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics. Free and open source, in development, not yet on npm.
+description: Validate and lint Arazzo documents, with every problem reported by rule code and location. Free and open source, on npm as an alpha.
 permalink: /validator/
 ---
 
@@ -45,11 +45,9 @@ permalink: /validator/
     <nav id="page-sidebar-nav" class="page-sidebar-nav lg:sticky lg:top-[82px] p-6 space-y-4 text-sm">
       <div class="font-bold text-primary-dark mb-4">Validator</div>
       <a href="#overview" class="block text-gray-600 hover:text-primary-light">Overview</a>
-      <a href="#availability" class="block text-gray-600 hover:text-primary-light">Availability</a>
-      <a href="#validating" class="block text-gray-600 hover:text-primary-light">Validating Documents</a>
-      <a href="#options" class="block text-gray-600 hover:text-primary-light">Validation Options</a>
-      <a href="#security" class="block text-gray-600 hover:text-primary-light">Security Considerations</a>
-      <a href="#diagnostics" class="block text-gray-600 hover:text-primary-light">Working with Diagnostics</a>
+      <a href="#terminal" class="block text-gray-600 hover:text-primary-light">From the Terminal</a>
+      <a href="#checks" class="block text-gray-600 hover:text-primary-light">What It Checks</a>
+      <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#toolkit" class="block text-gray-600 hover:text-primary-light">Rest of the Toolkit</a>
       <a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>
     </nav>
@@ -61,26 +59,20 @@ permalink: /validator/
     <section id="overview" class="mb-16">
       <div class="flex items-center gap-3 mb-4">
         <h1 class="text-4xl font-extrabold text-primary-dark">UseArazzo Validator</h1>
-        <span class="badge badge-secondary">In development</span>
+        <span class="badge badge-primary">Published</span>
       </div>
       <p class="text-xl text-gray-600 mb-6">Every violation against the Arazzo specification, with the location that caused it.</p>
 
       <p class="text-gray-700 text-lg mb-6">
-        <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> is a validator and linter for <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo Specification</a> documents. It performs semantic validation and semantic linting, with JSON Schema validation available opt-in, and returns diagnostics compatible with the Language Server Protocol and VS Code.
+        An Arazzo document can parse cleanly and still be wrong: two steps sharing an ID, a <code class="bg-gray-100 px-1 rounded">goto</code> to a step that does not exist, a runtime expression that does not parse. <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> finds those problems before a run does, and reports each one with its line, its severity, and the rule it broke.
       </p>
 
-      <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-6">
-        <p class="text-gray-700">
-          <strong>Not yet published.</strong> There is no <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> package on npm today. It is developed inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo and will be installable once its API stabilizes. The API described below is the library as it exists there, and it may change without notice. <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Follow Discussions</a> to hear when it ships.
-        </p>
-      </div>
-
       <div class="flex flex-wrap gap-4 mb-8">
-        <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator" target="_blank" rel="noopener noreferrer" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
-          View source on GitHub
+        <a href="{{ '/docs/validator/' | relative_url }}" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
+          Read the API reference
         </a>
-        <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-          Follow Discussions
+        <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
+          View source on GitHub
         </a>
       </div>
 
@@ -90,138 +82,78 @@ permalink: /validator/
       </ul>
     </section>
 
-    <!-- Installation -->
-    <section id="availability" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Availability</h2>
-      <p class="text-gray-700">For now the Validator runs from a checkout of the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo, where it is developed. It is not on npm yet, so there is no install command to give you; once it publishes, that becomes a single line.</p>
-    </section>
+    <!-- From the terminal -->
+    <section id="terminal" class="mb-16">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-2xl font-bold text-primary-dark">From the Terminal</h2>
+        <span class="badge badge-secondary">Coming soon</span>
+      </div>
+      <p class="text-gray-700 mb-6">The <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> will put the Validator behind a single command, for your terminal and your CI pipeline. The CLI is not built yet, so the command and its formatting are a preview. The diagnostics are not: each one is what the Validator reports for that document today.</p>
 
-    <!-- Validating Documents -->
-    <section id="validating" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Validating Arazzo Documents</h2>
-      <p class="text-gray-700 mb-4">Two functions cover every input shape: <code class="bg-gray-100 px-1 rounded">validateURI</code> for file paths and URLs, and the lower-level <code class="bg-gray-100 px-1 rounded">validate</code> for an in-memory <code class="bg-gray-100 px-1 rounded">TextDocument</code>.</p>
-
-      <h3 id="from-file" class="text-lg font-semibold text-primary-dark mb-3">From a file</h3>
-      <pre class="code-block mb-6"><code class="language-js">import { validateURI, DiagnosticSeverity } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('/path/to/arazzo.yaml');</code></pre>
-
-      <h3 id="from-url" class="text-lg font-semibold text-primary-dark mb-3">From a URL</h3>
-      <pre class="code-block mb-6"><code class="language-js">import { validateURI } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('https://example.com/arazzo.yaml');</code></pre>
-
-      <h3 id="from-text-document" class="text-lg font-semibold text-primary-dark mb-3">From an in-memory document</h3>
-      <p class="text-gray-700 mb-3">When you already have document content in memory, use <code class="bg-gray-100 px-1 rounded">validate</code> with <code class="bg-gray-100 px-1 rounded">createTextDocument</code>:</p>
-      <pre class="code-block mb-6"><code class="language-js">import { validate, createTextDocument } from '@usearazzo/validator';
-
-const content = `
-arazzo: '1.0.1'
-info:
-  title: My Workflow
-  version: '1.0.0'
-sourceDescriptions:
-  - name: myApi
-    type: openapi
-    url: https://example.com/openapi.json
-workflows:
-  - workflowId: myWorkflow
-    steps:
-      - stepId: step1
-        operationId: myApi.getUsers
-`;
-
-const textDocument = createTextDocument('file:///path/to/arazzo.yaml', content);
-const diagnostics = await validate(textDocument);</code></pre>
-
-      <!-- terminal example -->
-      <p class="text-gray-600 text-sm mb-3">Every diagnostic is <a href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">LSP-compatible</a>, so it carries a precise range, a severity, and a numeric code, the same shape a VS Code extension would render inline. Illustrative shape, not the literal output of a specific document:</p>
-      <div class="terminal mb-8" role="img" aria-label="Illustrative diagnostics for an Arazzo document: line 3, a missing 'version' field (error); line 9, an operationId that does not resolve (error). Summary: 2 problems, 2 errors.">
+      <div class="terminal mb-4">
         <div class="terminal-titlebar">
           <span class="terminal-dot terminal-dot-red"></span>
           <span class="terminal-dot terminal-dot-yellow"></span>
           <span class="terminal-dot terminal-dot-green"></span>
-          <span class="terminal-title">diagnostics (illustrative)</span>
+          <span class="terminal-title">usearazzo validate (preview)</span>
         </div>
-<pre class="terminal-body">arazzo.yaml
-  <span class="t-loc">3:3-3:9  </span>  <span class="t-error">error</span>  <span class="t-msg">Info Object should always have a 'version'</span>
-  <span class="t-loc">9:24-9:33</span>  <span class="t-error">error</span>  <span class="t-msg">operationId 'myApi.getUsers' could not be resolved</span>
+<!-- Two runs. JS types each command and reveals its output in a loop; without JS (or with
+     reduced motion) the runs render stacked. Diagnostics are verbatim validateURI output for
+     the two sample documents, with ranges shown 1-based. -->
+<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Preview of the planned validate command on two Arazzo documents" data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">adopt-a-pet.arazzo.yaml</span></span>
+<span class="t-file">adopt-a-pet.arazzo.yaml</span>
+  <span class="t-loc">2:1-2:5    </span>  <span class="t-error">error</span>  <span class="t-code">9010300</span>  <span class="t-msg">should always have a 'version'</span>
+  <span class="t-loc">15:9-19:42 </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
+  <span class="t-loc">20:9-27:1  </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
+  <span class="t-loc">26:21-26:34</span>  <span class="t-error">error</span>  <span class="t-code">9070401</span>  <span class="t-msg">Success action "stepId" must reference an existing step in the same workflow.</span>
 
-<span class="t-fail">&#10006; 2 problems (2 errors)</span></pre>
+<span class="t-fail">&#10006; 4 problems (4 errors)</span></span><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">onboarding.arazzo.yaml</span></span>
+<span class="t-file">onboarding.arazzo.yaml</span>
+  <span class="t-loc">16:9-17:32</span>  <span class="t-warn">warning</span>  <span class="t-code">9050201</span>  <span class="t-msg">Step 'description' should be present and non-empty string.</span>
+
+<span class="t-warnsum">&#9888; 1 problem (1 warning)</span></span></pre>
       </div>
+      <p class="text-gray-600 text-sm">Until the CLI lands, the same diagnostics are one function call away. See <a href="#installation" class="text-primary-light underline hover:no-underline">Installation</a>.</p>
     </section>
 
-    <!-- Validation options -->
-    <section id="options" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Validation Options</h2>
-
-      <h3 id="language-service-context" class="text-lg font-semibold text-primary-dark mb-3">Customizing language service context</h3>
-      <p class="text-gray-700 mb-3">Both functions accept an optional context parameter:</p>
-      <pre class="code-block mb-6"><code class="language-js">import { validateURI } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('/path/to/arazzo.yaml', {
-  validationContext: {
-    jsonSchemaValidation: true,   // Opt in to JSON Schema validation (default: false)
-    semanticValidation: true,     // Perform semantic validation (default: true)
-    referenceValidation: true,    // Validate references (default: true)
-    semanticLinting: true,        // Apply linting rules (default: true)
-    betterAjvErrors: true,        // Use improved error messages (default: true)
-  },
-  parseContext: {
-    fileAllowList: ['*'],         // Glob patterns for allowed files (default: ['*'])
-    arazzo: {
-      sourceDescriptionsResolution: true, // Resolve source descriptions (default: true)
-    },
-  },
-});</code></pre>
-      <p class="text-gray-700 mb-4"><code class="bg-gray-100 px-1 rounded">jsonSchemaValidation</code> is off by default. Turning it on adds structural checks from the Arazzo JSON Schema, which mostly catch malformed Reusable Object references. The cost is duplicate output, because the linting rules already report many of the same problems.</p>
-      <p class="text-gray-700 mb-4"><code class="bg-gray-100 px-1 rounded">referenceValidation</code> checks that local <code class="bg-gray-100 px-1 rounded">$ref</code> pointers in <code class="bg-gray-100 px-1 rounded">workflow.inputs</code> and <code class="bg-gray-100 px-1 rounded">components.inputs</code> point at something that exists.</p>
-
-      <p class="text-gray-700 mb-4">Relative <code class="bg-gray-100 px-1 rounded">sourceDescriptions[].url</code> entries need a <code class="bg-gray-100 px-1 rounded">baseURI</code> to resolve against. <code class="bg-gray-100 px-1 rounded">validateURI</code> works one out from the file location. <code class="bg-gray-100 px-1 rounded">validate</code> cannot, because its <code class="bg-gray-100 px-1 rounded">TextDocument</code> may only exist in memory, so pass <code class="bg-gray-100 px-1 rounded">baseURI</code> yourself.</p>
-
-      <h3 id="uri-resolution" class="text-lg font-semibold text-primary-dark mt-8 mb-3">Customizing URI resolution</h3>
-      <p class="text-gray-700 mb-4"><code class="bg-gray-100 px-1 rounded">validateURI</code> canonicalizes its input into an absolute URI before anything else, so a relative path, an absolute path, and any legal form of a <code class="bg-gray-100 px-1 rounded">file:</code> URI all land on the same location. That is what makes relative references inside the document, such as <code class="bg-gray-100 px-1 rounded">sourceDescriptions[].url: ./openapi.yaml</code>, resolve the same way no matter how you named the file.</p>
-      <p class="text-gray-700 mb-3">To fetch the document it reuses the file and HTTP resolvers from <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a>, which sets the HTTP resolver to a 15 second timeout, 5 redirects, and no credentials. A third parameter overrides that. Note that <code class="bg-gray-100 px-1 rounded">resolverOpts</code> is not a fixed set of options: its entries are merged onto the resolver instance, so the keys worth setting are the resolver's own properties, which for the HTTP resolver are <code class="bg-gray-100 px-1 rounded">timeout</code>, <code class="bg-gray-100 px-1 rounded">redirects</code>, <code class="bg-gray-100 px-1 rounded">withCredentials</code>, and <code class="bg-gray-100 px-1 rounded">cache</code>.</p>
-      <pre class="code-block mb-6"><code class="language-js">import { validateURI } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('https://example.com/arazzo.yaml', {}, {
-  resolverOpts: {
-    timeout: 10000, // HTTP timeout in milliseconds
-  },
-});</code></pre>
-
+    <!-- What it checks -->
+    <section id="checks" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-6">What It Checks</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="product-card">
+          <h3 class="product-card-title">Every Arazzo object</h3>
+          <p class="product-card-description">Required fields, field types, and allowed values on every object, from the document root to criteria and actions. IDs must be unique, and the steps and workflows a document points at must exist in it. Runtime expressions must parse.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">The version you wrote</h3>
+          <p class="product-card-description">Each document is checked against the Arazzo version in its own <code class="bg-gray-100 px-1 rounded">arazzo</code> field. A <code class="bg-gray-100 px-1 rounded">dependsOn</code> on a step passes in 1.1.0 and is reported in 1.0.1.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Diagnostics your tools understand</h3>
+          <p class="product-card-description">Every problem is a Language Server Protocol diagnostic: a range, a severity, a stable numeric code, and a message. Editors underline it, CI counts it, and your code can match on it.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Ready for untrusted documents</h3>
+          <p class="product-card-description">Only local JSON and YAML files are read. For a document you did not write, one option turns off everything beyond the document itself; another confines reads to a single directory.</p>
+        </div>
+      </div>
+      <p class="text-gray-700 mt-6">The <a href="{{ '/docs/validator/#rules' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference lists every rule</a>, with its code, severity, and message.</p>
     </section>
 
-    <!-- Security considerations -->
-    <section id="security" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Security Considerations</h2>
-      <p class="text-gray-700 mb-4">
-        Two allow lists gate file access, at different layers. The resolver behind <code class="bg-gray-100 px-1 rounded">validateURI</code> only reads paths matching its patterns, which by default admit local <code class="bg-gray-100 px-1 rounded">.json</code>, <code class="bg-gray-100 px-1 rounded">.yaml</code>, and <code class="bg-gray-100 px-1 rounded">.yml</code> files and nothing else. <code class="bg-gray-100 px-1 rounded">parseContext.fileAllowList</code> gates what the language service may open while it resolves source descriptions during semantic linting, and defaults to <code class="bg-gray-100 px-1 rounded">['*']</code>, which matches anything. <code class="bg-gray-100 px-1 rounded">sourceDescriptionsResolution</code> is also on by default, so external documents named in the Arazzo document are fetched and parsed.
-      </p>
-      <p class="text-gray-700 mb-3">When validating untrusted documents, restrict file access:</p>
-      <pre class="code-block"><code class="language-js">const diagnostics = await validateURI('/path/to/arazzo.yaml', {
-  parseContext: {
-    fileAllowList: [],  // Disable file access
-    arazzo: {
-      sourceDescriptionsResolution: false, // Disable source description resolution
-    },
-  },
-});</code></pre>
-    </section>
+    <!-- Installation -->
+    <section id="installation" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Installation</h2>
+      <pre class="code-block mb-6"><code class="language-bash">npm install @usearazzo/validator</code></pre>
+      <p class="text-gray-700 mb-3">Point it at a file or a URL, and count the errors:</p>
+      <pre class="code-block mb-6"><code class="language-js">import { validateURI, DiagnosticSeverity } from '@usearazzo/validator';
 
-    <!-- Working with diagnostics -->
-    <section id="diagnostics" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Working with Diagnostics</h2>
-      <p class="text-gray-700 mb-4">Both validation functions return an array of <a href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Diagnostic</a> objects compatible with VS Code and the Language Server Protocol.</p>
-      <pre class="code-block"><code class="language-js">import { validateURI, DiagnosticSeverity } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('/path/to/arazzo.yaml');
+const diagnostics = await validateURI('./adopt-a-pet.arazzo.yaml');
 const errors = diagnostics.filter((d) => d.severity === DiagnosticSeverity.Error);
-const warnings = diagnostics.filter((d) => d.severity === DiagnosticSeverity.Warning);
 const isValid = errors.length === 0;</code></pre>
+      <p class="text-gray-700">Content already in memory, options, the shape of a diagnostic, and validating documents you do not trust are all in the <a href="{{ '/docs/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a>.</p>
     </section>
 
-    <!-- Built With -->
+    <!-- Rest of the Toolkit -->
     <section id="toolkit" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-6">Rest of the Toolkit</h2>
       <div class="grid md:grid-cols-2 gap-6">
@@ -251,35 +183,69 @@ const isValid = errors.length === 0;</code></pre>
         </div>
       </div>
       <p class="text-gray-500 text-sm mt-6">
-        Under the hood, the Validator uses <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> to load and resolve referenced files.
+        Under the hood, the Validator uses <a href="{{ '/docs/parser/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> to fetch the documents it checks.
       </p>
     </section>
 
     <!-- FAQ -->
     <section id="faq" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-6">Frequently Asked Questions</h2>
-      <div class="space-y-6">
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Can I install the Validator today?</h3>
-          <p class="text-gray-700">Not from npm. <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> has not been published yet and is under heavy development inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo. It will publish once its API stabilizes.</p>
+      <dl class="divide-y divide-gray-200 border-y border-gray-200">
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-1">
+              <span>Can I install the Validator today?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-1" class="faq-answer mt-3"><p class="text-gray-700">Yes. Run <code class="bg-gray-100 px-1 rounded">npm install @usearazzo/validator</code>. It is published as an alpha, so the API may still change before the stable release.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Is the Validator free?</h3>
-          <p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> is free, open-source, and licensed under Apache 2.0, and it will stay that way once published.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-2">
+              <span>Is there a command-line tool?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Not yet. The planned <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> will wrap the Validator in a <code class="bg-gray-100 px-1 rounded">validate</code> command. Until then, call the library from a script.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">What does it check?</h3>
-          <p class="text-gray-700">Semantic validation against the Arazzo specification, semantic linting, and reference validation, which checks that local <code class="bg-gray-100 px-1 rounded">$ref</code> pointers inside <code class="bg-gray-100 px-1 rounded">workflow.inputs</code> and <code class="bg-gray-100 px-1 rounded">components.inputs</code> resolve to a target that exists. JSON Schema (AJV) validation is available on top of that, opt-in.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
+              <span>Is the Validator free?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> is free, open-source, and licensed under Apache 2.0.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Which Arazzo versions does it support?</h3>
-          <p class="text-gray-700">Arazzo 1.0.0, 1.0.1, and 1.1.0.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-4">
+              <span>What does it check?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-4" class="faq-answer mt-3"><p class="text-gray-700">Every Arazzo object against the specification: required fields, types, unique IDs, steps and workflows that must exist in the document, and runtime expression syntax. It also checks that local <code class="bg-gray-100 px-1 rounded">$ref</code> pointers in JSON Schemas resolve. JSON Schema validation is available on top, opt-in. The <a href="{{ '/docs/validator/#rules' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> lists every rule.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Is it safe to run on documents I don't fully trust?</h3>
-          <p class="text-gray-700">By default the validator can read any local file and will fetch external source descriptions referenced by the document. When validating untrusted input, set <code class="bg-gray-100 px-1 rounded">fileAllowList: []</code> and <code class="bg-gray-100 px-1 rounded">sourceDescriptionsResolution: false</code> to disable both.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-5">
+              <span>Which Arazzo versions does it support?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-5" class="faq-answer mt-3"><p class="text-gray-700">Arazzo 1.0.0, 1.0.1, and 1.1.0.</p></dd>
         </div>
-      </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-6">
+              <span>Is it safe to run on documents I don't fully trust?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-6" class="faq-answer mt-3"><p class="text-gray-700">By default it reads only local <code class="bg-gray-100 px-1 rounded">.json</code>, <code class="bg-gray-100 px-1 rounded">.yaml</code>, and <code class="bg-gray-100 px-1 rounded">.yml</code> files, and fetches the source descriptions a document names. For untrusted input, set <code class="bg-gray-100 px-1 rounded">fileAllowList: []</code> and <code class="bg-gray-100 px-1 rounded">sourceDescriptionsResolution: false</code>, or <a href="{{ '/docs/validator/#untrusted-directory' | relative_url }}" class="text-primary-light underline hover:no-underline">confine reads to one directory</a>.</p></dd>
+        </div>
+      </dl>
     </section>
     <script type="application/ld+json">
     {
@@ -291,7 +257,15 @@ const isValid = errors.length === 0;</code></pre>
           "name": "Can I install the Validator today?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not from npm. @usearazzo/validator has not been published yet and is under heavy development inside the arazzo-toolkit monorepo. It will publish once its API stabilizes."
+            "text": "Yes. Run npm install @usearazzo/validator. It is published as an alpha, so the API may still change before the stable release."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a command-line tool?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not yet. The planned UseArazzo CLI will wrap the Validator in a validate command. Until then, call the library from a script."
           }
         },
         {
@@ -299,7 +273,7 @@ const isValid = errors.length === 0;</code></pre>
           "name": "Is the Validator free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. @usearazzo/validator is free, open-source, and licensed under Apache 2.0, and it will stay that way once published."
+            "text": "Yes. @usearazzo/validator is free, open-source, and licensed under Apache 2.0."
           }
         },
         {
@@ -307,7 +281,7 @@ const isValid = errors.length === 0;</code></pre>
           "name": "What does it check?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Semantic validation against the Arazzo specification, semantic linting, and reference validation, which checks that local $ref pointers inside workflow.inputs and components.inputs resolve to a target that exists. JSON Schema (AJV) validation is available on top of that, opt-in."
+            "text": "Every Arazzo object against the specification: required fields, types, unique IDs, steps and workflows that must exist in the document, and runtime expression syntax. It also checks that local $ref pointers in JSON Schemas resolve. JSON Schema validation is available on top, opt-in. The API reference lists every rule."
           }
         },
         {
@@ -323,7 +297,7 @@ const isValid = errors.length === 0;</code></pre>
           "name": "Is it safe to run on documents I don't fully trust?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "By default the validator can read any local file and will fetch external source descriptions referenced by the document. When validating untrusted input, set fileAllowList: [] and sourceDescriptionsResolution: false to disable both."
+            "text": "By default it reads only local .json, .yaml, and .yml files, and fetches the source descriptions a document names. For untrusted input, set fileAllowList: [] and sourceDescriptionsResolution: false, or confine reads to one directory."
           }
         }
       ]
