@@ -3,6 +3,7 @@ title: "Arazzo Validator API Reference: @usearazzo/validator"
 description: "Validate and lint Arazzo documents in JavaScript, with LSP diagnostics. Every function, option, error, and rule of @usearazzo/validator."
 lead: "Validate and lint Arazzo documents in JavaScript, and get Language Server Protocol diagnostics back. Every function, option, diagnostic, error, and rule of @usearazzo/validator."
 date: 2026-10-03
+last_modified_at: 2026-10-04
 status: Published
 package:
   name: "@usearazzo/validator"
@@ -294,7 +295,7 @@ Warnings and hints are advice, not violations. A missing `description` on a work
 | `apilint` | `9000001` | The document is [not Arazzo](#not-detected). |
 | `apilint` | A generated string | A `$ref` whose target does not exist (message `local reference not found`). |
 | `syntax` | `0` | A JSON syntax error. |
-| `Arazzo 1.0 Schema` | `'json-schema'` | [JSON Schema validation](#validation-context), when enabled. |
+| `Arazzo 1.0 Schema`, `Arazzo 1.1 Schema` | `'json-schema'` | [JSON Schema validation](#validation-context), when enabled. The source names the schema version the document was checked against. |
 
 The code of an unresolvable `$ref` is different on every run, so it cannot be matched on. Match on the message instead.
 
@@ -313,7 +314,7 @@ Five options under `validationContext` decide which checks run and how their mes
 | `semanticValidation` | `true` | Every [rule](#rules) runs. |
 | `semanticLinting` | `true` | Only rules marked as lint rules run. No Arazzo rule is, so on its own it adds nothing. |
 | `referenceValidation` | `true` | Every local `$ref` inside a JSON Schema, such as `#/components/inputs/adopter`, must point at something that exists. External `$ref`s to other files are not checked. |
-| `jsonSchemaValidation` | `false` | Arazzo 1.0.x documents are also checked against the Arazzo 1.0 JSON Schema. Arazzo 1.1.0 documents get no JSON Schema check. |
+| `jsonSchemaValidation` | `false` | The document is also checked against the Arazzo JSON Schema for its version: 1.0 for Arazzo 1.0.x documents, 1.1 for Arazzo 1.1.0. |
 | `betterAjvErrors` | `true` | Friendlier messages for JSON Schema validation. |
 
 Turning `semanticValidation` off therefore turns every rule off, whatever `semanticLinting` says.
