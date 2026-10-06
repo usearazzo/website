@@ -310,6 +310,15 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   `@resvg/resvg-js` rendered the same SVG to within 95 differing pixels and is a usable fallback.)
   The parser post's "a tutorial the day it lands" sentence is about the Validator and the Runner
   ("Each"), not the resolver, so the resolver post owes no apology for having no tutorial.
+- The validator release announcement, `_posts/2026-10-06-arazzo-validator-on-npm.md`, was DRAFTED by AI
+  on 2026-10-06 at the owner's request, on the resolver post's template. Angle: an empty diagnostics
+  list has to mean something; findings grouped as silence (toolkit#202 1.1.0 schema skipped, #204
+  README promised an external `$ref` check), noise (#17 Reusable Objects; #16 OpenAPI misdetection was
+  cut, the owner has never seen it happen in practice), and reach (#201 `['*']` allow list). "What comes next" carries
+  the owner's rule roadmap (runtime expressions in position, criteria, JSONPath/Pointers,
+  operationIds against source descriptions, #197; goal: catch as much as possible without running
+  against real APIs) and the CLI as coming soon (#7 removed the validator's own CLI). Hero is the
+  third slab sibling (all three lit, check mark on top). Prose is the owner's to rewrite.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
