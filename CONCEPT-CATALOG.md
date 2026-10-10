@@ -179,8 +179,8 @@ and the natural next concept to build out once it publishes, using the
 Parsing concept as the template (guide + tutorial + reference together).
 
 **Backlog / candidate topics (do not draft until published):**
-- A guide-stage (pre-publish) piece on what "semantic" validation catches
-  that schema validation alone doesn't — this one *can* be written now,
+- DONE as a blog Explainer (2026-10, `validate-arazzo-documents-from-the-command-line`):
+  what "semantic" validation catches that schema validation alone doesn't — this one *can* be written now,
   since it doesn't require the package to exist, only honest explanation
   of the problem space.
 - Once published: a getting-started tutorial for validating a real Arazzo
@@ -264,20 +264,23 @@ resolver npm announcement post, and the "Resolving Arazzo Documents" guide
 
 ## CLI (cross-cutting)
 
-**Status:** Design-sketch only. `@usearazzo/cli` does not exist yet in
-`arazzo-toolkit/packages/`.
+**Status:** Published 2026-10-10 as an alpha with one command, `validate`
+(wraps the Validator). `run-workflow` and `run-operation` wait for the Runner; Discovery commands are an idea (toolkit #84).
+Reference at `/docs/cli/`, release post `2026-10-10-arazzo-cli-on-npm`, Explainer
+`validate-arazzo-documents-from-the-command-line`.
 
 **Why it matters:** It's the one-command-across-the-toolchain story, and
 the concept that ties Parsing, Validating, and Running together for
 someone who just wants a command line, not a library.
 
-**What it covers:** `validate` and `run` as a single interface built on
-the Validator and Runner libraries underneath.
+**What it covers:** `validate` today; `run-workflow`, `run-operation`, and
+the discovery commands planned (toolkit #84), built on the Validator and
+Runner libraries underneath.
 
 **How it connects to UseArazzo:** Genuinely "Built With" the other two
 products, unlike Validator or Runner's pages (where that framing was
 backwards).
 
-**Backlog / candidate topics:** none yet — too early; revisit once
-the Runner publishes too and the CLI has something real underneath it
-to describe.
+**Backlog / candidate topics:** "Validate Arazzo workflows in CI" (a
+tutorial: GitHub Actions step, `--fail-severity`, JSON report as an
+artifact) is the obvious first one now that `validate` is real.

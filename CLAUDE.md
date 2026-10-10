@@ -9,20 +9,28 @@ Initiative's specification for multi-step API workflows. Hosted on GitHub Pages 
 `https://usearazzo.com/`.
 
 Three products (the toolkit is pre-1.0; APIs may change before the stable release):
-- **CLI** — `@usearazzo/cli`, one command-line interface across the toolchain. **Not yet published**
-  — the page at `/cli/` describes the planned `validate`/`run` interface honestly as in-development,
-  built from the two libraries below. Do not present it as installable.
+- **CLI** — `@usearazzo/cli`, one command-line interface across the toolchain, binary `usearazzo`.
+  **Published as an alpha (2026-10-10) with one command, `validate`** (wraps the Validator's
+  `validateURI`). Planned command names come from toolkit#84, the CLI proposal (owner, 2026-10-10:
+  never `init`, and `run-workflow`/`run-operation` over #84's `execute-*`, no aliases advertised):
+  Execution (`run-workflow`, `run-operation`, wrap the Runner, In development) and Discovery (`list-workflows`, `describe-workflow`, `analyze-workflow`, the last
+  writing the "execution profile" of toolkit#82, Idea). The page says the names may change.
+  Reference at `/docs/cli/`, called the "CLI reference" everywhere (a CLI has no API; its primary CTA
+  is "Read the CLI reference"); every output on it and on `/cli/` was captured from the npm copy
+  (1.0.1-alpha.6) on 2026-10-10. alpha.7 followed the same day with identical `src/`, so the
+  outputs still hold (a final review re-ran them all against alpha.7 on 2026-10-10). Known quirk: a YAML syntax error has `code: 0`, so stylish output
+  leaves its code column blank.
 - **Validator** — `@usearazzo/validator`, **published as an alpha** (2026-10-04). Semantic
   validation and linting for Arazzo documents, LSP-compatible diagnostics, opt-in JSON Schema
   validation. Its product page sells the idea and hands the details to `/docs/validator/`, the API
-  reference; the page's terminal demo previews the unbuilt CLI and is labelled "Coming soon".
+  reference; the page's terminal demo is real `@usearazzo/cli` output (same two runs as `/cli/`).
 - **Runner** — `@usearazzo/runner`, **not yet published**, under heavy development. Its `package.json`
   carries `"private": true`, which is a publish guard, not secrecy: the source is public in the
   monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
   workflows against live APIs described by OpenAPI source descriptions, step by step.
 
-**Only `@usearazzo/parser` and `@usearazzo/resolver` are on npm** (parser published 2026-09-08; resolver published 2026-09-18 as `1.0.1-alpha.2`). The other three
-package names 404 on the registry — verify with
+**`@usearazzo/parser`, `@usearazzo/resolver`, `@usearazzo/validator`, and `@usearazzo/cli` are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10). `@usearazzo/runner`
+404s on the registry — verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
 trusting `"private": false` in a `package.json`, which only means publish*able*. Never add
 `npm install` instructions, "Published" badges, or `npmjs.com/package/@usearazzo/*` links (they are
@@ -168,7 +176,7 @@ pages/
                                  # They also cover the zero-guides case, so the old empty-state
                                  # branch is gone.
                                  # Package cards are all static (badge, name, one-line blurb,
-                                 # filled "API reference" for published, outline "README on
+                                 # filled "API reference" for published ("CLI reference" on the CLI card), outline "README on
                                  # GitHub" for the rest). No spec
                                  # section: the Ecosystem page's #spec covers it
   ecosystem.html                 # "Arazzo Ecosystem" registry of EXTERNAL resources: ONE page
@@ -187,9 +195,9 @@ pages/
                                  # curl-verified before listing; never invent one. Entry
                                  # snippet and acceptance bar in CONTRIBUTING.md. UseArazzo's
                                  # own content is never listed; linked in nav and footer.
-  cli.html                       # CLI product page — design sketch only, package does not exist
+  cli.html                       # CLI product page, published (validate); Execution In development, Discovery Idea
   runner.html                    # Runner product page, sidebar nav, inline SVG architecture + JS API
-  validator.html                 # Validator product page, sidebar nav, published; CLI preview demo + install
+  validator.html                 # Validator product page, sidebar nav, published; real CLI demo + install
   about.html                     # Mission, team, track record, "Built on SpecLynx" credit
   privacy.html, terms.html       # Legal pages
 tailwind.config.js               # Content globs for the generated Tailwind file; regenerate command
@@ -266,10 +274,8 @@ JavaScript in `main.js` auto-generates `#` anchor links on headings with IDs and
 
 ### Schema.org JSON-LD Structured Data
 - **Organization** — sitewide via `_includes/schema-organization.html` (name, logo, email, sameAs). Carries `"@id"` (the site root URL) so other JSON-LD blocks can reference it, e.g. blog posts' `"publisher": { "@id": ... }`
-- **SoftwareApplication** — on `/validator/` and `/runner/` only (category, license,
-  author). Deliberately **absent from `/cli/`**: that block asserts a real application with a
-  zero-price `Offer`, and no `@usearazzo/cli` source exists yet, so it would tell crawlers something
-  the visible page denies. Add it when the package does.
+- **SoftwareApplication** — on `/validator/`, `/runner/`, and (since the package published
+  2026-10-10) `/cli/` (category, license, author).
 - **BreadcrumbList** — on each product page (Home > Product Name)
 - **Person** — on About page (both co-founders with jobTitle, URLs, sameAs)
 - **FAQPage** — on each product page
@@ -319,6 +325,26 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   operationIds against source descriptions, #197; goal: catch as much as possible without running
   against real APIs) and the CLI as coming soon (#7 removed the validator's own CLI). Hero is the
   third slab sibling (all three lit, check mark on top). Prose is the owner's to rewrite.
+- The CLI release announcement, `_posts/2026-10-10-arazzo-cli-on-npm.md`, was DRAFTED by AI on
+  2026-10-10 at the owner's request, on the validator post's template. Angle: a command line is a
+  contract. Sourced from toolkit #220 (the PR), #7 (validator CLI removed), #84 (CLI proposal), #219
+  (JS config deferred: it would run code from the cwd). Facts in it were run against the npm copy:
+  exit codes, `--fail-severity`, `--max-problems` never masking a failure, `-o` refusing the input
+  (symlinks too), `--help` in ~0.11 s. The 64 KB pipe-truncation test is the PR's claim. Hero is the
+  fourth slab sibling (dark terminal tile with a prompt on top). Prose is the owner's to rewrite.
+  The 2026-08-18 and validator posts still say the CLI is a sketch / coming soon: dated history, left
+  as written.
+- The Validator-gets-a-CLI post, `_posts/2026-10-11-validate-arazzo-documents-from-the-command-line.md`,
+  DRAFTED by AI on 2026-10-10 at the owner's request, for his LinkedIn announcement the next day.
+  Dated 2026-10-11 and held back from the 2026-10-10 push so it does not go live a day early
+  (GitHub Pages only builds on push, and Jekyll hides future posts; preview with `--future`). Explainer for workflow
+  practitioners, separate from the CLI release post (which is about the CLI existing). Problem first:
+  the Ubiquiti manual-review story (moved here from the CLI post, sourced from his 2021 GitHub
+  Actions post), then a workflow that is valid YAML and passes JSON Schema (`semanticValidation:
+  false`, `jsonSchemaValidation: true` prints `No problems found`) but has two one-character
+  mistakes (`goto` to `adopt-pets`, `$response.body#status`), both caught by `validate`. Every
+  output is from a real run. Hero: the validator slab inside a terminal window. No wordmark image
+  (owner). Prose is the owner's to rewrite.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
@@ -616,9 +642,9 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 
 This is real, currently-shipping (or currently-not-shipping) software. When updating product pages:
 - Don't add commands, flags, or install instructions that don't exist in the actual package —
-  check `arazzo-toolkit/packages/{validator,runner}/README.md` and `package.json` first.
+  check `arazzo-toolkit/packages/{cli,validator,runner}/README.md` and `package.json` first.
 - Keep the "not yet published" framing on every product page until that package actually resolves
-  on the npm registry. The Validator resolves (2026-10-04); the CLI and the Runner do not. `@usearazzo/cli` does not even exist in `arazzo-toolkit/packages/` yet.
+  on the npm registry. The Validator (2026-10-04) and the CLI (2026-10-10) resolve; the Runner does not.
 - Keep the Runner page's "not yet published" framing until `@usearazzo/runner`'s `package.json`
   drops `"private": true` and the package resolves on the npm registry.
 - **Package metadata does not belong on product pages.** Node engine floors, transitive dependency
@@ -640,6 +666,9 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 
 ## Writing style
 
+- **The owner's voice is written down in the `owner-voice` skill** (`.claude/skills/owner-voice/`).
+  Load it before drafting any post, guide, or tutorial prose. It is distilled from his vladimirgorej.com
+  posts from 2022 and earlier (owner, 2026-10-10).
 - **`description` front matter is at most 160 characters** (2026-10-02; Bing Webmaster Tools flags
   longer ones as an SEO error, and Google truncates them). It becomes the meta description and the
   JSON-LD `description`. On guides, tutorials, and reference pages the layout also shows it as the
@@ -672,23 +701,23 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 
 The three product pages share a shape. Keep them parallel when editing one.
 
-- **Status badge ladder**: `Published` / `In development` / `Idea`. The Validator is `Published`;
-  the CLI and the Runner are `In development`; `Idea` marks a single unbuilt command (`init`) inside
-  an otherwise settled page. `Coming soon` marks a preview of something unbuilt on a published
-  page (the Validator's CLI demo).
+- **Status badge ladder**: `Published` / `In development` / `Idea`. The Validator and the CLI are
+  `Published`; the Runner is `In development`. On `/cli/` each command carries its own badge:
+  `validate` Published, Execution commands In development, Discovery commands Idea. `Coming soon` marks a preview of something
+  unbuilt on a published page (no current use outside the dated 2026-10-06 validator post).
 - **Status callout** directly under the intro paragraph (`bg-[#F0F5E7] border-l-4 border-primary-light`),
   stating plainly what does not exist.
 - **CTA pair**: "View source on GitHub" (primary) and "Follow Discussions" (secondary), both
   pointing at real destinations, never npm.
 - **"Availability"**, not "Installation", while nothing is installable. An install heading promises
   a command that does not exist.
-- **A published product page** (the Validator since 2026-10-04) drops the status callout, pairs
-  "Read the API reference" (primary) with "View source on GitHub" (secondary), and has an
+- **A published product page** (the Validator since 2026-10-04, the CLI since 2026-10-10) drops the status callout, pairs
+  "Read the API reference" (primary; "Read the CLI reference" on `/cli/`) with "View source on GitHub" (secondary), and has an
   "Installation" section with the real `npm install` line. It sells the idea and hands every
   option and edge case to its `/docs/<package>/` reference instead of repeating the README. The
-  rules above still apply to `/runner/` and `/cli/` until their packages publish.
+  rules above still apply to `/runner/` until it publishes.
 - **"Rest of the Toolkit"** for the sibling-product cards. "Built With" is only correct on `/cli/`,
-  which genuinely will be built with the other two; on `/validator/` and `/runner/` it was backwards.
+  which is genuinely built with the other two (the Validator today, the Runner once published); on `/validator/` and `/runner/` it was backwards.
   Each of those pages ends with an "Under the hood, X uses ..." line naming the real dependency.
 - **First FAQ answers "can I install this today?"** in the visible HTML and in the `FAQPage` JSON-LD.
 - **SpecLynx is not mentioned on product pages.** It appears only in the About page's "Built on
