@@ -84,36 +84,31 @@ permalink: /validator/
 
     <!-- From the terminal -->
     <section id="terminal" class="mb-16">
-      <div class="flex items-center gap-3 mb-4">
-        <h2 class="text-2xl font-bold text-primary-dark">From the Terminal</h2>
-        <span class="badge badge-secondary">Coming soon</span>
-      </div>
-      <p class="text-gray-700 mb-6">The <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> will put the Validator behind a single command, for your terminal and your CI pipeline. The CLI is not built yet, so the command and its formatting are a preview. The diagnostics are not: each one is what the Validator reports for that document today.</p>
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">From the Terminal</h2>
+      <p class="text-gray-700 mb-6">The <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> puts the Validator behind a single command, for your terminal and your CI pipeline. The first document has two steps with the same ID, an error. The second has a step without a description, a warning.</p>
 
       <div class="terminal mb-4">
         <div class="terminal-titlebar">
           <span class="terminal-dot terminal-dot-red"></span>
           <span class="terminal-dot terminal-dot-yellow"></span>
           <span class="terminal-dot terminal-dot-green"></span>
-          <span class="terminal-title">usearazzo validate (preview)</span>
+          <span class="terminal-title">usearazzo validate</span>
         </div>
 <!-- Two runs. JS types each command and reveals its output in a loop; without JS (or with
-     reduced motion) the runs render stacked. Diagnostics are verbatim validateURI output for
-     the two sample documents, with ranges shown 1-based. -->
-<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Preview of the planned validate command on two Arazzo documents" data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">adopt-a-pet.arazzo.yaml</span></span>
+     reduced motion) the runs render stacked. Output is verbatim from @usearazzo/cli for the two
+     sample documents (the first is the validator release post's adopt-a-pet.arazzo.yaml). -->
+<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="The validate command on two Arazzo documents" data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">adopt-a-pet.arazzo.yaml</span></span>
 <span class="t-file">adopt-a-pet.arazzo.yaml</span>
-  <span class="t-loc">2:1-2:5    </span>  <span class="t-error">error</span>  <span class="t-code">9010300</span>  <span class="t-msg">should always have a 'version'</span>
-  <span class="t-loc">15:9-19:42 </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
-  <span class="t-loc">20:9-27:1  </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
-  <span class="t-loc">26:21-26:34</span>  <span class="t-error">error</span>  <span class="t-code">9070401</span>  <span class="t-msg">Success action "stepId" must reference an existing step in the same workflow.</span>
+  <span class="t-loc">16:9-18:38</span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
+  <span class="t-loc">19:9-22:1 </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
 
-<span class="t-fail">&#10006; 4 problems (4 errors)</span></span><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">onboarding.arazzo.yaml</span></span>
+<span class="t-fail">&#10006; 2 problems (2 errors)</span></span><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">onboarding.arazzo.yaml</span></span>
 <span class="t-file">onboarding.arazzo.yaml</span>
-  <span class="t-loc">16:9-17:32</span>  <span class="t-warn">warning</span>  <span class="t-code">9050201</span>  <span class="t-msg">Step 'description' should be present and non-empty string.</span>
+  <span class="t-loc">16:9-18:1</span>  <span class="t-warn">warning</span>  <span class="t-code">9050201</span>  <span class="t-msg">Step 'description' should be present and non-empty string.</span>
 
 <span class="t-warnsum">&#9888; 1 problem (1 warning)</span></span></pre>
       </div>
-      <p class="text-gray-600 text-sm">Until the CLI lands, the same diagnostics are one function call away. See <a href="#installation" class="text-primary-light underline hover:no-underline">Installation</a>.</p>
+      <p class="text-gray-600 text-sm">Need the diagnostics in your own code instead? They are one function call away. See <a href="#installation" class="text-primary-light underline hover:no-underline">Installation</a>.</p>
     </section>
 
     <!-- What it checks -->
@@ -172,7 +167,7 @@ const isValid = errors.length === 0;</code></pre>
         <div class="product-card">
           <h3 class="product-card-title">CLI</h3>
           <p class="product-card-description">
-            Will put this library behind a command, so validation runs from a terminal instead of your own code.
+            Puts this library behind a command, so validation runs from a terminal or a CI pipeline instead of your own code.
           </p>
           <a href="{{ '/cli/' | relative_url }}" class="product-card-link">
             Explore CLI
@@ -203,11 +198,11 @@ const isValid = errors.length === 0;</code></pre>
         <div class="py-4">
           <dt>
             <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-2">
-              <span>Is there a command-line tool?</span>
+              <span>Can I run the Validator from the command line?</span>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
-          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Not yet. The planned <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> will wrap the Validator in a <code class="bg-gray-100 px-1 rounded">validate</code> command. Until then, call the library from a script.</p></dd>
+          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Yes. Run <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml</code>. The <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> wraps the Validator, prints every problem with its location, and exits with <code class="bg-gray-100 px-1 rounded">1</code> when there is an error, so it works in CI too. The <a href="{{ '/docs/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI reference</a> lists every option.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -262,10 +257,10 @@ const isValid = errors.length === 0;</code></pre>
         },
         {
           "@type": "Question",
-          "name": "Is there a command-line tool?",
+          "name": "Can I run the Validator from the command line?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not yet. The planned UseArazzo CLI will wrap the Validator in a validate command. Until then, call the library from a script."
+            "text": "Yes. Run npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml. The UseArazzo CLI wraps the Validator, prints every problem with its location, and exits with 1 when there is an error, so it works in CI too. The CLI reference lists every option."
           }
         },
         {

@@ -11,7 +11,7 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser, @usearazzo/resolver, and @usearazzo/validator are on npm as alphas; the CLI and the Runner are not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser, @usearazzo/resolver, @usearazzo/validator, and @usearazzo/cli are on npm as alphas; the Runner is not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
 
 ## Compatibility
 
@@ -27,11 +27,15 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 ### CLI
 
-- [CLI product page]({{ site.url }}{{ site.baseurl }}/cli/): one command-line interface across the toolchain: validate and run workflows on your machine and in CI
-- Not yet published to npm, in development
-- Planned commands: `validate` (wraps @usearazzo/validator), `run` (wraps @usearazzo/runner)
-- Under consideration, not built or decided: `init`, which would read a workflow and write an editable config file covering its inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
-- No cli package exists in the monorepo yet; the page is a design sketch, and feedback on it is welcome in [Discussions](https://github.com/orgs/usearazzo/discussions)
+- [CLI product page]({{ site.url }}{{ site.baseurl }}/cli/): one command-line interface across the toolchain, for the terminal and CI
+- [CLI source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/cli): the package in the monorepo, with its README
+- [@usearazzo/cli CLI reference]({{ site.url }}{{ site.baseurl }}/docs/cli/): every command, option, output format, exit code, and configuration setting
+- Published to npm as an alpha: `npm install --global @usearazzo/cli`, or `npx @usearazzo/cli validate <uri>`
+- `validate <uri>` (wraps @usearazzo/validator): checks a local file, file: URI, or HTTP(S) URL; stylish or JSON output; exits 1 when a problem at or above `--fail-severity` (default `error`) is found
+- Planned, proposed in [toolkit #84](https://github.com/usearazzo/arazzo-toolkit/issues/84) (names may change): `run-workflow` and `run-operation` (will wrap @usearazzo/runner, once it is published)
+- Idea, not built: discovery commands `list-workflows`, `describe-workflow`, and `analyze-workflow`; the last would write an execution profile covering a workflow's inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
+- Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
+- Free, open source (Apache 2.0)
 
 ### Validator
 
@@ -89,10 +93,10 @@ UseArazzo is built end to end on [SpecLynx](https://github.com/speclynx): the se
 
 ## Docs
 
-- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, API reference for each package that has one, and links to the README of each other package in the monorepo
+- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, a reference for each package that has one, and links to the README of each other package in the monorepo
 {% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
 {% endfor %}{% for guide in site.guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
-{% endfor %}{% for ref in site.reference %}- [API reference: {{ ref.package.name }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
+{% endfor %}{% for ref in site.reference %}- [{% if ref.package.name == '@usearazzo/cli' %}CLI reference{% else %}API reference{% endif %}: {{ ref.package.name }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem
 
