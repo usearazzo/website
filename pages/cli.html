@@ -1,11 +1,31 @@
 ---
 prism: true
 layout: base
-title: UseArazzo CLI - Command-Line Tool for Arazzo Workflows
-description: One command-line interface for validating and running Arazzo workflows on your machine and in CI. In development. Track progress and get notified when it ships.
+title: UseArazzo CLI - Validate Arazzo Documents in the Terminal
+description: Validate and lint Arazzo documents from your terminal or CI pipeline, with CI-friendly exit codes. Free and open source, on npm as an alpha.
 permalink: /cli/
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "UseArazzo CLI",
+  "description": "{{ page.description }}",
+  "url": "{{ site.url }}{{ site.baseurl }}{{ page.url }}",
+  "applicationCategory": "DeveloperApplication",
+  "license": "https://opensource.org/licenses/Apache-2.0",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "UseArazzo"
+  }
+}
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -25,8 +45,10 @@ permalink: /cli/
     <nav id="page-sidebar-nav" class="page-sidebar-nav lg:sticky lg:top-[82px] p-6 space-y-4 text-sm">
       <div class="font-bold text-primary-dark mb-4">CLI</div>
       <a href="#overview" class="block text-gray-600 hover:text-primary-light">Overview</a>
-      <a href="#shape" class="block text-gray-600 hover:text-primary-light">The shape we are aiming for</a>
-      <a href="#sequence" class="block text-gray-600 hover:text-primary-light">What has to land first</a>
+      <a href="#terminal" class="block text-gray-600 hover:text-primary-light">From the Terminal</a>
+      <a href="#ci" class="block text-gray-600 hover:text-primary-light">In CI</a>
+      <a href="#commands" class="block text-gray-600 hover:text-primary-light">Commands</a>
+      <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#built-with" class="block text-gray-600 hover:text-primary-light">Built With</a>
       <a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>
     </nav>
@@ -38,88 +60,151 @@ permalink: /cli/
     <section id="overview" class="mb-16">
       <div class="flex items-center gap-3 mb-4">
         <h1 class="text-4xl font-extrabold text-primary-dark">UseArazzo CLI</h1>
-        <span class="badge badge-secondary">In development</span>
+        <span class="badge badge-primary">Published</span>
       </div>
-      <p class="text-xl text-gray-600 mb-6">One command-line interface across the toolchain: validate and run Arazzo workflows on your machine and in CI.</p>
+      <p class="text-xl text-gray-600 mb-6">One command-line interface across the toolchain, for your terminal and your CI pipeline.</p>
 
       <p class="text-gray-700 text-lg mb-6">
-        <code class="bg-gray-100 px-1 rounded">@usearazzo/cli</code> is meant to be the front door to the toolkit: the same <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">validation</a> and <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">execution</a> engines the libraries expose, wrapped in a single binary for your terminal or CI/CD pipeline. It is the package the rest of this page describes, and it has not shipped yet.
+        <code class="bg-gray-100 px-1 rounded">@usearazzo/cli</code> puts the toolkit behind a single <code class="bg-gray-100 px-1 rounded">usearazzo</code> binary. Its first command, <code class="bg-gray-100 px-1 rounded">validate</code>, checks an Arazzo document, local file or remote URL, and prints every problem with its line, its severity, and the rule it broke. The exit code tells your pipeline whether to stop.
       </p>
 
-      <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-6">
-        <p class="text-gray-700">
-          <strong>This package does not exist yet.</strong> There is no <code class="bg-gray-100 px-1 rounded">@usearazzo/cli</code> on npm, and no <code class="bg-gray-100 px-1 rounded">cli</code> package in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo either. Everything below is a design sketch of the interface we intend to build on the <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a> and <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>. The Validator is on npm as an alpha; the Runner is still unpublished and under heavy development. Command names, flags, and output are all subject to change. <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Follow Discussions</a> to hear when it ships.
-        </p>
+      <div class="flex flex-wrap gap-4 mb-8">
+        <a href="{{ '/docs/cli/' | relative_url }}" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
+          Read the CLI reference
+        </a>
+        <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/cli" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
+          View source on GitHub
+        </a>
       </div>
 
-      <p class="text-gray-700 mb-3">The two engines it will wrap are built in the open. The Validator is already on npm:</p>
-      <div class="flex flex-wrap gap-4 mb-8">
-        <a href="{{ '/validator/' | relative_url }}" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
-          Explore Validator
-        </a>
-        <a href="{{ '/runner/' | relative_url }}" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-          Explore Runner
-        </a>
-      </div>
+      <p class="text-gray-700 mb-2">Supported versions:</p>
+      <ul class="text-gray-700 space-y-1 mb-6 ml-4">
+        <li>&#10003; Arazzo 1.0.0, 1.0.1, 1.1.0</li>
+      </ul>
     </section>
 
-    <!-- The shape we are aiming for -->
-    <section id="shape" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">The shape we are aiming for</h2>
-      <p class="text-gray-700 mb-6">Two commands mapped onto the two things the toolkit does as libraries, plus a third we are still thinking through. Nothing here is implemented, and the names are a starting point for discussion rather than a decision.</p>
+    <!-- From the terminal -->
+    <section id="terminal" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">From the Terminal</h2>
+      <p class="text-gray-700 mb-6">Two documents, two runs. The first has two steps with the same ID, which is an error. The second has a step without a description, which is a warning: advice, not a violation.</p>
 
+      <div class="terminal mb-4">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot terminal-dot-red"></span>
+          <span class="terminal-dot terminal-dot-yellow"></span>
+          <span class="terminal-dot terminal-dot-green"></span>
+          <span class="terminal-title">usearazzo validate</span>
+        </div>
+<!-- Two runs. JS types each command and reveals its output in a loop; without JS (or with
+     reduced motion) the runs render stacked. Output is verbatim from @usearazzo/cli for the two
+     sample documents (the first is the validator release post's adopt-a-pet.arazzo.yaml). -->
+<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="The validate command on two Arazzo documents" data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">adopt-a-pet.arazzo.yaml</span></span>
+<span class="t-file">adopt-a-pet.arazzo.yaml</span>
+  <span class="t-loc">16:9-18:38</span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
+  <span class="t-loc">19:9-22:1 </span>  <span class="t-error">error</span>  <span class="t-code">9040403</span>  <span class="t-msg">Every step must have a unique 'stepId' within a workflow.</span>
+
+<span class="t-fail">&#10006; 2 problems (2 errors)</span></span><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">onboarding.arazzo.yaml</span></span>
+<span class="t-file">onboarding.arazzo.yaml</span>
+  <span class="t-loc">16:9-18:1</span>  <span class="t-warn">warning</span>  <span class="t-code">9050201</span>  <span class="t-msg">Step 'description' should be present and non-empty string.</span>
+
+<span class="t-warnsum">&#9888; 1 problem (1 warning)</span></span></pre>
+      </div>
+      <p class="text-gray-600 text-sm">Lines and columns count from 1, so you can jump straight to them in your editor. The number in the third column is the rule's code; the <a href="{{ '/docs/validator/#rules' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator reference lists every rule</a>.</p>
+    </section>
+
+    <!-- In CI -->
+    <section id="ci" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">In CI</h2>
+      <p class="text-gray-700 mb-6">The exit code is the contract. The first run above exits with <code class="bg-gray-100 px-1 rounded">1</code>, the second with <code class="bg-gray-100 px-1 rounded">0</code>, because by default only errors fail a run. A pipeline needs nothing more than the command. Here it is as a complete GitHub Actions workflow, saved as <code class="bg-gray-100 px-1 rounded">.github/workflows/arazzo.yml</code>:</p>
+      <pre class="code-block mb-6"><code class="language-yaml"># .github/workflows/arazzo.yml
+name: Arazzo
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Validate Arazzo workflows
+        run: npx @usearazzo/cli validate workflows/adopt-a-pet.arazzo.yaml</code></pre>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="product-card">
+          <h3 class="product-card-title">Choose what fails</h3>
+          <p class="product-card-description"><code class="bg-gray-100 px-1 rounded">--fail-severity warning</code> makes warnings fail the run too. Run the second document with it, and it exits with <code class="bg-gray-100 px-1 rounded">1</code>.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Hand it to another tool</h3>
+          <p class="product-card-description"><code class="bg-gray-100 px-1 rounded">--json</code> prints the problems as Language Server Protocol diagnostics, and <code class="bg-gray-100 px-1 rounded">-o</code> writes them to a file.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Keep the log short</h3>
+          <p class="product-card-description"><code class="bg-gray-100 px-1 rounded">--max-problems 10</code> prints the first ten. The exit code still counts all of them, so a cap never hides a failure.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Set it once</h3>
+          <p class="product-card-description">A <code class="bg-gray-100 px-1 rounded">usearazzo.yaml</code> in the working directory holds your validation settings, so every run and every teammate uses the same ones.</p>
+        </div>
+      </div>
+      <p class="text-gray-700 mt-6">Every option, the configuration file, and the JSON format are in the <a href="{{ '/docs/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI reference</a>.</p>
+    </section>
+
+    <!-- Commands -->
+    <section id="commands" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Commands</h2>
+      <p class="text-gray-700 mb-6">Every command delegates to a toolkit library, so the CLI and the libraries always agree. One command ships today. The rest are proposed in <a href="https://github.com/usearazzo/arazzo-toolkit/issues/84" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">toolkit #84</a>, and their names and flags may still change.</p>
+
+      <div class="flex items-center gap-3 mb-3">
+        <h3 id="validate-command" class="text-lg font-semibold text-primary-dark">validate</h3>
+        <span class="badge badge-primary">Published</span>
+      </div>
       <pre class="code-block mb-3"><code class="language-bash">usearazzo validate &lt;uri&gt;</code></pre>
       <p class="text-gray-700 mb-8">
-        Check an Arazzo document, local file or remote URL, against the specification, and report every violation with the location that caused it. This is <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/validator</a> behind a command.
+        Check an Arazzo document, given as a path, a <code class="bg-gray-100 px-1 rounded">file:</code> URI, or an HTTP(S) URL, and report every problem with the location that caused it. This is <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/validator</a> behind a command.
       </p>
 
-      <pre class="code-block mb-3"><code class="language-bash">usearazzo run &lt;uri&gt; &lt;workflowId&gt; --input key=value</code></pre>
+      <div class="flex items-center gap-3 mb-3">
+        <h3 id="execution-commands" class="text-lg font-semibold text-primary-dark">Execution</h3>
+        <span class="badge badge-secondary">In development</span>
+      </div>
+      <pre class="code-block mb-3"><code class="language-bash">usearazzo run-workflow &lt;uri&gt; &lt;workflowId&gt; --inputs &lt;json|@file&gt;
+usearazzo run-operation &lt;uri&gt; --operation-id &lt;id&gt;</code></pre>
       <p class="text-gray-700 mb-8">
-        Execute a workflow against live APIs and print the trace of each step in run order, alongside the workflow's outputs and final status. This is <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/runner</a> behind a command.
+        Run a workflow against live APIs and print the result of each step in run order, alongside the workflow's outputs and final status. Or run a single OpenAPI operation, with no Arazzo document at all. Both will be <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/runner</a> behind a command, and they arrive once the Runner is published.
       </p>
 
       <div class="border border-dashed border-gray-300 rounded-lg p-6 mb-8">
         <div class="flex items-center gap-3 mb-3">
-          <h3 id="init-command" class="text-lg font-semibold text-primary-dark">init</h3>
+          <h3 id="discovery-commands" class="text-lg font-semibold text-primary-dark">Discovery</h3>
           <span class="badge badge-secondary">Idea</span>
         </div>
-        <p class="text-gray-700 mb-4">A workflow document tells you what the steps are, but not what <em>you</em> have to bring to run it. Today that means reading the Arazzo document and every OpenAPI source description it pulls in, then assembling credentials and inputs by hand. A third command could do that reading for you and write an editable configuration file instead:</p>
-        <pre class="code-block mb-4"><code class="language-bash">usearazzo init &lt;uri&gt;</code></pre>
-        <p class="text-gray-700 mb-3">What it would work out from the document and its source descriptions:</p>
+        <p class="text-gray-700 mb-4">A workflow document tells you what the steps are, but not what <em>you</em> have to bring to run it. Today that means reading the Arazzo document and every OpenAPI source description it pulls in, then assembling credentials and inputs by hand. Three commands could do that reading for you:</p>
+        <pre class="code-block mb-4"><code class="language-bash">usearazzo list-workflows &lt;uri&gt;
+usearazzo describe-workflow &lt;uri&gt; &lt;workflowId&gt;
+usearazzo analyze-workflow &lt;uri&gt; &lt;workflowId&gt;</code></pre>
+        <p class="text-gray-700 mb-3"><code class="bg-gray-100 px-1 rounded">list-workflows</code> lists the workflows a document offers. <code class="bg-gray-100 px-1 rounded">analyze-workflow</code> writes an execution profile: a YAML file with an empty slot for everything the run needs, ready to fill in and pass to <code class="bg-gray-100 px-1 rounded">run-workflow</code>. <code class="bg-gray-100 px-1 rounded">describe-workflow</code> prints the same profile for people to read. The profile covers:</p>
         <ul class="text-gray-700 space-y-2 mb-4 ml-4">
-          <li><strong>Inputs</strong> the workflow declares, as placeholders to fill in</li>
-          <li><strong>Inputs of every <code class="bg-gray-100 px-1 rounded">dependsOn</code> workflow</strong>, transitively, keyed by workflow. Arazzo gives <code class="bg-gray-100 px-1 rounded">dependsOn</code> no way to map inputs inside the document, so a prerequisite that needs inputs can only be fed from outside it</li>
-          <li><strong>Credentials</strong>, from the security schemes of each source description</li>
+          <li><strong>Inputs</strong> the workflow declares, with their schema</li>
+          <li><strong>Inputs of every <code class="bg-gray-100 px-1 rounded">dependsOn</code> workflow</strong>, transitively. Arazzo gives <code class="bg-gray-100 px-1 rounded">dependsOn</code> no way to map inputs inside the document, so a prerequisite that needs inputs can only be fed from outside it</li>
+          <li><strong>Credentials</strong>, from the security schemes of each source description, with the steps that use each one</li>
           <li><strong>Server variables</strong>, where a source description has a templated base URL</li>
         </ul>
-        <p class="text-gray-700 mb-3">And what it would mark as <em>not</em> yours to supply: step parameters that resolve from earlier steps, and sub-workflow steps, which map their own inputs through their <code class="bg-gray-100 px-1 rounded">parameters</code>.</p>
-        <p class="text-gray-600 text-sm">That boundary is the point: separating what you must provide from what the workflow computes for itself. Today the only way to find it is to read the entry document, every workflow it depends on, and every source description they name. This one is genuinely unexplored, so if it would help or if the shape is wrong, that is useful to hear.</p>
+        <p class="text-gray-600 text-sm">The point is the boundary: what you must provide, separated from what the workflow computes for itself. The profile needs new work in the Runner first (<a href="https://github.com/usearazzo/arazzo-toolkit/issues/82" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">toolkit #82</a>), so if it would help, or if the shape is wrong, now is the time to say so.</p>
       </div>
 
       <div class="bg-gray-50 border-l-4 border-[#94C83D] p-4">
-        <p class="text-gray-700">Opinions welcome while it is still cheap to change. If you run Arazzo documents in CI, or want particular flags, output formats, or exit-code behaviour, say so in <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> and it will shape what gets built.</p>
+        <p class="text-gray-700">Opinions welcome while it is still cheap to change. If you run Arazzo documents in CI, or want particular flags, output formats, or commands, say so in <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> and it will shape what gets built.</p>
       </div>
     </section>
 
-    <!-- What has to land first -->
-    <section id="sequence" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">What has to land first</h2>
-      <p class="text-gray-700 mb-6">The CLI is the last piece, not the first. It carries no logic of its own, so it can only be as stable as the two libraries underneath it.</p>
-      <ol class="space-y-3 mb-6">
-        <li class="flex gap-3">
-          <span class="text-gray-400 font-mono text-sm pt-1">1</span>
-          <span class="text-gray-700"><a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a> publishes to npm. Done, as an alpha.</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-gray-400 font-mono text-sm pt-1">2</span>
-          <span class="text-gray-700"><a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a> API stabilizes, then publishes to npm</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-gray-400 font-mono text-sm pt-1">3</span>
-          <span class="text-gray-700">CLI wraps both in a single binary, then publishes to npm</span>
-        </li>
-      </ol>
-      <p class="text-gray-600 text-sm">Beyond the CLI, the wider roadmap adds a Language Service, a browser editor, a VS Code extension, GitHub Actions, agent skills, an MCP server, an MCP compiler, and Arazzo transformers. See the <a href="{{ '/#roadmap' | relative_url }}" class="text-primary-light underline hover:no-underline">full roadmap</a> for what each one is.</p>
+    <!-- Installation -->
+    <section id="installation" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Installation</h2>
+      <pre class="code-block mb-6"><code class="language-bash">npm install --global @usearazzo/cli</code></pre>
+      <p class="text-gray-700 mb-3">Or run it without installing:</p>
+      <pre class="code-block mb-6"><code class="language-bash">npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml</code></pre>
+      <p class="text-gray-700">Every option, the exit codes, and the configuration file are in the <a href="{{ '/docs/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI reference</a>.</p>
     </section>
 
     <!-- Built With -->
@@ -129,7 +214,7 @@ permalink: /cli/
         <div class="product-card">
           <h3 class="product-card-title">Validator</h3>
           <p class="product-card-description">
-            Semantic validation and linting. The planned <code class="bg-gray-100 px-1 rounded">validate</code> command is a thin wrapper around it.
+            Semantic validation and linting. The <code class="bg-gray-100 px-1 rounded">validate</code> command is a thin wrapper around it.
           </p>
           <a href="{{ '/validator/' | relative_url }}" class="product-card-link">
             Explore Validator
@@ -141,7 +226,7 @@ permalink: /cli/
         <div class="product-card">
           <h3 class="product-card-title">Runner</h3>
           <p class="product-card-description">
-            Step-by-step workflow execution against live APIs. The planned <code class="bg-gray-100 px-1 rounded">run</code> command is a thin wrapper around it.
+            Step-by-step workflow execution against live APIs. The planned <code class="bg-gray-100 px-1 rounded">run-workflow</code> and <code class="bg-gray-100 px-1 rounded">run-operation</code> commands will be thin wrappers around it.
           </p>
           <a href="{{ '/runner/' | relative_url }}" class="product-card-link">
             Explore Runner
@@ -152,31 +237,60 @@ permalink: /cli/
         </div>
       </div>
       <p class="text-gray-500 text-sm mt-6">
-        Both build on <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> and <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a>, the toolkit's lower-level packages.
+        The Validator builds on <a href="{{ '/docs/parser/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a>, and the Runner on both the parser and <a href="{{ '/docs/resolver/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a>, the toolkit's lower-level packages.
       </p>
     </section>
 
     <!-- FAQ -->
     <section id="faq" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-6">Frequently Asked Questions</h2>
-      <div class="space-y-6">
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Can I install UseArazzo CLI today?</h3>
-          <p class="text-gray-700">No. There is no <code class="bg-gray-100 px-1 rounded">@usearazzo/cli</code> package on npm yet. Of the two libraries it will wrap, the <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a> is on npm as an alpha and the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a> is not published yet. The entire toolkit is pre-1.0 and in heavy development.</p>
+      <dl class="divide-y divide-gray-200 border-y border-gray-200">
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-1">
+              <span>Can I install UseArazzo CLI today?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-1" class="faq-answer mt-3"><p class="text-gray-700">Yes. Run <code class="bg-gray-100 px-1 rounded">npm install --global @usearazzo/cli</code>, or use <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli</code> without installing. It is published as an alpha, so options and output may still change before the stable release.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">What will UseArazzo CLI do?</h3>
-          <p class="text-gray-700">Two commands to begin with: <code class="bg-gray-100 px-1 rounded">validate</code> checks an Arazzo document against the specification, and <code class="bg-gray-100 px-1 rounded">run</code> executes a workflow against live APIs and prints the step-by-step trace. Both wrap existing libraries, not new logic. A third, <code class="bg-gray-100 px-1 rounded">init</code>, is being explored: it would read a workflow and write an editable configuration file covering the inputs, credentials, and server variables needed to run it.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-2">
+              <span>How do I validate an Arazzo document from the command line?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Run <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml</code>. It prints every problem with its location, severity, and rule code, and exits with <code class="bg-gray-100 px-1 rounded">1</code> when there is an error. The argument can also be an HTTP(S) URL.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Will it be free?</h3>
-          <p class="text-gray-700">Yes. Like the rest of the toolkit, UseArazzo CLI will be free, open-source, and licensed under Apache 2.0.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
+              <span>Can it run workflows?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A <code class="bg-gray-100 px-1 rounded">run-workflow</code> command will wrap the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>, which is still in development. Discovery commands are an idea too: <code class="bg-gray-100 px-1 rounded">analyze-workflow</code> would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">How can I find out when it ships?</h3>
-          <p class="text-gray-700">Watch or follow <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">the arazzo-toolkit repository</a>, or join <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">GitHub Discussions</a>.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-4">
+              <span>Which Arazzo versions does it support?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-4" class="faq-answer mt-3"><p class="text-gray-700">Arazzo 1.0.0, 1.0.1, and 1.1.0, in JSON and YAML.</p></dd>
         </div>
-      </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-5">
+              <span>Is it free?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-5" class="faq-answer mt-3"><p class="text-gray-700">Yes. Like the rest of the toolkit, UseArazzo CLI is free, open-source, and licensed under Apache 2.0.</p></dd>
+        </div>
+      </dl>
     </section>
     <script type="application/ld+json">
     {
@@ -188,31 +302,39 @@ permalink: /cli/
           "name": "Can I install UseArazzo CLI today?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. There is no @usearazzo/cli package on npm yet. Of the two libraries it will wrap, the Validator is on npm as an alpha and the Runner is not published yet. The entire toolkit is pre-1.0 and in heavy development."
+            "text": "Yes. Run npm install --global @usearazzo/cli, or use npx @usearazzo/cli without installing. It is published as an alpha, so options and output may still change before the stable release."
           }
         },
         {
           "@type": "Question",
-          "name": "What will UseArazzo CLI do?",
+          "name": "How do I validate an Arazzo document from the command line?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Two commands to begin with: validate checks an Arazzo document against the specification, and run executes a workflow against live APIs and prints the step-by-step trace. Both wrap existing libraries, not new logic. A third, init, is being explored: it would read a workflow and write an editable configuration file covering the inputs, credentials, and server variables needed to run it."
+            "text": "Run npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml. It prints every problem with its location, severity, and rule code, and exits with 1 when there is an error. The argument can also be an HTTP(S) URL."
           }
         },
         {
           "@type": "Question",
-          "name": "Will it be free?",
+          "name": "Can it run workflows?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. Like the rest of the toolkit, UseArazzo CLI will be free, open-source, and licensed under Apache 2.0."
+            "text": "Not yet. A run-workflow command will wrap the Runner, which is still in development. Discovery commands are an idea too: analyze-workflow would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it."
           }
         },
         {
           "@type": "Question",
-          "name": "How can I find out when it ships?",
+          "name": "Which Arazzo versions does it support?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Watch or follow the arazzo-toolkit repository on GitHub, or join GitHub Discussions."
+            "text": "Arazzo 1.0.0, 1.0.1, and 1.1.0, in JSON and YAML."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Like the rest of the toolkit, UseArazzo CLI is free, open-source, and licensed under Apache 2.0."
           }
         }
       ]
