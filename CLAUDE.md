@@ -184,9 +184,13 @@ pages/
                                  # #articles #videos #examples #other #curation. Product-page
                                  # sticky sidebar (hidden below lg, like /cli/), hero gradient
                                  # header, full-width bands alternating white / #F0F5E7 tint
-                                 # (assets/css/ecosystem.css). YouTube entries embed a
-                                 # youtube-nocookie.com iframe (.ecosystem-video). Pure HTML,
-                                 # no JS, no per-entry data-* attributes: a filter bar, star
+                                 # (assets/css/ecosystem.css). YouTube entries are click-to-play
+                                 # (2026-10-21): a thumbnail link (i.ytimg.com hqdefault, play
+                                 # button in CSS, data-video="<id>") that main.js swaps for a
+                                 # youtube-nocookie.com iframe on click. Thirty live embeds froze
+                                 # the page; never go back to embedding players up front. Without
+                                 # JS the link opens YouTube. Otherwise pure HTML, no JS, no other
+                                 # per-entry data-* attributes: a filter bar, star
                                  # picks, JS-computed counts, "recently added", nav pills, nav
                                  # cards, and six sub-pages were all built and removed at the
                                  # owner's request ("simple and easily maintainable"); don't

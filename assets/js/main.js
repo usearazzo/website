@@ -142,6 +142,22 @@ document.addEventListener('DOMContentLoaded', function() {
     updateActive();
   });
 
+  // Click-to-play videos: a thumbnail link becomes the YouTube player on click.
+  // Without JS the link opens the video on YouTube.
+  document.querySelectorAll('a.ecosystem-video[data-video]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const iframe = document.createElement('iframe');
+      iframe.className = 'ecosystem-video';
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + link.dataset.video + '?autoplay=1';
+      iframe.title = link.querySelector('img').alt;
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      link.replaceWith(iframe);
+      iframe.focus();
+    });
+  });
+
   // Collapsible FAQ: <dt><button aria-controls> toggles the matching <dd>.
   // Without JS every answer stays visible.
   document.querySelectorAll('.faq-toggle[aria-controls]').forEach(function(button) {
