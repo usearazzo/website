@@ -3,7 +3,6 @@ title: "Arazzo Runner API Reference: @usearazzo/runner"
 description: "Run Arazzo workflows against live APIs from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 lead: "Run Arazzo workflows step by step against the live APIs behind their OpenAPI source descriptions, from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 date: 2026-10-25
-status: Published
 package:
   name: "@usearazzo/runner"
   npm: https://www.npmjs.com/package/@usearazzo/runner

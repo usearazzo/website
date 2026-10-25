@@ -4,7 +4,6 @@ description: "Parse Arazzo and OpenAPI documents, runtime expressions, and crite
 lead: "Parse Arazzo and OpenAPI documents, runtime expressions, and criterion conditions in JavaScript. Every function, option, result shape, and error of @usearazzo/parser."
 date: 2026-09-08
 last_modified_at: 2026-09-21
-status: Published
 package:
   name: "@usearazzo/parser"
   npm: https://www.npmjs.com/package/@usearazzo/parser

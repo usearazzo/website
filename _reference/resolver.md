@@ -3,7 +3,6 @@ title: "Arazzo Resolver API Reference: @usearazzo/resolver"
 description: "Dereference, bundle, and resolve references in Arazzo and OpenAPI documents in JavaScript. Every function, option, and error of @usearazzo/resolver."
 lead: "Dereference, bundle, and resolve the references in Arazzo and OpenAPI documents in JavaScript. Every function, option, result shape, and error of @usearazzo/resolver."
 date: 2026-09-18
-status: Published
 package:
   name: "@usearazzo/resolver"
   npm: https://www.npmjs.com/package/@usearazzo/resolver

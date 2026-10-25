@@ -3,7 +3,6 @@ title: "Arazzo CLI Reference: @usearazzo/cli"
 description: "Validate and lint Arazzo documents from the terminal and CI. Every command, option, output format, exit code, and setting of @usearazzo/cli."
 lead: "Validate and lint Arazzo documents from your terminal or CI pipeline. Every command, option, output format, exit code, and configuration setting of @usearazzo/cli."
 date: 2026-10-10
-status: Published
 package:
   name: "@usearazzo/cli"
   npm: https://www.npmjs.com/package/@usearazzo/cli

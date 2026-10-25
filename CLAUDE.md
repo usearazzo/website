@@ -714,8 +714,10 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 
 The three product pages share a shape. Keep them parallel when editing one.
 
-- **Status badge ladder**: `Published` / `In development` / `Idea`. The Validator and the CLI are
-  `Published`; so is the Runner (since 2026-10-25). On `/cli/` each command carries its own badge:
+- **Status badge ladder**: `Published` / `In development` / `Idea`. Since every package is published
+  (2026-10-25), the owner removed the `Published` badges from the homepage cards, the product page H1s,
+  the docs hub package cards, and the reference pages (no `status` front matter): one badge everywhere
+  says nothing. The ladder survives on `/cli/`'s command list, where it contrasts. On `/cli/` each command carries its own badge:
   `validate` Published, Execution commands In development, Discovery commands Idea. `Coming soon` marks a preview of something
   unbuilt on a published page (no current use outside the dated 2026-10-06 validator post).
 - **Status callout** directly under the intro paragraph (`bg-[#F0F5E7] border-l-4 border-primary-light`),

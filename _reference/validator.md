@@ -4,7 +4,6 @@ description: "Validate and lint Arazzo documents in JavaScript, with LSP diagnos
 lead: "Validate and lint Arazzo documents in JavaScript, and get Language Server Protocol diagnostics back. Every function, option, diagnostic, error, and rule of @usearazzo/validator."
 date: 2026-10-03
 last_modified_at: 2026-10-04
-status: Published
 package:
   name: "@usearazzo/validator"
   npm: https://www.npmjs.com/package/@usearazzo/validator
