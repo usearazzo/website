@@ -171,7 +171,7 @@ jobs:
       <pre class="code-block mb-3"><code class="language-bash">usearazzo run-workflow &lt;uri&gt; &lt;workflowId&gt; --inputs &lt;json|@file&gt;
 usearazzo run-operation &lt;uri&gt; --operation-id &lt;id&gt;</code></pre>
       <p class="text-gray-700 mb-8">
-        Run a workflow against live APIs and print the result of each step in run order, alongside the workflow's outputs and final status. Or run a single OpenAPI operation, with no Arazzo document at all. Both will be <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/runner</a> behind a command, and they arrive once the Runner is published.
+        Run a workflow against live APIs and print the result of each step in run order, alongside the workflow's outputs and final status. Or run a single OpenAPI operation, with no Arazzo document at all. Both will be <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/runner</a> behind a command. The Runner is on npm today and runs workflows from your own code; the command to run a workflow is what comes next.
       </p>
 
       <div class="border border-dashed border-gray-300 rounded-lg p-6 mb-8">
@@ -270,7 +270,7 @@ usearazzo analyze-workflow &lt;uri&gt; &lt;workflowId&gt;</code></pre>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
-          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A <code class="bg-gray-100 px-1 rounded">run-workflow</code> command will wrap the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>, which is still in development. Discovery commands are an idea too: <code class="bg-gray-100 px-1 rounded">analyze-workflow</code> would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it.</p></dd>
+          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A <code class="bg-gray-100 px-1 rounded">run-workflow</code> command will wrap the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>, and it comes next. The Runner itself is on npm today and runs workflows from your own code. Discovery commands are an idea too: <code class="bg-gray-100 px-1 rounded">analyze-workflow</code> would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -318,7 +318,7 @@ usearazzo analyze-workflow &lt;uri&gt; &lt;workflowId&gt;</code></pre>
           "name": "Can it run workflows?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not yet. A run-workflow command will wrap the Runner, which is still in development. Discovery commands are an idea too: analyze-workflow would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it."
+            "text": "Not yet. A run-workflow command will wrap the Runner, and it comes next. The Runner itself is on npm today and runs workflows from your own code. Discovery commands are an idea too: analyze-workflow would read a workflow and write a profile of the inputs, credentials, and server variables needed to run it."
           }
         },
         {

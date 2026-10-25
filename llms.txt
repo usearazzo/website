@@ -11,7 +11,7 @@ layout: none
 2. Run the workflow against live APIs.
 3. Read the trace of each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.
 
-The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser, @usearazzo/resolver, @usearazzo/validator, and @usearazzo/cli are on npm as alphas; the Runner is not published yet, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
+The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and resolver) is pre-1.0 and in heavy development. @usearazzo/parser, @usearazzo/resolver, @usearazzo/validator, @usearazzo/runner, and @usearazzo/cli are on npm as alphas, and APIs may change without notice. Everything is built in the open in the [arazzo-toolkit monorepo](https://github.com/usearazzo/arazzo-toolkit).
 
 ## Compatibility
 
@@ -32,7 +32,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - [@usearazzo/cli CLI reference]({{ site.url }}{{ site.baseurl }}/docs/cli/): every command, option, output format, exit code, and configuration setting
 - Published to npm as an alpha: `npm install --global @usearazzo/cli`, or `npx @usearazzo/cli validate <uri>`
 - `validate <uri>` (wraps @usearazzo/validator): checks a local file, file: URI, or HTTP(S) URL; stylish or JSON output; exits 1 when a problem at or above `--fail-severity` (default `error`) is found
-- Planned, proposed in [toolkit #84](https://github.com/usearazzo/arazzo-toolkit/issues/84) (names may change): `run-workflow` and `run-operation` (will wrap @usearazzo/runner, once it is published)
+- Planned, proposed in [toolkit #84](https://github.com/usearazzo/arazzo-toolkit/issues/84) (names may change): `run-workflow` and `run-operation` (will wrap @usearazzo/runner; running a workflow from the CLI is what comes next)
 - Idea, not built: discovery commands `list-workflows`, `describe-workflow`, and `analyze-workflow`; the last would write an execution profile covering a workflow's inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Free, open source (Apache 2.0)
@@ -51,12 +51,14 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 - [Runner product page]({{ site.url }}{{ site.baseurl }}/runner/): executes Arazzo workflows against live APIs described by OpenAPI source descriptions
 - [Runner source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner): the package in the monorepo, with its README
-- Step-by-step execution: criteria evaluation, output mapping, failure actions, retries, sub-workflows, dependsOn prerequisites, cancellation via AbortSignal
+- [@usearazzo/runner API reference]({{ site.url }}{{ site.baseurl }}/docs/runner/): every building block, option, result field, and error, checked against the package source, with a workflow you can run end to end
+- Step-by-step execution: criteria evaluation, output mapping, goto/retry/end, retry references, one-way transfer to another workflow, sub-workflows, dependsOn prerequisites, workflows in other Arazzo documents, cancellation via AbortSignal
 - Pluggable HTTP transport (a function from the built request to a WHATWG Response; global fetch by default)
 - Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
-- Pre-1.0, not yet published to npm, under heavy development in the open
+- Pre-1.0, on npm as an alpha: `npm install @usearazzo/runner`. Used from JavaScript or TypeScript today, by composing DocumentRegistry, OpenAPIOperationExecutor, StepExecutor, and WorkflowExecutor
+- Coming next, in order: one function call to run a workflow; a CLI command to run workflows that prints each step as it passes or fails; a live event stream of a run (logging, OpenTelemetry)
 - Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 
@@ -78,6 +80,9 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 None of these are built yet. They are planned, not shipping:
 
+- Run workflows in one call: a single Runner function, instead of composing its four building blocks
+- Run workflows from the CLI: a command that prints each step as it passes or fails, with each success criterion's result
+- Live run events: an event stream for following a run as it happens (terminal progress, logs, OpenTelemetry)
 - Language Service: LSP-compatible library bringing Arazzo intelligence to any editor or tool (validation, completion, hover, go-to-definition, find references)
 - Editor: browser-based editor for authoring and validating Arazzo workflows with real-time feedback
 - VS Code Extension: Arazzo authoring inside VS Code, with real-time validation, semantic linting, autocompletion, live preview

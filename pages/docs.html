@@ -127,29 +127,16 @@ stylesheets:
     <div class="max-w-6xl mx-auto px-6 py-14">
       <div class="text-center mb-10">
         <h2 class="text-3xl font-bold text-primary-dark mb-3">Package reference</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Each package gets its reference here. Until it has one, its README in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo is the reference.</p>
+        <p class="text-gray-600 max-w-2xl mx-auto">Every function, option, and error of each package, checked against its source in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo.</p>
       </div>
       <div class="docs-grid">
         <article class="docs-card">
           <div class="docs-card-body">
             <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
-            <h3 class="docs-card-title"><a href="{{ '/docs/parser/' | relative_url }}">@usearazzo/parser</a></h3>
-            <p class="docs-card-text">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees.</p>
-            <a href="{{ '/docs/parser/' | relative_url }}" class="docs-card-cta">
-              API reference
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-              </svg>
-            </a>
-          </div>
-        </article>
-        <article class="docs-card">
-          <div class="docs-card-body">
-            <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
-            <h3 class="docs-card-title"><a href="{{ '/docs/resolver/' | relative_url }}">@usearazzo/resolver</a></h3>
-            <p class="docs-card-text">Dereferences, bundles, and resolves the references in Arazzo and OpenAPI documents: <code>$ref</code>, JSON Schema, and reusable components.</p>
-            <a href="{{ '/docs/resolver/' | relative_url }}" class="docs-card-cta">
-              API reference
+            <h3 class="docs-card-title"><a href="{{ '/docs/cli/' | relative_url }}">@usearazzo/cli</a></h3>
+            <p class="docs-card-text">Validates Arazzo documents from the terminal and CI, with stylish or JSON output and exit codes your pipeline can act on.</p>
+            <a href="{{ '/docs/cli/' | relative_url }}" class="docs-card-cta">
+              CLI reference
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
@@ -172,10 +159,10 @@ stylesheets:
         <article class="docs-card">
           <div class="docs-card-body">
             <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
-            <h3 class="docs-card-title"><a href="{{ '/docs/cli/' | relative_url }}">@usearazzo/cli</a></h3>
-            <p class="docs-card-text">Validates Arazzo documents from the terminal and CI, with stylish or JSON output and exit codes your pipeline can act on.</p>
-            <a href="{{ '/docs/cli/' | relative_url }}" class="docs-card-cta">
-              CLI reference
+            <h3 class="docs-card-title"><a href="{{ '/docs/runner/' | relative_url }}">@usearazzo/runner</a></h3>
+            <p class="docs-card-text">Runs Arazzo workflows step by step against the live APIs behind their OpenAPI source descriptions, and returns a trace of every step.</p>
+            <a href="{{ '/docs/runner/' | relative_url }}" class="docs-card-cta">
+              API reference
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
@@ -184,13 +171,26 @@ stylesheets:
         </article>
         <article class="docs-card">
           <div class="docs-card-body">
-            <p class="docs-card-meta"><span class="badge badge-secondary">In development</span></p>
-            <h3 class="docs-card-title">@usearazzo/runner</h3>
-            <p class="docs-card-text">Executes Arazzo workflows against live APIs, step by step. The <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner page</a> introduces it.</p>
-            <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner#readme" target="_blank" rel="noopener noreferrer" class="docs-card-cta docs-card-cta-secondary">
-              README on GitHub
+            <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
+            <h3 class="docs-card-title"><a href="{{ '/docs/parser/' | relative_url }}">@usearazzo/parser</a></h3>
+            <p class="docs-card-text">Parses Arazzo and OpenAPI documents into an ApiDOM data model, and parses runtime expressions and criterion conditions into syntax trees.</p>
+            <a href="{{ '/docs/parser/' | relative_url }}" class="docs-card-cta">
+              API reference
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        <article class="docs-card">
+          <div class="docs-card-body">
+            <p class="docs-card-meta"><span class="badge badge-primary">Published</span> <span>on npm as an alpha</span></p>
+            <h3 class="docs-card-title"><a href="{{ '/docs/resolver/' | relative_url }}">@usearazzo/resolver</a></h3>
+            <p class="docs-card-text">Dereferences, bundles, and resolves the references in Arazzo and OpenAPI documents: <code>$ref</code>, JSON Schema, and reusable components.</p>
+            <a href="{{ '/docs/resolver/' | relative_url }}" class="docs-card-cta">
+              API reference
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
             </a>
           </div>

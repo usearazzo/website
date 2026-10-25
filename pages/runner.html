@@ -2,7 +2,7 @@
 prism: true
 layout: base
 title: UseArazzo Runner - Run Arazzo Workflows on Live APIs
-description: "Run Arazzo workflows step by step: criteria, output mapping, retries, and sub-workflows, with a full run trace. Free and open source, in development."
+description: "Run Arazzo workflows step by step against live APIs, with retries, sub-workflows, and a trace of every step. Free and open source, on npm as an alpha."
 permalink: /runner/
 ---
 
@@ -45,16 +45,11 @@ permalink: /runner/
     <nav id="page-sidebar-nav" class="page-sidebar-nav lg:sticky lg:top-[82px] p-6 space-y-4 text-sm">
       <div class="font-bold text-primary-dark mb-4">Runner</div>
       <a href="#overview" class="block text-gray-600 hover:text-primary-light">Overview</a>
+      <a href="#run" class="block text-gray-600 hover:text-primary-light">Run a Workflow</a>
+      <a href="#coming-next" class="block text-gray-600 hover:text-primary-light">Coming Next</a>
+      <a href="#handles" class="block text-gray-600 hover:text-primary-light">What It Handles</a>
       <a href="#architecture" class="block text-gray-600 hover:text-primary-light">Architecture</a>
-      <div class="pl-3 space-y-2 mt-2">
-        <a href="#document-registry" class="block text-gray-500 hover:text-primary-light text-xs">DocumentRegistry</a>
-        <a href="#workflow-executor" class="block text-gray-500 hover:text-primary-light text-xs">WorkflowExecutor</a>
-        <a href="#step-executor" class="block text-gray-500 hover:text-primary-light text-xs">StepExecutor</a>
-        <a href="#operation-executor" class="block text-gray-500 hover:text-primary-light text-xs">OpenAPIOperationExecutor</a>
-      </div>
-      <a href="#control-flow" class="block text-gray-600 hover:text-primary-light">Control Flow</a>
-      <a href="#inheritance" class="block text-gray-600 hover:text-primary-light">What Steps Inherit</a>
-      <a href="#not-yet-supported" class="block text-gray-600 hover:text-primary-light">Not Yet Supported</a>
+      <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#toolkit" class="block text-gray-600 hover:text-primary-light">Rest of the Toolkit</a>
       <a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>
     </nav>
@@ -66,26 +61,20 @@ permalink: /runner/
     <section id="overview" class="mb-16">
       <div class="flex items-center gap-3 mb-4">
         <h1 class="text-4xl font-extrabold text-primary-dark">UseArazzo Runner</h1>
-        <span class="badge badge-secondary">In development</span>
+        <span class="badge badge-primary">Published</span>
       </div>
       <p class="text-xl text-gray-600 mb-6">Executes Arazzo workflows step by step against live APIs, and hands back a full run trace, not just a pass or fail.</p>
 
       <p class="text-gray-700 text-lg mb-6">
-        <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> executes <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo Specification</a> workflows against live APIs described by <a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Specification</a> source descriptions.
+        An Arazzo document describes a sequence of API calls. <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> makes those calls. It sends real requests to the APIs behind the workflow's <a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI</a> source descriptions, checks each step's success criteria, follows the control flow the document declares, and tells you what happened at every step.
       </p>
 
-      <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-6">
-        <p class="text-gray-700">
-          <strong>Under heavy development.</strong> This package is developed inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo and is not yet published to npm. It will become publicly installable once its API stabilizes. Until then, APIs may change without notice and there is nothing to install.
-        </p>
-      </div>
-
       <div class="flex flex-wrap gap-4 mb-8">
-        <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner" target="_blank" rel="noopener noreferrer" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
-          View source on GitHub
+        <a href="{{ '/docs/runner/' | relative_url }}" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
+          Read the API reference
         </a>
-        <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-          Follow Discussions
+        <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/runner" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
+          View source on GitHub
         </a>
       </div>
 
@@ -96,11 +85,108 @@ permalink: /runner/
       </ul>
     </section>
 
+    <!-- Run a workflow -->
+    <section id="run" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Run a Workflow</h2>
+      <p class="text-gray-700 mb-4">Today the Runner is a library. You build it from four small pieces and call it from your own code. Here it runs a Petstore workflow that logs in, finds a pet, orders it, and checks the order. Start a local Petstore for it to call first:</p>
+      <pre class="code-block mb-4"><code class="language-bash">docker run --rm -p 8080:8080 swaggerapi/petstore3:1.0.28</code></pre>
+      <p class="text-gray-700 mb-4">Install the Runner in an empty directory:</p>
+      <pre class="code-block mb-4"><code class="language-bash">npm install @usearazzo/runner</code></pre>
+      <p class="text-gray-700 mb-4">Save this script there as <code class="bg-gray-100 px-1 rounded">run.mjs</code> and run it with <code class="bg-gray-100 px-1 rounded">node run.mjs</code>:</p>
+      <pre class="code-block mb-4"><code class="language-js">import {
+  DocumentRegistry,
+  OpenAPIOperationExecutor,
+  StepExecutor,
+  WorkflowExecutor,
+} from '@usearazzo/runner';
+
+const registry = new DocumentRegistry();
+const document = await registry.acquireEntryDocument(
+  'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
+);
+
+const operationExecutor = new OpenAPIOperationExecutor();
+const stepExecutor = new StepExecutor({ document, registry, operationExecutor });
+const executor = new WorkflowExecutor({ document, registry, stepExecutor });
+
+const result = await executor.execute('authenticateAndOrderPet', {
+  inputs: {
+    username: 'theUser',
+    password: '12345',
+    preferredPetStatus: 'available',
+    orderQuantity: 1,
+  },
+  executeOptions: { server: 'http://localhost:8080/api/v3' }, // a local Petstore
+});
+
+for (const step of result.steps) {
+  const mark = step.successful ? '✓' : '✗';
+  const time = `${Math.round(step.durationMs)} ms`;
+  console.log(`${mark} ${step.stepId.padEnd(26)}${time.padStart(7)}`);
+}
+console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code></pre>
+      <div class="terminal mb-4">
+        <div class="terminal-titlebar">
+          <span class="terminal-dot terminal-dot-red"></span>
+          <span class="terminal-dot terminal-dot-yellow"></span>
+          <span class="terminal-dot terminal-dot-green"></span>
+          <span class="terminal-title">node run.mjs</span>
+        </div>
+<!-- Verbatim output of the script above against swaggerapi/petstore3:1.0.28, captured 2026-10-25. -->
+<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Output of the script: each step with its time"><span class="terminal-prompt"><span class="t-dollar">$</span> node <span class="t-arg">run.mjs</span></span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">loginUser                 </span><span class="t-loc"> 710 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">findAvailablePets         </span><span class="t-loc">  18 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">placeOrder                </span><span class="t-loc">  13 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">retrieveOrderedPetDetails </span><span class="t-loc">   8 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">verifyOrderConfirmation   </span><span class="t-loc">   6 ms</span>
+
+<span class="t-ok">completed in 758 ms</span></pre>
+      </div>
+      <p class="text-gray-700">Five real requests, each judged by its step's criteria. The result also carries the workflow's outputs, and for each step the action it picked and how many attempts it took. The <a href="{{ '/docs/runner/#quick-start' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> walks through the same run, outputs included.</p>
+    </section>
+
+    <!-- Coming next -->
+    <section id="coming-next" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Coming Next</h2>
+      <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-4">
+        <p class="text-gray-700 mb-3">The Runner is usable today from code. Next, in this order:</p>
+        <ol class="text-gray-700 space-y-2 ml-5 list-decimal list-outside">
+          <li><strong>One call to run a workflow.</strong> A single function that builds the four pieces for you.</li>
+          <li><strong>A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> to run workflows.</strong> It will print each step as it passes or fails, with the result of each success criterion.</li>
+          <li><strong>Live progress.</strong> An event stream for following a run as it happens, for logging and OpenTelemetry.</li>
+        </ol>
+      </div>
+      <p class="text-gray-600 text-sm">Follow along in <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">GitHub Discussions</a>.</p>
+    </section>
+
+    <!-- What it handles -->
+    <section id="handles" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-6">What It Handles</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="product-card">
+          <h3 class="product-card-title">The control flow you wrote</h3>
+          <p class="product-card-description"><code class="bg-gray-100 px-1 rounded">goto</code>, <code class="bg-gray-100 px-1 rounded">retry</code> with <code class="bg-gray-100 px-1 rounded">retryLimit</code> and <code class="bg-gray-100 px-1 rounded">retryAfter</code>, and <code class="bg-gray-100 px-1 rounded">end</code>, as the specification defines them. Workflow-level default actions and parameters reach every step. A runaway loop stops at a step budget.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Workflows that call workflows</h3>
+          <p class="product-card-description">Sub-workflow steps, <code class="bg-gray-100 px-1 rounded">dependsOn</code> prerequisites, and one-way transfers with <code class="bg-gray-100 px-1 rounded">goto</code>, including workflows in other Arazzo documents. Cycles are caught, and a dependency runs once per run.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">Your HTTP stack, your credentials</h3>
+          <p class="product-card-description">Requests go out through global <code class="bg-gray-100 px-1 rounded">fetch</code> by default, or through any client you plug in. Credentials are added by a request interceptor, because Arazzo itself is auth-agnostic.</p>
+        </div>
+        <div class="product-card">
+          <h3 class="product-card-title">A trace, not a verdict</h3>
+          <p class="product-card-description">Every step in run order: whether it passed, which action was picked, how many attempts it took, and how long it ran. A failed step is a result you read, not an exception you catch.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Architecture -->
     <section id="architecture" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-4">Architecture</h2>
       <p class="text-gray-700 mb-6">
-        Running an Arazzo workflow is a pipeline of small, single-responsibility building blocks. Each layer reads run state but never mutates it. <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> is the single writer that records outputs and interprets the returned control-flow action. Every layer takes its collaborator rather than building one, so a deterministic stub drops in for tests at any level.
+        Running a workflow is a pipeline of four small parts. <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> runs the steps and is the only part that writes run state. <code class="bg-gray-100 px-1 rounded">StepExecutor</code> runs one step. <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> builds and sends one request. <code class="bg-gray-100 px-1 rounded">DocumentRegistry</code> loads every document once. Each part takes its collaborator rather than building one, so a stub drops in for tests at any level.
       </p>
 
       <figure class="mb-6">
@@ -163,213 +249,17 @@ permalink: /runner/
           </g>
         </svg>
       </figure>
-      <p class="text-gray-600 text-sm"><code class="bg-gray-100 px-1 rounded">HTTPClient</code> is drawn dashed because it is the seam you are meant to replace.</p>
-
-      <!-- DocumentRegistry -->
-      <h3 id="document-registry" class="text-lg font-semibold text-primary-dark mt-10 mb-3">DocumentRegistry</h3>
-      <p class="text-gray-700 mb-4">Loads and caches Arazzo and OpenAPI documents, so a source description referenced by many steps is fetched and parsed once.</p>
-      <pre class="code-block mb-6"><code class="language-js">import { DocumentRegistry } from '@usearazzo/runner';
-
-const registry = new DocumentRegistry();
-
-// the entry Arazzo document
-const arazzoDoc = await registry.acquireEntryDocument(
-  'https://example.com/petstore-order-workflow.arazzo.yaml',
-);
-
-// a source description, resolved by name to an absolute URI, then acquired
-const uri = arazzoDoc.resolveSourceDescriptionURI('petstoreAPI');
-const openapiDoc = await registry.acquire(uri);
-
-registry.clear(); // drop cached documents to reclaim memory</code></pre>
-
-      <!-- WorkflowExecutor -->
-      <h3 id="workflow-executor" class="text-lg font-semibold text-primary-dark mt-10 mb-3">WorkflowExecutor</h3>
-      <p class="text-gray-700 mb-4">
-        The stateful orchestrator that runs a whole workflow. It iterates a workflow's steps in list order, calling <code class="bg-gray-100 px-1 rounded">StepExecutor</code> per step, and owns the run state that accumulates each step's outputs so later steps can read <code class="bg-gray-100 px-1 rounded">$steps.*.outputs</code>.
-      </p>
-      <pre class="code-block mb-6"><code class="language-js">import {
-  DocumentRegistry,
-  OpenAPIOperationExecutor,
-  StepExecutor,
-  WorkflowExecutor,
-} from '@usearazzo/runner';
-
-const registry = new DocumentRegistry();
-const arazzoDoc = await registry.acquireEntryDocument(
-  'https://example.com/petstore-order-workflow.arazzo.yaml',
-);
-
-// compose bottom-up: operation executor -> step executor -> workflow executor
-const operationExecutor = new OpenAPIOperationExecutor();
-const stepExecutor = new StepExecutor({ document: arazzoDoc, registry, operationExecutor });
-const executor = new WorkflowExecutor({ document: arazzoDoc, registry, stepExecutor });
-
-const result = await executor.execute('authenticateAndOrderPet', {
-  inputs: { username: 'user1', password: 'secret', preferredPetStatus: 'available' },
-});
-
-console.log(result.status);      // 'completed' | 'ended' | 'failed'
-console.log(result.outputs);     // workflow $outputs, resolved against final state
-console.log(result.steps);       // trace: each step's id, success, action, attempts, durationMs
-console.log(result.durationMs);  // elapsed time for the whole run</code></pre>
-
-      <p class="text-gray-700 mb-3">The options bag that second argument carries:</p>
-      <div class="overflow-x-auto mb-6">
-        <table class="w-full text-sm text-left spec-table">
-          <thead>
-            <tr><th>Option</th><th>Meaning</th></tr>
-          </thead>
-          <tbody class="bg-white text-gray-700">
-            <tr><td><code class="bg-gray-100 px-1 rounded">inputs</code></td><td>the workflow's inputs, read through <code class="bg-gray-100 px-1 rounded">$inputs</code></td></tr>
-            <tr><td><code class="bg-gray-100 px-1 rounded">executeOptions</code></td><td>opaque bag forwarded to every step's operation, for example <code class="bg-gray-100 px-1 rounded">server</code> or <code class="bg-gray-100 px-1 rounded">requestInterceptor</code></td></tr>
-            <tr><td><code class="bg-gray-100 px-1 rounded">dependencyInputs</code></td><td>inputs for the workflows run to satisfy <code class="bg-gray-100 px-1 rounded">dependsOn</code>, keyed by workflowId</td></tr>
-            <tr><td><code class="bg-gray-100 px-1 rounded">runDependencies</code></td><td>run those <code class="bg-gray-100 px-1 rounded">dependsOn</code> workflows first (default <code class="bg-gray-100 px-1 rounded">true</code>)</td></tr>
-            <tr><td><code class="bg-gray-100 px-1 rounded">signal</code></td><td>an <code class="bg-gray-100 px-1 rounded">AbortSignal</code> that cancels the run</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="text-gray-600 text-sm">Run state is created fresh per <code class="bg-gray-100 px-1 rounded">execute</code> call and owned internally, and the result you get back is read-only.</p>
-
-      <!-- StepExecutor -->
-      <h3 id="step-executor" class="text-lg font-semibold text-primary-dark mt-10 mb-3">StepExecutor</h3>
-      <p class="text-gray-700 mb-4">
-        Executes a single Arazzo step that invokes an OpenAPI operation: locates the operation, resolves parameters and request body against the pre-request context, delegates the call, then evaluates <code class="bg-gray-100 px-1 rounded">successCriteria</code>, resolves outputs, and selects the next action. It reads run state and mutates nothing. The caller records the outcome.
-      </p>
-      <pre class="code-block mb-6"><code class="language-js">const outcome = await stepExecutor.execute(step, state);
-
-console.log(outcome.successful); // true when every successCriterion passed
-console.log(outcome.outputs);    // resolved step outputs, keyed by name
-console.log(outcome.action);     // the selected onSuccess / onFailure action, or undefined</code></pre>
-
-      <!-- OpenAPIOperationExecutor -->
-      <h3 id="operation-executor" class="text-lg font-semibold text-primary-dark mt-10 mb-3">OpenAPIOperationExecutor</h3>
-      <p class="text-gray-700 mb-4">
-        Executes a single OpenAPI operation and returns its normalized response. It is Arazzo-agnostic and can be used standalone, with just an OpenAPI document and an <code class="bg-gray-100 px-1 rounded">operationId</code>, no workflow involved. The default transport is global <code class="bg-gray-100 px-1 rounded">fetch</code>; pass <code class="bg-gray-100 px-1 rounded">httpClient</code> to swap it for undici, a proxy-aware client, or a canned response in tests.
-      </p>
-      <pre class="code-block mb-6"><code class="language-js">import { DocumentRegistry, OpenAPIOperationExecutor } from '@usearazzo/runner';
-
-const registry = new DocumentRegistry();
-const openapiDoc = await registry.acquire('https://petstore3.swagger.io/api/v3/openapi.json');
-
-const locator = {
-  document: openapiDoc,
-  jsonPointer: openapiDoc.operationIndex.get('findPetsByStatus'),
-};
-
-const executor = new OpenAPIOperationExecutor();
-const response = await executor.execute(locator, { parameters: { status: 'available' } });
-
-console.log(response.status, response.body);
-console.log(response.request.url); // the URL as actually sent</code></pre>
-      <h4 id="http-client" class="font-semibold text-primary-dark mt-8 mb-3">Swapping the transport</h4>
-      <p class="text-gray-700 mb-4">The transport is the extension point, and its contract is deliberately small: a function from the built request to a WHATWG <code class="bg-gray-100 px-1 rounded">Response</code>. The default is global <code class="bg-gray-100 px-1 rounded">fetch</code> in one line, exported as <code class="bg-gray-100 px-1 rounded">httpClientFetch</code> so a custom transport can delegate to it rather than reimplement it.</p>
-      <pre class="code-block mb-4"><code class="language-js">import { fetch, Agent } from 'undici';
-import { OpenAPIOperationExecutor } from '@usearazzo/runner';
-
-// any HTTP stack drops in: here undici with a dispatcher global fetch cannot take
-// (connection-pool tuning, a proxy, client certificates)
-const dispatcher = new Agent({ connections: 128, keepAliveTimeout: 60_000 });
-
-const pooledExecutor = new OpenAPIOperationExecutor({
-  httpClient: (request) =&gt; fetch(request.url, { ...request, dispatcher }),
-});
-
-// or serve canned responses in a test: no network, no interception hooks
-const offlineExecutor = new OpenAPIOperationExecutor({
-  httpClient: async () =&gt;
-    new Response('[{"id":1,"status":"available"}]', {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    }),
-});</code></pre>
-      <p class="text-gray-700 mb-3">Whatever you plug in has to hold up three ends of the bargain:</p>
-      <ul class="text-gray-700 space-y-2 mb-6 ml-4">
-        <li>Resolve with a <code class="bg-gray-100 px-1 rounded">Response</code> for <strong>every</strong> HTTP status. A non-2xx is a valid Arazzo outcome for a step's <code class="bg-gray-100 px-1 rounded">successCriteria</code> to judge, never an error.</li>
-        <li>Throw only on genuine transport failure, which the executor wraps as a <code class="bg-gray-100 px-1 rounded">ClientError</code> carrying the original as <code class="bg-gray-100 px-1 rounded">cause</code>.</li>
-        <li>Honor <code class="bg-gray-100 px-1 rounded">request.signal</code> when it is present.</li>
-      </ul>
-      <p class="text-gray-600 text-sm mb-8">Response normalization happens on the executor's side of the seam, so <code class="bg-gray-100 px-1 rounded">$response.body</code> means the same thing no matter which transport is underneath.</p>
-
-      <h4 id="choosing-server" class="font-semibold text-primary-dark mt-8 mb-3">Choosing the server</h4>
-      <p class="text-gray-700 mb-4">By default the request goes to the first server the operation declares, with a relative server resolved against the URL the document itself was loaded from. That covers the common case with no options at all. The <code class="bg-gray-100 px-1 rounded">server</code> option does double duty:</p>
-      <pre class="code-block mb-4"><code class="language-js">// selection: the value matches a declared server, so its variable defaults come
-// along and only the ones you name are overridden
-await executor.execute(locator, {
-  server: 'https://{region}.example.com/{basePath}', // the raw template, as declared
-  serverVariables: { region: 'us' },                   // basePath keeps its declared default
-});
-
-// override: the value matches nothing declared, so it simply is the base URL
-await executor.execute(locator, { server: 'https://staging.internal.test/api' });</code></pre>
-      <p class="text-gray-700 mb-8">There is deliberately no silent fallback. A <code class="bg-gray-100 px-1 rounded">server</code> matching nothing declared is never quietly swapped for the first declared one, so a typo fails loudly at the network rather than succeeding against the wrong host. An override replaces the declared base path along with the host, so include it if the API expects one. Overriding works on Swagger 2.0 as well; selection and <code class="bg-gray-100 px-1 rounded">serverVariables</code> are 3.x only, since 2.0 has no server list and no URL templates.</p>
-
-      <p class="text-gray-600 text-sm">Credentials are applied via a <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> that runs after the request is built and before it is sent. Arazzo itself is auth-agnostic, so the runner does not model authentication.</p>
+      <p class="text-gray-600 text-sm"><code class="bg-gray-100 px-1 rounded">HTTPClient</code> is drawn dashed because it is the seam you are meant to replace. The <a href="{{ '/docs/runner/#architecture' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> documents each part.</p>
     </section>
 
-    <!-- Control Flow -->
-    <section id="control-flow" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Control Flow</h2>
-      <p class="text-gray-700 mb-4">After each step, the selected <code class="bg-gray-100 px-1 rounded">onSuccess</code> / <code class="bg-gray-100 px-1 rounded">onFailure</code> action determines what happens next:</p>
-      <div class="overflow-x-auto mb-6">
-        <table class="w-full text-sm text-left">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 font-semibold">Action</th>
-              <th class="px-4 py-2 font-semibold">Behavior</th>
-            </tr>
-          </thead>
-          <tbody class="text-gray-700">
-            <tr class="border-b">
-              <td class="px-4 py-2 font-medium">no matching action</td>
-              <td class="px-4 py-2">success falls through to the next step; failure breaks and returns <code class="bg-gray-100 px-1 rounded">status: 'failed'</code></td>
-            </tr>
-            <tr class="border-b">
-              <td class="px-4 py-2 font-medium"><code class="bg-gray-100 px-1 rounded">end</code></td>
-              <td class="px-4 py-2">stops the run early with <code class="bg-gray-100 px-1 rounded">status: 'ended'</code>, returning outputs accumulated so far</td>
-            </tr>
-            <tr class="border-b">
-              <td class="px-4 py-2 font-medium"><code class="bg-gray-100 px-1 rounded">goto</code></td>
-              <td class="px-4 py-2">jumps to a <code class="bg-gray-100 px-1 rounded">stepId</code> within the current workflow</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-2 font-medium"><code class="bg-gray-100 px-1 rounded">retry</code></td>
-              <td class="px-4 py-2">re-runs the step up to <code class="bg-gray-100 px-1 rounded">retryLimit</code> (default 1), waiting <code class="bg-gray-100 px-1 rounded">retryAfter</code> seconds between attempts; each step's <code class="bg-gray-100 px-1 rounded">attempts</code> count is surfaced in the trace</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="text-gray-700 mb-4">A runaway <code class="bg-gray-100 px-1 rounded">goto</code> loop, retry, or sub-workflow tree is bounded by <code class="bg-gray-100 px-1 rounded">maxSteps</code> (default 1000, shared across the whole call tree). Workflows can call other workflows: a step targeting a <code class="bg-gray-100 px-1 rounded">workflowId</code> records the sub-run under <code class="bg-gray-100 px-1 rounded">$workflows.&lt;id&gt;</code>, and <code class="bg-gray-100 px-1 rounded">dependsOn</code> workflows run to completion first, with results readable the same way. Nesting past <code class="bg-gray-100 px-1 rounded">maxWorkflowDepth</code> (default 32) or re-entering a workflow already in progress throws.</p>
-      <p class="text-gray-700">A run accepts an <code class="bg-gray-100 px-1 rounded">AbortSignal</code>: the signal is observed at every boundary (before each step, before each retry attempt, before entering a sub-workflow) and is forwarded to the transport, so a request in flight is cancelled rather than merely awaited.</p>
+    <!-- Installation -->
+    <section id="installation" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Installation</h2>
+      <pre class="code-block mb-6"><code class="language-bash">npm install @usearazzo/runner</code></pre>
+      <p class="text-gray-700">Choosing the server, plugging in an HTTP client, adding credentials, cancelling a run, and every error are in the <a href="{{ '/docs/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a>.</p>
     </section>
 
-    <!-- Inheritance -->
-    <section id="inheritance" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">What Steps Inherit</h2>
-      <p class="text-gray-700 mb-6">A workflow can hand its steps two things, and they behave in opposite ways.</p>
-
-      <h3 id="default-actions" class="text-lg font-semibold text-primary-dark mb-3">Default actions replace</h3>
-      <p class="text-gray-700 mb-6">A workflow's <code class="bg-gray-100 px-1 rounded">successActions</code> and <code class="bg-gray-100 px-1 rounded">failureActions</code> apply to every step as a default. A step declaring its own <code class="bg-gray-100 px-1 rounded">onSuccess</code> or <code class="bg-gray-100 px-1 rounded">onFailure</code> overrides the corresponding list wholesale. There is no per-action merge, and the two fall back independently, so a step can override only its failure actions and still inherit the workflow's success actions.</p>
-
-      <h3 id="workflow-parameters" class="text-lg font-semibold text-primary-dark mb-3">Parameters merge</h3>
-      <p class="text-gray-700 mb-4">A workflow's <code class="bg-gray-100 px-1 rounded">parameters</code> also reach every step, but these merge rather than replace. The specification lets a step override an inherited parameter but says it can never remove one, so each step ends up with the union of both lists, its own declaration winning.</p>
-      <p class="text-gray-700 mb-4">A parameter's identity is the <code class="bg-gray-100 px-1 rounded">(name, in)</code> pair, not the name alone. A step declaring a <code class="bg-gray-100 px-1 rounded">trace</code> query parameter overrides an inherited <code class="bg-gray-100 px-1 rounded">trace</code> query parameter, and leaves an inherited <code class="bg-gray-100 px-1 rounded">trace</code> <em>header</em> untouched, because those are two parameters bound for two places. Names are case-sensitive, per the specification.</p>
-      <p class="text-gray-700 mb-4">Inheritance copies the declarations, not resolved values, so a workflow-level <code class="bg-gray-100 px-1 rounded">value</code> holding a runtime expression is evaluated once per step, in that step's own context. A workflow parameter reading <code class="bg-gray-100 px-1 rounded">$steps.login.outputs.token</code> therefore means what it looks like it means: each step sees the state as it entered, not a value frozen when the workflow began.</p>
-      <p class="text-gray-600 text-sm">This is inheritance rather than dispatch, so it happens during normalization. A normalized workflow's steps already carry what they inherit, exactly as a normalized OpenAPI operation already carries the parameters it inherits from its Path Item, and neither executor knows about it.</p>
-    </section>
-
-    <!-- Not yet supported -->
-    <section id="not-yet-supported" class="mb-16">
-      <h2 class="text-2xl font-bold text-primary-dark mb-4">Not Yet Supported</h2>
-      <p class="text-gray-700 mb-3">These land in later work. Each throws a named <code class="bg-gray-100 px-1 rounded">ExecutionError</code> rather than behaving incorrectly:</p>
-      <ul class="text-gray-700 space-y-2 mb-2 ml-4 list-disc list-outside pl-4">
-        <li>Step-level <code class="bg-gray-100 px-1 rounded">goto</code> to a <code class="bg-gray-100 px-1 rounded">workflowId</code></li>
-        <li>A <code class="bg-gray-100 px-1 rounded">retry</code> carrying a <code class="bg-gray-100 px-1 rounded">stepId</code> / <code class="bg-gray-100 px-1 rounded">workflowId</code> reference to run before retrying</li>
-        <li>Cross-document workflow references (a <code class="bg-gray-100 px-1 rounded">workflowId</code> naming a workflow in another document). Same-document only for now</li>
-      </ul>
-    </section>
-
-    <!-- Built With -->
+    <!-- Rest of the Toolkit -->
     <section id="toolkit" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-6">Rest of the Toolkit</h2>
       <div class="grid md:grid-cols-2 gap-6">
@@ -388,7 +278,7 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
         <div class="product-card">
           <h3 class="product-card-title">CLI</h3>
           <p class="product-card-description">
-            Already on npm with a <code class="bg-gray-100 px-1 rounded">validate</code> command. Its planned <code class="bg-gray-100 px-1 rounded">run-workflow</code> and <code class="bg-gray-100 px-1 rounded">run-operation</code> commands will be thin wrappers around this library.
+            Already on npm with a <code class="bg-gray-100 px-1 rounded">validate</code> command. A command to run workflows, built on this library, comes next.
           </p>
           <a href="{{ '/cli/' | relative_url }}" class="product-card-link">
             Explore CLI
@@ -399,31 +289,69 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
         </div>
       </div>
       <p class="text-gray-500 text-sm mt-6">
-        Under the hood, the Runner reuses the loading, resolution, and normalization primitives shared with <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/parser" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> and <a href="https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/resolver" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a>.
+        Under the hood, the Runner uses <a href="{{ '/docs/parser/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/parser</a> and <a href="{{ '/docs/resolver/' | relative_url }}" class="text-primary-light underline hover:no-underline">@usearazzo/resolver</a> to load and resolve the documents it runs.
       </p>
     </section>
 
     <!-- FAQ -->
     <section id="faq" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-6">Frequently Asked Questions</h2>
-      <div class="space-y-6">
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Can I install the Runner today?</h3>
-          <p class="text-gray-700">Not from npm. <code class="bg-gray-100 px-1 rounded">@usearazzo/runner</code> is under heavy development in the open, inside the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo. It will publish once its API stabilizes.</p>
+      <dl class="divide-y divide-gray-200 border-y border-gray-200">
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-1">
+              <span>Can I install the Runner today?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-1" class="faq-answer mt-3"><p class="text-gray-700">Yes. Run <code class="bg-gray-100 px-1 rounded">npm install @usearazzo/runner</code>. It is published as an alpha, so the API may still change before the stable release. Today you call it from JavaScript or TypeScript; the <a href="{{ '/docs/runner/#quick-start' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> runs a workflow end to end.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Does the Runner handle authentication?</h3>
-          <p class="text-gray-700">Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. It gives you two seams instead. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> decorates the built request after it is assembled and before it is sent, which covers the everyday cases: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport-level concerns such as mTLS client certificates or a proxy belong in a replacement <code class="bg-gray-100 px-1 rounded">httpClient</code>. Interceptor edits land in the request record that <code class="bg-gray-100 px-1 rounded">$request.*</code> and the trace read, whereas transport-level changes are deliberately invisible to it.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-2">
+              <span>Can I run a workflow from the command line?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> to run workflows comes next, printing each step as it passes or fails. Before that comes a single function call that runs a workflow from your own code. Until then, you wire the Runner's four building blocks yourself, in about ten lines.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">Can I swap the HTTP transport?</h3>
-          <p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> accepts an <code class="bg-gray-100 px-1 rounded">httpClient</code>, a function from the built request to a WHATWG <code class="bg-gray-100 px-1 rounded">Response</code>. The default is global <code class="bg-gray-100 px-1 rounded">fetch</code> in one line; undici, a pooled client, or a canned response for tests drop in the same way.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
+              <span>Does the Runner handle authentication?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> adds them to each request after it is built and before it is sent: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport concerns such as client certificates or a proxy belong in a replacement <code class="bg-gray-100 px-1 rounded">httpClient</code>.</p></dd>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900 mb-2">What happens when a step's criteria aren't met?</h3>
-          <p class="text-gray-700">That's a normal outcome, not an error: the step's <code class="bg-gray-100 px-1 rounded">successful</code> flag is <code class="bg-gray-100 px-1 rounded">false</code> and its <code class="bg-gray-100 px-1 rounded">onFailure</code> action runs. Malformed input, such as a step with no operation target or an unknown action type, throws an <code class="bg-gray-100 px-1 rounded">ExecutionError</code> instead.</p>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-4">
+              <span>Can I swap the HTTP transport?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-4" class="faq-answer mt-3"><p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> accepts an <code class="bg-gray-100 px-1 rounded">httpClient</code>, a function from the built request to a WHATWG <code class="bg-gray-100 px-1 rounded">Response</code>. The default is global <code class="bg-gray-100 px-1 rounded">fetch</code> in one line. undici, a pooled client, or a canned response for tests drop in the same way.</p></dd>
         </div>
-      </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-5">
+              <span>What happens when a step's criteria aren't met?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-5" class="faq-answer mt-3"><p class="text-gray-700">That is a normal outcome, not an error. The step's <code class="bg-gray-100 px-1 rounded">successful</code> flag is <code class="bg-gray-100 px-1 rounded">false</code> and its <code class="bg-gray-100 px-1 rounded">onFailure</code> action runs. With no matching action, the run ends with <code class="bg-gray-100 px-1 rounded">status: 'failed'</code>. A broken document, such as a <code class="bg-gray-100 px-1 rounded">goto</code> to a step that does not exist, throws an <code class="bg-gray-100 px-1 rounded">ExecutionError</code> instead.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-6">
+              <span>Which versions does the Runner support?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-6" class="faq-answer mt-3"><p class="text-gray-700">Arazzo 1.0.0, 1.0.1, and 1.1.0 workflow documents, with OpenAPI 2.0, 3.0.x, and 3.1.x source descriptions. A workflow can also call workflows in other Arazzo documents.</p></dd>
+        </div>
+      </dl>
     </section>
     <script type="application/ld+json">
     {
@@ -435,7 +363,15 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
           "name": "Can I install the Runner today?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not from npm. @usearazzo/runner is under heavy development in the open, inside the arazzo-toolkit monorepo. It will publish once its API stabilizes."
+            "text": "Yes. Run npm install @usearazzo/runner. It is published as an alpha, so the API may still change before the stable release. Today you call it from JavaScript or TypeScript; the API reference runs a workflow end to end."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I run a workflow from the command line?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not yet. A command in the UseArazzo CLI to run workflows comes next, printing each step as it passes or fails. Before that comes a single function call that runs a workflow from your own code. Until then, you wire the Runner's four building blocks yourself, in about ten lines."
           }
         },
         {
@@ -443,7 +379,7 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
           "name": "Does the Runner handle authentication?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. It gives you two seams instead. A requestInterceptor decorates the built request after it is assembled and before it is sent, which covers the everyday cases: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport-level concerns such as mTLS client certificates or a proxy belong in a replacement httpClient. Interceptor edits land in the request record that $request.* and the trace read, whereas transport-level changes are deliberately invisible to it."
+            "text": "Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. A requestInterceptor adds them to each request after it is built and before it is sent: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport concerns such as client certificates or a proxy belong in a replacement httpClient."
           }
         },
         {
@@ -451,7 +387,7 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
           "name": "Can I swap the HTTP transport?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. OpenAPIOperationExecutor accepts an httpClient, a function from the built request to a WHATWG Response. The default is global fetch in one line; undici, a pooled client, or a canned response for tests drop in the same way."
+            "text": "Yes. OpenAPIOperationExecutor accepts an httpClient, a function from the built request to a WHATWG Response. The default is global fetch in one line. undici, a pooled client, or a canned response for tests drop in the same way."
           }
         },
         {
@@ -459,7 +395,15 @@ await executor.execute(locator, { server: 'https://staging.internal.test/api' })
           "name": "What happens when a step's criteria aren't met?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "That's a normal outcome, not an error: the step's successful flag is false and its onFailure action runs. Malformed input, such as a step with no operation target or an unknown action type, throws an ExecutionError instead."
+            "text": "That is a normal outcome, not an error. The step's successful flag is false and its onFailure action runs. With no matching action, the run ends with status: 'failed'. A broken document, such as a goto to a step that does not exist, throws an ExecutionError instead."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which versions does the Runner support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Arazzo 1.0.0, 1.0.1, and 1.1.0 workflow documents, with OpenAPI 2.0, 3.0.x, and 3.1.x source descriptions. A workflow can also call workflows in other Arazzo documents."
           }
         }
       ]

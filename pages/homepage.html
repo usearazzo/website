@@ -88,7 +88,7 @@ permalink: /
       </div>
     </div>
     <p class="text-center text-gray-500 text-sm mt-10">
-      The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a> and the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> are on npm as alphas. The <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a> is under heavy development in the open, ahead of its first npm release.
+      The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a>, the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>, and the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> are on npm as alphas. Running a workflow takes a few lines of JavaScript today; a CLI command for it comes next.
     </p>
   </div>
 </section>
@@ -122,7 +122,7 @@ permalink: /
   <div class="container mx-auto px-4 max-w-6xl">
     <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Validate and run workflows</h2>
     <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-      The entire toolkit is pre-1.0, and APIs may change without notice. The Validator and the CLI are on npm as alphas; the Runner is still in heavy development. Everything below is built in the open, so you can read the code, follow along, and tell exactly where each piece stands.
+      The entire toolkit is pre-1.0, and APIs may change without notice. The Validator, the Runner, and the CLI are on npm as alphas. Everything below is built in the open, so you can read the code, follow along, and tell exactly where each piece stands.
     </p>
 
     <div class="grid md:grid-cols-3 gap-8">
@@ -134,13 +134,13 @@ permalink: /
         </div>
         <h3 class="product-card-title">CLI</h3>
         <p class="product-card-description">
-          One command-line interface across the toolchain, on your machine and in CI. Validate Arazzo documents today; running workflows comes with the Runner.
+          One command-line interface across the toolchain, on your machine and in CI. Validate Arazzo documents today. A command to run workflows comes next.
         </p>
         <ul class="text-sm text-gray-600 mb-4 space-y-1">
           <li>&#10003; <code class="bg-gray-100 px-1 rounded">validate</code> from the terminal</li>
           <li>&#10003; CI-friendly exit codes</li>
           <li>&#10003; Same engine as the libraries</li>
-          <li>&#9744; Running workflows in development</li>
+          <li>&#9744; Running workflows comes next</li>
         </ul>
         <a href="{{ '/cli/' | relative_url }}" class="product-card-link">
           Explore CLI
@@ -178,7 +178,7 @@ permalink: /
       <div class="product-card relative overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-1 bg-[#94C83D]"></div>
         <div class="mb-4">
-          <span class="badge badge-secondary">In development</span>
+          <span class="badge badge-primary">Published</span>
         </div>
         <h3 class="product-card-title">Runner</h3>
         <p class="product-card-description">
@@ -188,7 +188,7 @@ permalink: /
           <li>&#10003; Full control-flow (goto/retry/end)</li>
           <li>&#10003; Sub-workflows &amp; <code class="bg-gray-100 px-1 rounded">dependsOn</code></li>
           <li>&#10003; Pluggable HTTP transport</li>
-          <li>&#9744; Not yet published to npm</li>
+          <li>&#10003; On npm as an alpha</li>
         </ul>
         <a href="{{ '/runner/' | relative_url }}" class="product-card-link">
           Explore Runner
@@ -261,6 +261,18 @@ permalink: /
       None of this is built yet. It's where the toolkit is headed, published here so you can tell what exists today from what doesn't.
     </p>
     <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
+        <h3 class="text-lg font-bold text-primary-dark mb-2">Run Workflows in One Call</h3>
+        <p class="text-gray-600 text-sm">Next for the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>: a single function that runs a workflow, instead of wiring its four building blocks by hand.</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
+        <h3 class="text-lg font-bold text-primary-dark mb-2">Run Workflows from the CLI</h3>
+        <p class="text-gray-600 text-sm">A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> that runs a workflow and prints each step as it passes or fails, with the result of each success criterion.</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
+        <h3 class="text-lg font-bold text-primary-dark mb-2">Live Run Events</h3>
+        <p class="text-gray-600 text-sm">An event stream for following a run as it happens: progress in the terminal, logs, and OpenTelemetry traces.</p>
+      </div>
       <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
         <h3 class="text-lg font-bold text-primary-dark mb-2">Language Service</h3>
         <p class="text-gray-600 text-sm">An LSP-compatible library bringing Arazzo intelligence to any editor or tool: validation, completion, hover, go-to-definition, and find references.</p>

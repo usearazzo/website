@@ -24,13 +24,21 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   validation and linting for Arazzo documents, LSP-compatible diagnostics, opt-in JSON Schema
   validation. Its product page sells the idea and hands the details to `/docs/validator/`, the API
   reference; the page's terminal demo is real `@usearazzo/cli` output (same two runs as `/cli/`).
-- **Runner** — `@usearazzo/runner`, **not yet published**, under heavy development. Its `package.json`
-  carries `"private": true`, which is a publish guard, not secrecy: the source is public in the
-  monorepo like everything else, so never describe it as "private" on the site. Executes Arazzo
-  workflows against live APIs described by OpenAPI source descriptions, step by step.
+- **Runner** — `@usearazzo/runner`, **published as an alpha** (1.0.1-alpha.10, announced on the site
+  2026-10-25). Programmatic only: you compose `DocumentRegistry` → `OpenAPIOperationExecutor` →
+  `StepExecutor` → `WorkflowExecutor`. Coming next, said on `/runner/`, `/docs/runner/`, the homepage
+  roadmap, and `llms.txt`: (1) a one-call API, (2) a CLI command to run workflows (name not final, so
+  new copy never names it; `/cli/` keeps its #84 names with "may change"), (3) a live event stream.
+  No CLI run output anywhere until the command ships. Reference at `/docs/runner/`; its outputs were
+  captured on 2026-10-25 against the `swaggerapi/petstore3:1.0.28` container (the image the toolkit's
+  e2e test pins), because the public petstore3.swagger.io answers every `placeOrder` with a 500.
+  Sample: `assets/reference/runner/petstore-order.arazzo.yaml` (the toolkit fixture, source URL made
+  absolute, the `sessionToken` workflow output dropped: the Petstore labels a plain-text login body
+  `application/json`, so `$response.body` is undefined). Findings from that run: the Runner does not
+  apply `default`s from a workflow's `inputs` schema; a missing entry file throws ApiDOM's
+  `ResolveError`, not a runner error; the README's sample URL `ui.usearazzo.com` does not resolve in DNS.
 
-**`@usearazzo/parser`, `@usearazzo/resolver`, `@usearazzo/validator`, and `@usearazzo/cli` are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10). `@usearazzo/runner`
-404s on the registry — verify with
+**All five packages are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10; runner by 2026-10-25). For any future package, verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
 trusting `"private": false` in a `package.json`, which only means publish*able*. Never add
 `npm install` instructions, "Published" badges, or `npmjs.com/package/@usearazzo/*` links (they are
@@ -200,7 +208,8 @@ pages/
                                  # snippet and acceptance bar in CONTRIBUTING.md. UseArazzo's
                                  # own content is never listed; linked in nav and footer.
   cli.html                       # CLI product page, published (validate); Execution In development, Discovery Idea
-  runner.html                    # Runner product page, sidebar nav, inline SVG architecture + JS API
+  runner.html                    # Runner product page, published; run sample, Coming Next callout, inline SVG
+                                 # architecture (the same SVG is in _reference/runner.md; keep the two in step)
   validator.html                 # Validator product page, sidebar nav, published; real CLI demo + install
   about.html                     # Mission, team, track record, "Built on SpecLynx" credit
   privacy.html, terms.html       # Legal pages
@@ -647,10 +656,8 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
 This is real, currently-shipping (or currently-not-shipping) software. When updating product pages:
 - Don't add commands, flags, or install instructions that don't exist in the actual package —
   check `arazzo-toolkit/packages/{cli,validator,runner}/README.md` and `package.json` first.
-- Keep the "not yet published" framing on every product page until that package actually resolves
-  on the npm registry. The Validator (2026-10-04) and the CLI (2026-10-10) resolve; the Runner does not.
-- Keep the Runner page's "not yet published" framing until `@usearazzo/runner`'s `package.json`
-  drops `"private": true` and the package resolves on the npm registry.
+- Keep the "not yet published" framing on a product page until that package actually resolves
+  on the npm registry. All three products resolve now (Runner since 2026-10-25 on the site).
 - **Package metadata does not belong on product pages.** Node engine floors, transitive dependency
   versions, and similar install-time detail live in the README and `package.json`, where someone
   installing will look. A product page introduces a product to someone evaluating it. README parity
@@ -706,7 +713,7 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 The three product pages share a shape. Keep them parallel when editing one.
 
 - **Status badge ladder**: `Published` / `In development` / `Idea`. The Validator and the CLI are
-  `Published`; the Runner is `In development`. On `/cli/` each command carries its own badge:
+  `Published`; so is the Runner (since 2026-10-25). On `/cli/` each command carries its own badge:
   `validate` Published, Execution commands In development, Discovery commands Idea. `Coming soon` marks a preview of something
   unbuilt on a published page (no current use outside the dated 2026-10-06 validator post).
 - **Status callout** directly under the intro paragraph (`bg-[#F0F5E7] border-l-4 border-primary-light`),
@@ -719,7 +726,7 @@ The three product pages share a shape. Keep them parallel when editing one.
   "Read the API reference" (primary; "Read the CLI reference" on `/cli/`) with "View source on GitHub" (secondary), and has an
   "Installation" section with the real `npm install` line. It sells the idea and hands every
   option and edge case to its `/docs/<package>/` reference instead of repeating the README. The
-  rules above still apply to `/runner/` until it publishes.
+  rules above apply to any future unpublished product.
 - **"Rest of the Toolkit"** for the sibling-product cards. "Built With" is only correct on `/cli/`,
   which is genuinely built with the other two (the Validator today, the Runner once published); on `/validator/` and `/runner/` it was backwards.
   Each of those pages ends with an "Under the hood, X uses ..." line naming the real dependency.
