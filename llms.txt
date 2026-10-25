@@ -80,9 +80,6 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 
 None of these are built yet. They are planned, not shipping:
 
-- Run workflows in one call: a single Runner function, instead of composing its four building blocks
-- Run workflows from the CLI: a command that prints each step as it passes or fails, with each success criterion's result
-- Live run events: an event stream for following a run as it happens (terminal progress, logs, OpenTelemetry)
 - Language Service: LSP-compatible library bringing Arazzo intelligence to any editor or tool (validation, completion, hover, go-to-definition, find references)
 - Editor: browser-based editor for authoring and validating Arazzo workflows with real-time feedback
 - VS Code Extension: Arazzo authoring inside VS Code, with real-time validation, semantic linting, autocompletion, live preview
