@@ -122,14 +122,14 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
           <span class="terminal-title">node run.mjs</span>
         </div>
 <!-- Verbatim output of the script above against swaggerapi/petstore3:1.0.28, captured 2026-10-25. -->
-<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Output of the script: each step with its time"><span class="terminal-prompt"><span class="t-dollar">$</span> node <span class="t-arg">run.mjs</span></span>
+<pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Output of the script: each step with its time" data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> node <span class="t-arg">run.mjs</span></span>
 <span class="t-ok">&#10003;</span> <span class="t-msg">loginUser                 </span><span class="t-loc"> 739 ms</span>
 <span class="t-ok">&#10003;</span> <span class="t-msg">findAvailablePets         </span><span class="t-loc">  19 ms</span>
 <span class="t-ok">&#10003;</span> <span class="t-msg">placeOrder                </span><span class="t-loc">  17 ms</span>
 <span class="t-ok">&#10003;</span> <span class="t-msg">retrieveOrderedPetDetails </span><span class="t-loc">   9 ms</span>
 <span class="t-ok">&#10003;</span> <span class="t-msg">verifyOrderConfirmation   </span><span class="t-loc">   7 ms</span>
 
-<span class="t-ok">completed in 796 ms</span></pre>
+<span class="t-ok">completed in 796 ms</span></span></pre>
       </div>
       <p class="text-gray-700">Five real requests, each judged by its step's criteria. The result also carries the workflow's outputs, and for each step the action it picked and how many attempts it took. The <a href="{{ '/docs/runner/#quick-start' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> walks through the same run, outputs included.</p>
     </section>
