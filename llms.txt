@@ -57,8 +57,8 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
-- Pre-1.0, on npm as an alpha: `npm install @usearazzo/runner`. Used from JavaScript or TypeScript today, by composing DocumentRegistry, OpenAPIOperationExecutor, StepExecutor, and WorkflowExecutor
-- Coming next, in order: one function call to run a workflow; a CLI command to run workflows that prints each step as it passes or fails; a live event stream of a run (logging, OpenTelemetry)
+- Pre-1.0, on npm as an alpha: `npm install @usearazzo/runner`. Used from JavaScript or TypeScript today: `ArazzoRunner.load(uri)` then `runner.execute(workflowId, { inputs })`. The four building blocks it wires (DocumentRegistry, OpenAPIOperationExecutor, StepExecutor, WorkflowExecutor) stay public for swapping one
+- Coming next, in order: a CLI command to run workflows that prints each step as it passes or fails; a live event stream of a run (logging, OpenTelemetry)
 - Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 

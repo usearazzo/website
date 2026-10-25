@@ -88,28 +88,18 @@ permalink: /runner/
     <!-- Run a workflow -->
     <section id="run" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-4">Run a Workflow</h2>
-      <p class="text-gray-700 mb-4">Today the Runner is a library. You build it from four small pieces and call it from your own code. Here it runs a Petstore workflow that logs in, finds a pet, orders it, and checks the order. Start a local Petstore for it to call first:</p>
+      <p class="text-gray-700 mb-4">Today the Runner is a library: <code class="bg-gray-100 px-1 rounded">ArazzoRunner</code> loads a document and runs a workflow in two calls. Here it runs a Petstore workflow that logs in, finds a pet, orders it, and checks the order. Start a local Petstore for it to call first:</p>
       <pre class="code-block mb-4"><code class="language-bash">docker run --rm -p 8080:8080 swaggerapi/petstore3:1.0.28</code></pre>
       <p class="text-gray-700 mb-4">Install the Runner in an empty directory:</p>
       <pre class="code-block mb-4"><code class="language-bash">npm install @usearazzo/runner</code></pre>
       <p class="text-gray-700 mb-4">Save this script there as <code class="bg-gray-100 px-1 rounded">run.mjs</code> and run it with <code class="bg-gray-100 px-1 rounded">node run.mjs</code>:</p>
-      <pre class="code-block mb-4"><code class="language-js">import {
-  DocumentRegistry,
-  OpenAPIOperationExecutor,
-  StepExecutor,
-  WorkflowExecutor,
-} from '@usearazzo/runner';
+      <pre class="code-block mb-4"><code class="language-js">import { ArazzoRunner } from '@usearazzo/runner';
 
-const registry = new DocumentRegistry();
-const document = await registry.acquireEntryDocument(
+const runner = await ArazzoRunner.load(
   'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
 );
 
-const operationExecutor = new OpenAPIOperationExecutor();
-const stepExecutor = new StepExecutor({ document, registry, operationExecutor });
-const executor = new WorkflowExecutor({ document, registry, stepExecutor });
-
-const result = await executor.execute('authenticateAndOrderPet', {
+const result = await runner.execute('authenticateAndOrderPet', {
   inputs: {
     username: 'theUser',
     password: '12345',
@@ -134,13 +124,13 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
         </div>
 <!-- Verbatim output of the script above against swaggerapi/petstore3:1.0.28, captured 2026-10-25. -->
 <pre class="terminal-body terminal-panel" role="region" tabindex="0" aria-label="Output of the script: each step with its time"><span class="terminal-prompt"><span class="t-dollar">$</span> node <span class="t-arg">run.mjs</span></span>
-<span class="t-ok">&#10003;</span> <span class="t-msg">loginUser                 </span><span class="t-loc"> 710 ms</span>
-<span class="t-ok">&#10003;</span> <span class="t-msg">findAvailablePets         </span><span class="t-loc">  18 ms</span>
-<span class="t-ok">&#10003;</span> <span class="t-msg">placeOrder                </span><span class="t-loc">  13 ms</span>
-<span class="t-ok">&#10003;</span> <span class="t-msg">retrieveOrderedPetDetails </span><span class="t-loc">   8 ms</span>
-<span class="t-ok">&#10003;</span> <span class="t-msg">verifyOrderConfirmation   </span><span class="t-loc">   6 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">loginUser                 </span><span class="t-loc"> 739 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">findAvailablePets         </span><span class="t-loc">  19 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">placeOrder                </span><span class="t-loc">  17 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">retrieveOrderedPetDetails </span><span class="t-loc">   9 ms</span>
+<span class="t-ok">&#10003;</span> <span class="t-msg">verifyOrderConfirmation   </span><span class="t-loc">   7 ms</span>
 
-<span class="t-ok">completed in 758 ms</span></pre>
+<span class="t-ok">completed in 796 ms</span></pre>
       </div>
       <p class="text-gray-700">Five real requests, each judged by its step's criteria. The result also carries the workflow's outputs, and for each step the action it picked and how many attempts it took. The <a href="{{ '/docs/runner/#quick-start' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> walks through the same run, outputs included.</p>
     </section>
@@ -151,7 +141,6 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
       <div class="bg-[#F0F5E7] border-l-4 border-primary-light p-4 mb-4">
         <p class="text-gray-700 mb-3">The Runner is usable today from code. Next, in this order:</p>
         <ol class="text-gray-700 space-y-2 ml-5 list-decimal list-outside">
-          <li><strong>One call to run a workflow.</strong> A single function that builds the four pieces for you.</li>
           <li><strong>A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> to run workflows.</strong> It will print each step as it passes or fails, with the result of each success criterion.</li>
           <li><strong>Live progress.</strong> An event stream for following a run as it happens, for logging and OpenTelemetry.</li>
         </ol>
@@ -186,7 +175,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
     <section id="architecture" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-4">Architecture</h2>
       <p class="text-gray-700 mb-6">
-        Running a workflow is a pipeline of four small parts. <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> runs the steps and is the only part that writes run state. <code class="bg-gray-100 px-1 rounded">StepExecutor</code> runs one step. <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> builds and sends one request. <code class="bg-gray-100 px-1 rounded">DocumentRegistry</code> loads every document once. Each part takes its collaborator rather than building one, so a stub drops in for tests at any level.
+        Running a workflow is a pipeline of four small parts, and <code class="bg-gray-100 px-1 rounded">ArazzoRunner</code> wires them for you. <code class="bg-gray-100 px-1 rounded">WorkflowExecutor</code> runs the steps and is the only part that writes run state. <code class="bg-gray-100 px-1 rounded">StepExecutor</code> runs one step. <code class="bg-gray-100 px-1 rounded">OpenAPIOperationExecutor</code> builds and sends one request. <code class="bg-gray-100 px-1 rounded">DocumentRegistry</code> loads every document once. Each part takes its collaborator rather than building one, so you can swap any of them, or drop in a stub for tests.
       </p>
 
       <figure class="mb-6">
@@ -313,7 +302,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
-          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> to run workflows comes next, printing each step as it passes or fails. Before that comes a single function call that runs a workflow from your own code. Until then, you wire the Runner's four building blocks yourself, in about ten lines.</p></dd>
+          <dd id="faq-answer-2" class="faq-answer mt-3"><p class="text-gray-700">Not yet. A command in the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> to run workflows comes next, printing each step as it passes or fails. Until then, <code class="bg-gray-100 px-1 rounded">ArazzoRunner</code> runs a workflow from your own code in two calls: <code class="bg-gray-100 px-1 rounded">load</code>, then <code class="bg-gray-100 px-1 rounded">execute</code>.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -371,7 +360,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
           "name": "Can I run a workflow from the command line?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not yet. A command in the UseArazzo CLI to run workflows comes next, printing each step as it passes or fails. Before that comes a single function call that runs a workflow from your own code. Until then, you wire the Runner's four building blocks yourself, in about ten lines."
+            "text": "Not yet. A command in the UseArazzo CLI to run workflows comes next, printing each step as it passes or fails. Until then, ArazzoRunner runs a workflow from your own code in two calls: load, then execute."
           }
         },
         {

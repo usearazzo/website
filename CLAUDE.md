@@ -25,9 +25,11 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   validation. Its product page sells the idea and hands the details to `/docs/validator/`, the API
   reference; the page's terminal demo is real `@usearazzo/cli` output (same two runs as `/cli/`).
 - **Runner** — `@usearazzo/runner`, **published as an alpha** (1.0.1-alpha.10, announced on the site
-  2026-10-25). Programmatic only: you compose `DocumentRegistry` → `OpenAPIOperationExecutor` →
-  `StepExecutor` → `WorkflowExecutor`. Coming next, said on `/runner/` and `/docs/runner/` (the owner removed
-  these from the roadmap on the homepage, `llms.txt`, and the org profile, 2026-10-25): (1) a one-call API, (2) a CLI command to run workflows (name not final, so
+  2026-10-25). Programmatic only. Since 1.0.1-alpha.11 (2026-10-25, toolkit#271) the entry point is the
+  `ArazzoRunner` facade (`load(uri, options)` then `execute(workflowId, options)`), documented in
+  `/docs/runner/#arazzo-runner`; `/runner/` shows the facade only. The four building blocks it wires
+  (`DocumentRegistry` → `OpenAPIOperationExecutor` → `StepExecutor` → `WorkflowExecutor`) stay public. Coming next, said on `/runner/` and `/docs/runner/` (the owner removed
+  these from the roadmap on the homepage, `llms.txt`, and the org profile, 2026-10-25): (1) a one-call API (shipped as `ArazzoRunner`, dropped from the lists), (2) a CLI command to run workflows (name not final, so
   new copy never names it; `/cli/` keeps its #84 names with "may change"), (3) a live event stream.
   No CLI run output anywhere until the command ships. Reference at `/docs/runner/`; its outputs were
   captured on 2026-10-25 against the `swaggerapi/petstore3:1.0.28` container (the image the toolkit's

@@ -17,6 +17,13 @@ toc:
     title: Coming next
   - id: exports
     title: Exports
+  - id: arazzo-runner
+    title: ArazzoRunner
+    children:
+      - id: arazzo-runner-options
+        title: Load options
+      - id: arazzo-runner-registry
+        title: One registry, one document
   - id: architecture
     title: Four building blocks
   - id: document-registry
@@ -78,7 +85,7 @@ toc:
 
 `@usearazzo/runner` executes an Arazzo workflow. It sends real HTTP requests to the APIs the workflow's OpenAPI source descriptions describe, one step at a time. It evaluates each step's success criteria, follows the control flow the document declares (`goto`, `retry`, `end`), runs sub-workflows, and hands back a trace of every step.
 
-Today it is a library. You build a runner from four small pieces and call it from your own code. A one-call API and a CLI command come next.
+Today it is a library. [`ArazzoRunner`](#arazzo-runner) loads a document and runs its workflows in two calls, and the four building blocks it wires stay public for when you need to swap one. A CLI command to run workflows comes next.
 
 ## Installation {#install}
 
@@ -101,23 +108,13 @@ docker run --rm -p 8080:8080 swaggerapi/petstore3:1.0.28
 Save this script as `run.mjs` and run it with `node run.mjs`. It loads the workflow straight from this site:
 
 ```js
-import {
-  DocumentRegistry,
-  OpenAPIOperationExecutor,
-  StepExecutor,
-  WorkflowExecutor,
-} from '@usearazzo/runner';
+import { ArazzoRunner } from '@usearazzo/runner';
 
-const registry = new DocumentRegistry();
-const document = await registry.acquireEntryDocument(
+const runner = await ArazzoRunner.load(
   'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
 );
 
-const operationExecutor = new OpenAPIOperationExecutor();
-const stepExecutor = new StepExecutor({ document, registry, operationExecutor });
-const executor = new WorkflowExecutor({ document, registry, stepExecutor });
-
-const result = await executor.execute('authenticateAndOrderPet', {
+const result = await runner.execute('authenticateAndOrderPet', {
   inputs: {
     username: 'theUser',
     password: '12345',
@@ -146,10 +143,10 @@ completed
   orderQuantity: 1,
   orderShipDate: '2026-11-01T10:00:00.000+00:00'
 }
-loginUser true 1 771 ms
+loginUser true 1 746 ms
 findAvailablePets true 1 17 ms
-placeOrder true 1 15 ms
-retrieveOrderedPetDetails true 1 9 ms
+placeOrder true 1 16 ms
+retrieveOrderedPetDetails true 1 8 ms
 verifyOrderConfirmation true 1 7 ms
 ```
 
@@ -159,20 +156,18 @@ Notice that every input is passed in. The runner does not fill in `default` valu
 
 ## Coming next {#coming-next}
 
-Wiring four building blocks is the entry point for now. Next, in this order:
+Today you run workflows from your own code. Next, in this order:
 
-1. **One call to run a workflow.** A single function that builds the pieces for you.
-2. **A command in the [CLI](/cli/) to run workflows.** It will print each step as it passes or fails, along with the result of each success criterion.
-3. **Live progress.** An event stream for following a run as it happens, for logging and OpenTelemetry.
-
-The building blocks on this page stay. The one-call API is built from them, and they remain the way to swap a piece.
+1. **A command in the [CLI](/cli/) to run workflows.** It will print each step as it passes or fails, along with the result of each success criterion.
+2. **Live progress.** An event stream for following a run as it happens, for logging and OpenTelemetry.
 
 ## Exports {#exports}
 
-These are the exports you build a runner from:
+These are the main exports:
 
 | Export | Kind | What it is |
 |---|---|---|
+| `ArazzoRunner` | class | Loads an Arazzo document and runs its workflows. Start here. |
 | `DocumentRegistry` | class | Loads and caches the Arazzo document and its source descriptions. |
 | `WorkflowExecutor` | class | Runs a whole workflow and returns its result. |
 | `StepExecutor` | class | Runs one step that calls an OpenAPI operation. |
@@ -184,11 +179,71 @@ These are the exports you build a runner from:
 | `ArazzoRunnerError` | class | Base class of every error the runner throws. |
 | `ExecutionError`, `ClientError`, `ResolverError`, `CriterionError`, `RuntimeExpressionError`, `InvalidEntryDocumentError` | class | The errors you are most likely to catch. See [Errors](#errors). |
 
-Every type on this page is exported too: `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
+Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
+
+## ArazzoRunner {#arazzo-runner}
+
+```ts
+ArazzoRunner.load(uri: string, options?: ArazzoRunnerLoadOptions): Promise<ArazzoRunner>
+runner.execute(workflowId: string, options?: WorkflowExecuteOptions): Promise<WorkflowExecutionResult>
+```
+
+The way to run a workflow. `load` reads the Arazzo document at `uri` (a path or a URL) and wires the [four building blocks](#architecture) with their defaults. `execute` runs one workflow of that document:
+
+```js
+import { ArazzoRunner } from '@usearazzo/runner';
+
+const runner = await ArazzoRunner.load('./petstore-order.arazzo.yaml');
+const result = await runner.execute('authenticateAndOrderPet', { inputs });
+```
+
+`execute` is [`WorkflowExecutor.execute`](#workflow-executor): it takes the same [execute options](#execute-options) and returns the same [result](#result). One runner can run any workflow of its document, as many times as you like; each run gets fresh state.
+
+### Load options {#arazzo-runner-options}
+
+Every option is a seam of a building block the runner wires:
+
+| Option | Goes to | Meaning |
+|---|---|---|
+| `registry` | `DocumentRegistry` | The registry to load into. A new one by default. |
+| `httpClient` | `OpenAPIOperationExecutor` | Sends the requests. See [The HTTP client](#http-client). |
+| `requestInterceptor` | `OpenAPIOperationExecutor` | Changes every request before it is sent. See [Authentication](#request-interceptor). |
+| `maxSteps`, `maxWorkflowDepth`, `sleep`, `now` | `WorkflowExecutor` | See [Constructor options](#workflow-executor-options). |
+
+```js
+const runner = await ArazzoRunner.load(uri, {
+  requestInterceptor: async (request) => {
+    request.headers.Authorization = `Bearer ${await acquireToken()}`;
+  },
+});
+```
+
+`runner.document` is the loaded Arazzo document, and `runner.registry` the registry holding it and its source descriptions.
+
+### One registry, one document {#arazzo-runner-registry}
+
+A registry backs one entry document. Loading the same document into a registry again is fine; loading a different one throws `InvalidEntryDocumentError`:
+
+```js
+const registry = new DocumentRegistry();
+await ArazzoRunner.load('./petstore-order.arazzo.yaml', { registry });
+await ArazzoRunner.load('./adopt-a-pet.arazzo.yaml', { registry });
+// InvalidEntryDocumentError: Document at "./adopt-a-pet.arazzo.yaml" is not the entry document of the given registry
+```
+
+To bind a runner to a document you already loaded, use the constructor. It takes the load options above, with `document` and `registry` required, and throws `InvalidEntryDocumentError` unless `document` is the entry document of `registry`:
+
+```js
+const registry = new DocumentRegistry();
+const document = await registry.acquireEntryDocument('./petstore-order.arazzo.yaml');
+const runner = new ArazzoRunner({ document, registry });
+```
+
+A document that is not Arazzo throws `InvalidEntryDocumentError` from `load`, as it does from `acquireEntryDocument`.
 
 ## Four building blocks {#architecture}
 
-Running a workflow is a pipeline of four parts, each with one job:
+`ArazzoRunner` wires these for you. Use them directly when you need to swap one, or to run a single step or operation on its own. Running a workflow is a pipeline of four parts, each with one job:
 
 | Building block | Job |
 |---|---|
@@ -760,7 +815,7 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `ResolverError` | A parameter, body, or output could not be resolved. | `reason`, `workflowId`, `stepId`, `target` |
 | `CriterionError` | A criterion could not be evaluated, for example a `context` that is not an expression. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
-| `InvalidEntryDocumentError` | `acquireEntryDocument` loaded a document that is not Arazzo. | `uri` |
+| `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
 
 A document that cannot be read at all (a missing file, an HTTP error) throws the parser's own error, not one of these.
 
