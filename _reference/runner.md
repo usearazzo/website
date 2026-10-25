@@ -12,8 +12,6 @@ toc:
     title: Installation
   - id: quick-start
     title: Run a workflow
-  - id: coming-next
-    title: Coming next
   - id: exports
     title: Exports
   - id: arazzo-runner
@@ -84,7 +82,7 @@ toc:
 
 `@usearazzo/runner` executes an Arazzo workflow. It sends real HTTP requests to the APIs the workflow's OpenAPI source descriptions describe, one step at a time. It evaluates each step's success criteria, follows the control flow the document declares (`goto`, `retry`, `end`), runs sub-workflows, and hands back a trace of every step.
 
-Today it is a library. [`ArazzoRunner`](#arazzo-runner) loads a document and runs its workflows in two calls, and the four building blocks it wires stay public for when you need to swap one. A CLI command to run workflows comes next.
+Today it is a library. [`ArazzoRunner`](#arazzo-runner) loads a document and runs its workflows in two calls, and the four building blocks it wires stay public for when you need to swap one.
 
 ## Installation {#install}
 
@@ -153,13 +151,6 @@ Five requests went out, each judged by its step's `successCriteria`, and the wor
 
 Notice that every input is passed in. The runner does not fill in `default` values from the workflow's `inputs` schema, so pass every input a step reads.
 
-## Coming next {#coming-next}
-
-Today you run workflows from your own code. Next, in this order:
-
-1. **A command in the [CLI](/cli/) to run workflows.** It will print each step as it passes or fails, along with the result of each success criterion.
-2. **Live progress.** An event stream for following a run as it happens, for logging and OpenTelemetry.
-
 ## Exports {#exports}
 
 These are the main exports:
@@ -192,7 +183,9 @@ The way to run a workflow. `load` reads the Arazzo document at `uri` (a path or 
 ```js
 import { ArazzoRunner } from '@usearazzo/runner';
 
-const runner = await ArazzoRunner.load('./petstore-order.arazzo.yaml');
+const runner = await ArazzoRunner.load(
+  'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
+);
 const result = await runner.execute('authenticateAndOrderPet', { inputs });
 ```
 
@@ -225,16 +218,19 @@ A registry backs one entry document. Loading the same document into a registry a
 
 ```js
 const registry = new DocumentRegistry();
-await ArazzoRunner.load('./petstore-order.arazzo.yaml', { registry });
-await ArazzoRunner.load('./adopt-a-pet.arazzo.yaml', { registry });
-// InvalidEntryDocumentError: Document at "./adopt-a-pet.arazzo.yaml" is not the entry document of the given registry
+await ArazzoRunner.load('https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml', { registry });
+await ArazzoRunner.load('https://usearazzo.com/assets/guides/arazzo-document-resolving/adopt-a-pet.arazzo.yaml', { registry });
+// InvalidEntryDocumentError: Document at "https://usearazzo.com/assets/guides/arazzo-document-resolving/adopt-a-pet.arazzo.yaml"
+// is not the entry document of the given registry
 ```
 
 To bind a runner to a document you already loaded, use the constructor. It takes the load options above, with `document` and `registry` required, and throws `InvalidEntryDocumentError` unless `document` is the entry document of `registry`:
 
 ```js
 const registry = new DocumentRegistry();
-const document = await registry.acquireEntryDocument('./petstore-order.arazzo.yaml');
+const document = await registry.acquireEntryDocument(
+  'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
+);
 const runner = new ArazzoRunner({ document, registry });
 ```
 

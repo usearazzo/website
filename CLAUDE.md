@@ -28,10 +28,9 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   2026-10-25). Programmatic only. Since 1.0.1-alpha.11 (2026-10-25, toolkit#271) the entry point is the
   `ArazzoRunner` facade (`load(uri, options)` then `execute(workflowId, options)`), documented in
   `/docs/runner/#arazzo-runner`; `/runner/` shows the facade only. The four building blocks it wires
-  (`DocumentRegistry` → `OpenAPIOperationExecutor` → `StepExecutor` → `WorkflowExecutor`) stay public. Coming next, said on `/runner/` and `/docs/runner/` (the owner removed
-  these from the roadmap on the homepage, `llms.txt`, and the org profile, 2026-10-25): (1) a one-call API (shipped as `ArazzoRunner`, dropped from the lists), (2) a CLI command to run workflows (name not final, so
-  new copy never names it; `/cli/` keeps its #84 names with "may change"), (3) a live event stream.
-  No CLI run output anywhere until the command ships. Reference at `/docs/runner/`; its outputs were
+  (`DocumentRegistry` → `OpenAPIOperationExecutor` → `StepExecutor` → `WorkflowExecutor`) stay public. No "Coming next" anywhere: the owner removed every coming-next section and sentence from the
+  site, the READMEs, and the org profile (2026-10-25); `/cli/` keeps its In development / Idea command
+  sections. No CLI run output anywhere until the command ships. Reference at `/docs/runner/`; its outputs were
   captured on 2026-10-25 against the `swaggerapi/petstore3:1.0.28` container (the image the toolkit's
   e2e test pins), because the public petstore3.swagger.io answers every `placeOrder` with a 500.
   Sample: `assets/reference/runner/petstore-order.arazzo.yaml` (the toolkit fixture, source URL made

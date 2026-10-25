@@ -32,7 +32,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - [@usearazzo/cli CLI reference]({{ site.url }}{{ site.baseurl }}/docs/cli/): every command, option, output format, exit code, and configuration setting
 - Published to npm as an alpha: `npm install --global @usearazzo/cli`, or `npx @usearazzo/cli validate <uri>`
 - `validate <uri>` (wraps @usearazzo/validator): checks a local file, file: URI, or HTTP(S) URL; stylish or JSON output; exits 1 when a problem at or above `--fail-severity` (default `error`) is found
-- Planned, proposed in [toolkit #84](https://github.com/usearazzo/arazzo-toolkit/issues/84) (names may change): `run-workflow` and `run-operation` (will wrap @usearazzo/runner; running a workflow from the CLI is what comes next)
+- Planned, proposed in [toolkit #84](https://github.com/usearazzo/arazzo-toolkit/issues/84) (names may change): `run-workflow` and `run-operation` (will wrap @usearazzo/runner)
 - Idea, not built: discovery commands `list-workflows`, `describe-workflow`, and `analyze-workflow`; the last would write an execution profile covering a workflow's inputs, the inputs of every dependsOn workflow (transitively), credentials from source-description security schemes, and server variables
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Free, open source (Apache 2.0)
@@ -58,7 +58,6 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
 - Pre-1.0, on npm as an alpha: `npm install @usearazzo/runner`. Used from JavaScript or TypeScript today: `ArazzoRunner.load(uri)` then `runner.execute(workflowId, { inputs })`. The four building blocks it wires (DocumentRegistry, OpenAPIOperationExecutor, StepExecutor, WorkflowExecutor) stay public for swapping one
-- Coming next, in order: a CLI command to run workflows that prints each step as it passes or fails; a live event stream of a run (logging, OpenTelemetry)
 - Supports Arazzo 1.0.0/1.0.1/1.1.0 workflows; OpenAPI 2.0/3.0.x/3.1.x source descriptions
 - Free, open source (Apache 2.0)
 
