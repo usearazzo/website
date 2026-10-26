@@ -42,7 +42,7 @@ Because a runner is the last thing you can build, not the first. It stands on ev
 
 Each of those became its own piece of work, and each one shipped on its own:
 
-1. **The specification itself.** I [diffed every Arazzo release]({{ '/blog/arazzo-specification-evolution/' | relative_url }}) line by line, because a runner can't guess what changed. Where the specification was ambiguous, I filed it upstream. That's ten issues since July. They cover the runtime expression grammar, criterion semantics, and the JSON Schemas.
+1. **The specification itself.** I [diffed every Arazzo release]({{ '/blog/arazzo-specification-evolution/' | relative_url }}) line by line, because a runner can't guess what changed. Where the specification was ambiguous, I filed an issue in the [Arazzo Specification repository](https://github.com/OAI/Arazzo-Specification). That's [ten issues](https://github.com/OAI/Arazzo-Specification/issues?q=is%3Aissue%20author%3Achar0n%20created%3A%3E%3D2026-07-01) since July. They cover the runtime expression grammar, criterion semantics, and the JSON Schemas. I also opened two pull requests with fixes ([#499](https://github.com/OAI/Arazzo-Specification/pull/499), [#516](https://github.com/OAI/Arazzo-Specification/pull/516)).
 2. **The [parser]({{ '/blog/arazzo-parser-on-npm/' | relative_url }}),** in September. It reads a document and everything it points at. Writing its docs turned up five bugs.
 3. **The [resolver]({{ '/blog/arazzo-resolver-on-npm/' | relative_url }}),** ten days later. It follows references. It took ten fixes in the layer underneath.
 4. **The [validator]({{ '/blog/arazzo-validator-on-npm/' | relative_url }}),** in early October. It finds what's wrong with a document before a run does.
