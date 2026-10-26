@@ -359,6 +359,14 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   mistakes (`goto` to `adopt-pets`, `$response.body#status`), both caught by `validate`. Every
   output is from a real run. Hero: the validator slab inside a terminal window. No wordmark image
   (owner). Prose is the owner's to rewrite.
+- The runner release post, `_posts/2026-10-26-arazzo-runner-on-npm.md`, DRAFTED by AI on 2026-10-25/26 at the
+  owner's request and published 2026-10-26. A first draft built around spec gaps and wire bugs was rejected
+  ("the article is bad"); the owner wanted the story instead: how UseArazzo started, the groundwork before it
+  (spec diff and ten upstream issues, parser, resolver, validator; the CLI shipped alongside), the Runner as
+  the culmination, and an honest alpha (four releases from 2026-10-22, #259 #265 #271, open #272, #97). No
+  "we" (owner dislikes it), no future plans. Origin lines come only from the August post and the About page.
+  "251 commits across the UseArazzo organization (not counting bots)" was counted 2026-10-25 over the five
+  org repos (not the spec fork). Hero is the fifth slab sibling (dark top tile, three checked steps).
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
