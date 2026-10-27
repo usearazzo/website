@@ -547,11 +547,11 @@ A workflow hands its steps two things, and they behave in opposite ways.
 
 Inheritance copies declarations, not values. A workflow parameter with the value `$steps.login.outputs.token` is evaluated for each step when that step runs, so every step sees the token as it is at that moment. Every step sends its inherited parameters, including to an operation that does not declare them, so a parameter only some operations take belongs on those steps rather than on the workflow.
 
+For a step that calls an operation, a parameter's `in` must be `path`, `query`, `header`, `cookie`, or `querystring`. Any other location throws `ResolverError` with `reason: 'invalid-location'` before any request is sent. That includes `body`, which Arazzo 1.0.0 listed and 1.0.1 removed: it is rejected in every version. A payload belongs in the step's `requestBody`, which reaches an OpenAPI 2.0 operation's body parameter too.
+
 A step's parameters are sent even when the operation does not declare them. Header, query, and cookie parameters are delivered, including an `Authorization` header, which OpenAPI 3 cannot declare. A header replaces any value the request would otherwise carry, such as the default `Accept`. Header and cookie values are serialized the way a declared parameter without `style` or `explode` would be, so an array is sent as `a,b` and an object as `k,v,k2,v2`. Cookie values are percent-encoded, and a `null` value sends nothing. A path parameter fills a matching `{name}` in the operation's path, and throws a `ClientError` when the path has none.
 
 Steps that call a workflow inherit both too. Their parameters are inputs, with no `in`, so the name alone decides what overrides what. An inherited parameter that does carry an `in` arrives as an input under its bare name.
-
-One limit: resolved values are handed to the request builder keyed by `name` alone. Two parameters that differ only in `in` collapse into one there, and the step's own wins. A step can never lose to something it inherited.
 
 ## Cancellation {#cancellation}
 
