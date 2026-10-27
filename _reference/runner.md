@@ -545,7 +545,9 @@ A workflow hands its steps two things, and they behave in opposite ways.
 
 **Parameters merge.** A workflow's `parameters` reach every step. The specification lets a step override an inherited parameter but never remove one, so each step gets both lists, its own declaration winning. A parameter is identified by its `name` and `in` together: a step's `trace` query parameter overrides an inherited `trace` query parameter, and leaves an inherited `trace` header alone.
 
-Inheritance copies declarations, not values. A workflow parameter with the value `$steps.login.outputs.token` is evaluated for each step when that step runs, so every step sees the token as it is at that moment.
+Inheritance copies declarations, not values. A workflow parameter with the value `$steps.login.outputs.token` is evaluated for each step when that step runs, so every step sees the token as it is at that moment. Every step sends its inherited parameters, including to an operation that does not declare them, so a parameter only some operations take belongs on those steps rather than on the workflow.
+
+A step's parameters are sent even when the operation does not declare them. Header, query, and cookie parameters are delivered, including an `Authorization` header, which OpenAPI 3 cannot declare. A header replaces any value the request would otherwise carry, such as the default `Accept`. Header and cookie values are serialized the way a declared parameter without `style` or `explode` would be, so an array is sent as `a,b` and an object as `k,v,k2,v2`. Cookie values are percent-encoded, and a `null` value sends nothing. A path parameter fills a matching `{name}` in the operation's path, and throws a `ClientError` when the path has none.
 
 Steps that call a workflow inherit both too. Their parameters are inputs, with no `in`, so the name alone decides what overrides what. An inherited parameter that does carry an `in` arrives as an input under its bare name.
 
@@ -806,7 +808,7 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | Error | Thrown when | Extra fields |
 |---|---|---|
 | `ExecutionError` | The document cannot be run as written, a budget ran out, or the run was cancelled. | `reason`, `workflowId`, `stepId`, `path` |
-| `ClientError` | A request could not be built (a required parameter is missing, a media type matches nothing) or sent. The underlying error is on `cause`. | `operationId`, `operationPath`, `uri` |
+| `ClientError` | A request could not be built (a required parameter is missing, a media type matches nothing, a path parameter has no place in the path) or sent. The underlying error is on `cause`. | `operationId`, `operationPath`, `uri` |
 | `ResolverError` | A parameter, body, or output could not be resolved. | `reason`, `workflowId`, `stepId`, `target` |
 | `CriterionError` | A criterion could not be evaluated, for example a `context` that is not an expression. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
