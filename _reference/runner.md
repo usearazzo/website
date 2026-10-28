@@ -539,9 +539,9 @@ Two details follow from the runtime expression grammar:
 
 ## What steps inherit {#inheritance}
 
-A workflow hands its steps two things, and they behave in opposite ways.
+A workflow hands its steps two things, default actions and parameters, and both follow the same rule: a step can override what it inherits but never remove it.
 
-**Default actions replace.** A workflow's `successActions` and `failureActions` apply to every step that declares none of its own. A step that declares `onSuccess` or `onFailure` replaces the workflow's list entirely; there is no merging. Success and failure fall back separately. Declaring the key is what counts: `onFailure: []` means no failure actions, not the workflow's.
+**Default actions merge by name.** A workflow's `successActions` and `failureActions` "can be overridden at the step level but cannot be removed there", as the specification puts it. A step's own action replaces the workflow action with the same `name`, and every workflow action the step does not name still applies. Each step gets its own actions first, in order, followed by the workflow actions it did not override. Order matters because the first action whose `criteria` match is the one taken. So `onFailure: []` gets every workflow failure action, and a step with its own `goto` still falls through to the workflow's `end` when the `goto` does not match. A step's own list is kept as written. Within the workflow's list, the first action with a given `name` wins. Success and failure merge separately.
 
 **Parameters merge.** A workflow's `parameters` reach every step. The specification lets a step override an inherited parameter but never remove one, so each step gets both lists, its own declaration winning. A parameter is identified by its `name` and `in` together: a step's `trace` query parameter overrides an inherited `trace` query parameter, and leaves an inherited `trace` header alone.
 
