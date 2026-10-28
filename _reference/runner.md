@@ -631,7 +631,8 @@ A step whose criteria go unmet is a normal outcome, `successful: false`, not a t
 
 - a step with no operation, more than one target, or an operation that cannot be found: `ExecutionError`;
 - an `outputs` value that is not a runtime expression: `ResolverError` with `reason: 'invalid-expression'`. `$response.body.id` is not Arazzo syntax; `$response.body#/id` is;
-- a criterion `context` that is not a runtime expression, whatever the criterion `type`: `CriterionError` with `reason: 'invalid-context'`.
+- a criterion `context` that is not a runtime expression, whatever the criterion `type`: `CriterionError` with `reason: 'invalid-context'`;
+- a `successCriteria` that is not a list of Criterion Objects: `ResolverError` with `reason: 'malformed-criteria'` when it is not a list, or `'malformed-criterion'` when an entry is not a Criterion Object. It throws before the request, rather than skipping the entry and letting the step pass on less than the author asserted.
 
 Parameter and payload values may be literals, since the specification types them `Any`.
 
@@ -855,7 +856,7 @@ try {
 | `source-description-not-found` | The named source description does not exist. |
 | `source-description-not-arazzo` | A workflow reference points into a document that is not Arazzo. |
 
-A workflow's `steps` and `dependsOn` are checked before anything runs, so those mistakes never send a request. A mistake inside one step is found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
+A workflow's `steps`, `dependsOn`, and `outputs`, and every step's `successCriteria`, are checked before anything runs, so those mistakes never send a request. Other mistakes inside one step are found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
 
 ## Supported versions {#versions}
 
