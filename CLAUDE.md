@@ -36,8 +36,9 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   Sample: `assets/reference/runner/petstore-order.arazzo.yaml` (the toolkit fixture, source URL made
   absolute, the `sessionToken` workflow output dropped: the Petstore labels a plain-text login body
   `application/json`, so `$response.body` is undefined). Findings from that run: the Runner does not
-  apply `default`s from a workflow's `inputs` schema; a missing entry file throws ApiDOM's
-  `ResolveError`, not a runner error; the README's sample URL `ui.usearazzo.com` does not resolve in DNS.
+  apply `default`s from a workflow's `inputs` schema; a missing entry file threw ApiDOM's
+  `ResolveError`, not a runner error (fixed in 1.0.1-alpha.18, toolkit#272: now `DocumentLoadError`);
+  the README's sample URL `ui.usearazzo.com` does not resolve in DNS.
 
 **All five packages are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10; runner by 2026-10-25). For any future package, verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than

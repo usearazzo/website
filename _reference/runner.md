@@ -167,7 +167,7 @@ These are the main exports:
 | `WorkflowExecutionState` | class | Run state, for calling `StepExecutor` on its own. |
 | `ArazzoWorkflowExtractor`, `ArazzoStepExtractor` | class | Pull a workflow or a step out of a loaded document by id. |
 | `ArazzoRunnerError` | class | Base class of every error the runner throws. |
-| `ExecutionError`, `ClientError`, `ResolverError`, `CriterionError`, `RuntimeExpressionError`, `InvalidEntryDocumentError` | class | The errors you are most likely to catch. See [Errors](#errors). |
+| `ExecutionError`, `ClientError`, `ResolverError`, `CriterionError`, `RuntimeExpressionError`, `InvalidEntryDocumentError`, `DocumentLoadError` | class | The errors you are most likely to catch. See [Errors](#errors). |
 
 Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
 
@@ -234,7 +234,7 @@ const document = await registry.acquireEntryDocument(
 const runner = new ArazzoRunner({ document, registry });
 ```
 
-A document that is not Arazzo throws `InvalidEntryDocumentError` from `load`, as it does from `acquireEntryDocument`.
+A document that is not Arazzo throws `InvalidEntryDocumentError` from `load`, and one that cannot be read or loaded throws `DocumentLoadError`, as they do from `acquireEntryDocument`.
 
 ## Four building blocks {#architecture}
 
@@ -337,8 +337,8 @@ registry.clear(); // drop every cached document
 
 | Member | What it does |
 |---|---|
-| `acquireEntryDocument(uri)` | Loads the Arazzo document a run starts from. Throws `InvalidEntryDocumentError` when the document is not Arazzo. |
-| `acquire(uri)` | Loads any Arazzo or OpenAPI document, or returns the cached one. |
+| `acquireEntryDocument(uri)` | Loads the Arazzo document a run starts from. Throws `InvalidEntryDocumentError` when the document is not Arazzo, and `DocumentLoadError` when it cannot be read or loaded. |
+| `acquire(uri)` | Loads any Arazzo or OpenAPI document, or returns the cached one. Throws `DocumentLoadError` when the document cannot be read or loaded. |
 | `get(uri)` | Returns a document already loaded, or `undefined`. Never loads. |
 | `entryDocument` | The entry document, once acquired. |
 | `clear()` | Drops every cached document. |
@@ -814,8 +814,7 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `CriterionError` | A criterion could not be evaluated, for example a `context` that is not an expression. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
 | `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
-
-A document that cannot be read at all (a missing file, an HTTP error) throws the parser's own error, not one of these.
+| `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run. The underlying error is on `cause`. | `uri` |
 
 ```js
 import { ExecutionError, ClientError } from '@usearazzo/runner';
