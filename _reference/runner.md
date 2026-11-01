@@ -627,7 +627,7 @@ state.setStepOutputs(outcome.stepId, outcome.outputs);
 
 `StepExecutor` changes nothing in the state. It returns the outputs and the action for the caller to record and act on. `matchedActions` lists every action that matched, in order; `action` is the first.
 
-A step whose criteria go unmet is a normal outcome, `successful: false`, not a throw. These throw:
+A step whose criteria go unmet is a normal outcome, `successful: false`, not a throw. So is a criterion whose condition cannot be evaluated: an invalid regex, JSONPath, XPath or simple condition, or non-XML data under an `xpath` query, counts as unmet, as Arazzo 1.1.0 requires. In an action's `criteria` it makes the action not match. These throw:
 
 - a step with no operation, more than one target, or an operation that cannot be found: `ExecutionError`;
 - an `outputs` value that is not a runtime expression: `ResolverError` with `reason: 'invalid-expression'`. `$response.body.id` is not Arazzo syntax; `$response.body#/id` is;
@@ -811,10 +811,12 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `ExecutionError` | The document cannot be run as written, a budget ran out, or the run was cancelled. | `reason`, `workflowId`, `stepId`, `path` |
 | `ClientError` | A request could not be built (a required parameter is missing, a media type matches nothing, a path parameter has no place in the path) or sent. The underlying error is on `cause`. | `operationId`, `operationPath`, `uri` |
 | `ResolverError` | A parameter, body, or output could not be resolved. | `reason`, `workflowId`, `stepId`, `target` |
-| `CriterionError` | A criterion could not be evaluated, for example a `context` that is not an expression. | `reason`, `condition`, `type` |
+| `CriterionError` | A criterion is malformed as written: a missing `condition`, an unknown `type`, an unsupported expression `version`, a `context` that is missing or not an expression. A condition that cannot be evaluated is not an error; the criterion is unmet. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
 | `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
 | `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run. The underlying error is on `cause`. | `uri` |
+
+`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. `CriterionErrorReason` names every `reason` a `CriterionError` carries, such as `CriterionErrorReason.InvalidContext` (`'invalid-context'`).
 
 ```js
 import { ExecutionError, ClientError } from '@usearazzo/runner';
