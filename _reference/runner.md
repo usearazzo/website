@@ -411,8 +411,29 @@ Each `StepRunRecord` in `steps` carries:
 | `action` | The `onSuccess` or `onFailure` action that was selected, or `undefined` when none matched. |
 | `attempts` | How many times the step ran: `1`, or more after retries. |
 | `durationMs` | Time across every attempt and the waits between them. |
+| `successCriteria` | One record per entry of the step's `successCriteria`, on the last attempt, in order. |
+| `actionCriteria` | One record per criterion of the actions the last attempt considered: its `onSuccess` actions when it succeeded, its `onFailure` actions otherwise. |
 | `subWorkflows` | One result per attempt, on a step that calls a workflow. |
 | `retryReferences` | One record per [retry reference](#retry) that fired. |
+
+Each criterion record is a `CriterionEvaluationRecord`: the `condition` as written, whether it was `met`, the `actionName` for an action criterion, and a `diagnostic` when the condition could not be evaluated. The diagnostic has a machine-readable `code` (a `CriterionErrorReason` value, or `'unavailable-expression'`) and a human-readable `message`. Records never hold request or response data.
+
+```js
+result.steps[0].successCriteria;
+// [
+//   { condition: '$statusCode == 200', met: false },
+//   {
+//     condition: '^(200',
+//     met: false,
+//     diagnostic: {
+//       code: 'invalid-regex',
+//       message: 'Invalid regex criterion condition "^(200": Invalid regular expression: /^(200/: Unterminated group',
+//     },
+//   },
+// ]
+```
+
+Every criterion in a list is evaluated, not only up to the first unmet one, so a single run shows every reason a step failed. The regex and JSONPath messages include the engine's explanation; XPath messages name the condition only, because a query can put values from the response into its own error.
 
 A step that fails its criteria is not an error. It makes a `failed` result, which you read like any other. Only a broken document, a failed transport, or a cancelled run throws (see [Errors](#errors)).
 
@@ -489,7 +510,7 @@ Parameters the calling workflow passed down reach it too. A called workflow that
 The specification does not say what the HTTP expressions mean in such a step, since it sent no request. The runner reads them this way:
 
 - **`$outputs.<name>` is the called workflow's output** in the step's `successCriteria`, `outputs`, and action `criteria`. Every example in the specification that uses it relies on this reading. `$workflows.<id>.outputs.<name>` works everywhere.
-- **`$statusCode`, `$url`, `$method`, `$request.*`, and `$response.*` throw** a `RuntimeExpressionError` with `reason: 'unavailable-expression'` in the step's `successCriteria` or `outputs`. In an action's `criteria` they make the action not match instead, so a workflow-wide default written for operation steps does not stop the run.
+- **`$statusCode`, `$url`, `$method`, `$request.*`, and `$response.*` fail a criterion** in the step's `successCriteria` or an action's `criteria`. The record carries a `diagnostic` with `code: 'unavailable-expression'`, so the mistake stays visible. A failed `successCriteria` sends the step down its failure path, where `onFailure` applies, and a workflow-wide default action written for operation steps simply does not match. In the step's `outputs` they throw a `RuntimeExpressionError` with `reason: 'unavailable-expression'`, since an output has no failed state to fall back to.
 
 ```yaml
 - stepId: place-order
@@ -619,6 +640,8 @@ const outcome = await stepExecutor.execute(step, state, { server: 'http://localh
 outcome.successful; // true when every successCriterion passed
 outcome.outputs; // the step's outputs, by name
 outcome.action; // the selected onSuccess / onFailure action, or undefined
+outcome.successCriteria; // one CriterionEvaluationRecord per successCriterion
+outcome.actionCriteria; // one per criterion of the actions considered
 outcome.response; // the response, with the request as sent
 
 // record the outputs so a later step can read $steps.findAvailablePets.outputs
@@ -627,7 +650,7 @@ state.setStepOutputs(outcome.stepId, outcome.outputs);
 
 `StepExecutor` changes nothing in the state. It returns the outputs and the action for the caller to record and act on. `matchedActions` lists every action that matched, in order; `action` is the first.
 
-A step whose criteria go unmet is a normal outcome, `successful: false`, not a throw. So is a criterion whose condition cannot be evaluated: an invalid regex, JSONPath, XPath or simple condition, or non-XML data under an `xpath` query, counts as unmet, as Arazzo 1.1.0 requires. In an action's `criteria` it makes the action not match. These throw:
+A step whose criteria go unmet is a normal outcome, `successful: false`, not a throw. So is a criterion whose condition cannot be evaluated: an invalid regex, JSONPath, XPath or simple condition, or non-XML data under an `xpath` query, counts as unmet, as Arazzo 1.1.0 requires. In an action's `criteria` it makes the action not match. Every criterion is evaluated, so one that is malformed throws even after an earlier criterion was unmet. These throw:
 
 - a step with no operation, more than one target, or an operation that cannot be found: `ExecutionError`;
 - an `outputs` value that is not a runtime expression: `ResolverError` with `reason: 'invalid-expression'`. `$response.body.id` is not Arazzo syntax; `$response.body#/id` is;
@@ -636,7 +659,7 @@ A step whose criteria go unmet is a normal outcome, `successful: false`, not a t
 
 Parameter and payload values may be literals, since the specification types them `Any`.
 
-A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria` and `selectActions`, which are public for that reason. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
+A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria` and `selectActions`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
 
 ### Request body payloads {#request-body}
 
@@ -816,7 +839,7 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
 | `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run. The underlying error is on `cause`. | `uri` |
 
-`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. `CriterionErrorReason` names every `reason` a `CriterionError` carries, such as `CriterionErrorReason.InvalidContext` (`'invalid-context'`).
+`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion: `evaluate` returns a `CriterionOutcome`, `{ met, error? }`, whose `error` is that `CriterionEvaluationError`. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. `CriterionErrorReason` names every `reason` a `CriterionError` carries, such as `CriterionErrorReason.InvalidContext` (`'invalid-context'`).
 
 ```js
 import { ExecutionError, ClientError } from '@usearazzo/runner';
