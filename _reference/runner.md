@@ -865,7 +865,7 @@ try {
 
 | `reason` | Cause |
 |---|---|
-| `workflow-not-found` | No workflow has that id. The message names the document searched. |
+| `workflow-not-found` | No workflow has that id. The message names the document searched. For a reference to a missing workflow (a `dependsOn` entry, a step that calls a workflow, or a `goto` or `retry` action), `workflowId` is the workflow making the reference, `stepId` is the step it sits on (there is none for `dependsOn`), and the message quotes the reference as written. For an unknown id passed to `execute`, `workflowId` is that id. |
 | `goto-target-not-found` | A `goto` names a step that does not exist. |
 | `goto-target-missing` | A `goto` names neither a `stepId` nor a `workflowId`. |
 | `retry-target-not-found` | A `retry` references a step the workflow does not have. |
