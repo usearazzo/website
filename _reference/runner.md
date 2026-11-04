@@ -598,7 +598,7 @@ A client that ignores the signal costs one request in flight; the run still stop
 
 ```ts
 new StepExecutor(options: { document: ArazzoDocument; registry: DocumentRegistry; operationExecutor: OpenAPIOperationExecutor })
-stepExecutor.execute(step, state, executeOptions?): Promise<StepExecutionResult>
+stepExecutor.execute(step, state, executeOptions?, workflowId?): Promise<StepExecutionResult>
 ```
 
 Runs one step that calls an OpenAPI operation. It does four things in order:
@@ -652,14 +652,16 @@ state.setStepOutputs(outcome.stepId, outcome.outputs);
 
 A step whose criteria go unmet is a normal outcome, `successful: false`, not a throw. So is a criterion whose condition cannot be evaluated: an invalid regex, JSONPath, XPath or simple condition, or non-XML data under an `xpath` query, counts as unmet, as Arazzo 1.1.0 requires. In an action's `criteria` it makes the action not match. Every criterion is evaluated, so one that is malformed throws even after an earlier criterion was unmet. These throw:
 
-- a step with no operation, more than one target, or an operation that cannot be found: `ExecutionError`;
+- a step with no operation (`missing-operation`), more than one target (`ambiguous-target`), or an operation that cannot be found (`operation-not-found`, or another reason from [Errors](#errors) when the reference itself is wrong): `ExecutionError`;
 - an `outputs` value that is not a runtime expression: `ResolverError` with `reason: 'invalid-expression'`. `$response.body.id` is not Arazzo syntax; `$response.body#/id` is;
 - a criterion `context` that is not a runtime expression, whatever the criterion `type`: `CriterionError` with `reason: 'invalid-context'`;
 - a `successCriteria` that is not a list of Criterion Objects: `ResolverError` with `reason: 'malformed-criteria'` when it is not a list, or `'malformed-criterion'` when an entry is not a Criterion Object. It throws before the request, rather than skipping the entry and letting the step pass on less than the author asserted.
 
+Pass `workflowId`, the id of the workflow the step belongs to, and every error the step raises carries it next to `stepId`: step ids are only unique within a workflow. `WorkflowExecutor` always passes it.
+
 Parameter and payload values may be literals, since the specification types them `Any`.
 
-A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria` and `selectActions`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
+A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria` and `selectActions`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`. Both take the same optional `workflowId` as `execute`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
 
 ### Request body payloads {#request-body}
 
@@ -866,10 +868,13 @@ try {
 | `reason` | Cause |
 |---|---|
 | `workflow-not-found` | No workflow has that id. The message names the document searched. For a reference to a missing workflow (a `dependsOn` entry, a step that calls a workflow, or a `goto` or `retry` action), `workflowId` is the workflow making the reference, `stepId` is the step it sits on (there is none for `dependsOn`), and the message quotes the reference as written. For an unknown id passed to `execute`, `workflowId` is that id. |
+| `operation-not-found` | No operation answers a step's `operationId` or `operationPath`: the operation is not in its OpenAPI source description, the document has no OpenAPI source description, or the `operationPath` pointer locates no operation. `workflowId` and `stepId` name the step. |
 | `goto-target-not-found` | A `goto` names a step that does not exist. |
 | `goto-target-missing` | A `goto` names neither a `stepId` nor a `workflowId`. |
 | `retry-target-not-found` | A `retry` references a step the workflow does not have. |
 | `ambiguous-target` | A step, `goto`, or `retry` names more than one target. |
+| `missing-operation` | An operation step has neither an `operationId` nor an `operationPath`. |
+| `workflow-step` | `StepExecutor` was given a step that calls a workflow. `WorkflowExecutor` runs those itself. |
 | `unknown-action-type` | An action's `type` is not `end`, `goto`, or `retry`. |
 | `malformed-steps`, `malformed-dependsOn` | A workflow's `steps` or `dependsOn` is present but malformed. |
 | `workflow-cycle`, `dependsOn-cycle` | A workflow is entered again while it is still running. |
@@ -877,8 +882,10 @@ try {
 | `step-budget` | The run made more than `maxSteps` step attempts. |
 | `aborted` | The run was cancelled. |
 | `invalid-workflow-reference` | A `$`-prefixed workflow reference is not `$sourceDescriptions.<name>.<workflowId>`. |
-| `source-description-not-found` | The named source description does not exist. |
+| `invalid-operation-reference` | A `$`-prefixed `operationId` is not `$sourceDescriptions.<name>.<operationId>`, or an `operationPath` has no source URL or an invalid JSON Pointer. |
+| `source-description-not-found` | The named source description does not exist, whether a workflow reference or an operation reference names it. |
 | `source-description-not-arazzo` | A workflow reference points into a document that is not Arazzo. |
+| `source-description-not-openapi` | An operation reference points into a document that is not OpenAPI. |
 
 A workflow's `steps`, `dependsOn`, and `outputs`, and every step's `successCriteria`, are checked before anything runs, so those mistakes never send a request. Other mistakes inside one step are found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
 
