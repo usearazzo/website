@@ -416,7 +416,7 @@ Each `StepRunRecord` in `steps` carries:
 | `subWorkflows` | One result per attempt, on a step that calls a workflow. |
 | `retryReferences` | One record per [retry reference](#retry) that fired. |
 
-Each criterion record is a `CriterionEvaluationRecord`: the `condition` as written, whether it was `met`, the `actionName` for an action criterion, and a `diagnostic` when the condition could not be evaluated. The diagnostic has a machine-readable `code` (a `CriterionErrorReason` value, or `'unavailable-expression'`) and a human-readable `message`. Records never hold request or response data.
+Each criterion record is a `CriterionEvaluationRecord`: the `condition` as written, whether it was `met`, the `actionName` for an action criterion, and a `diagnostic` when the condition could not be evaluated. The diagnostic has a machine-readable `code` (a [`CriterionError` reason](#criterion-error-reasons), or `RuntimeExpressionError.UnavailableExpression`, `'unavailable-expression'`) and a human-readable `message`. Records never hold request or response data.
 
 ```js
 result.steps[0].successCriteria;
@@ -841,7 +841,9 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
 | `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run. The underlying error is on `cause`. | `uri` |
 
-`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion: `evaluate` returns a `CriterionOutcome`, `{ met, error? }`, whose `error` is that `CriterionEvaluationError`. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. `CriterionErrorReason` names every `reason` a `CriterionError` carries, such as `CriterionErrorReason.InvalidContext` (`'invalid-context'`).
+`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion: `evaluate` returns a `CriterionOutcome`, `{ met, error? }`, whose `error` is that `CriterionEvaluationError`. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. It carries the same reasons as `CriterionError`, so `CriterionEvaluationError.InvalidRegex` is `CriterionError.InvalidRegex`.
+
+`ExecutionError`, `ResolverError`, `CriterionError`, and `RuntimeExpressionError` list the reasons they carry as static fields on the class: `ExecutionError.WorkflowNotFound` is `'workflow-not-found'`. Compare `error.reason` against the static rather than a string literal; in TypeScript, `reason` is typed as the class's own union (`ExecutionErrorReason`, `ResolverErrorReason`, `CriterionErrorReason`, `RuntimeExpressionErrorReason`), so a misspelled reason does not compile. The tables below list every reason.
 
 ```js
 import { ExecutionError, ClientError } from '@usearazzo/runner';
@@ -853,7 +855,7 @@ try {
   }
 } catch (error) {
   if (error instanceof ExecutionError) {
-    error.reason; // 'workflow-not-found'
+    error.reason === ExecutionError.WorkflowNotFound; // true
     error.message; // 'workflow "nope" not found in Arazzo document at "https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml"'
   }
   if (error instanceof ClientError) {
@@ -865,27 +867,83 @@ try {
 
 `ExecutionError` names its cause in `reason`:
 
-| `reason` | Cause |
-|---|---|
-| `workflow-not-found` | No workflow has that id. The message names the document searched. For a reference to a missing workflow (a `dependsOn` entry, a step that calls a workflow, or a `goto` or `retry` action), `workflowId` is the workflow making the reference, `stepId` is the step it sits on (there is none for `dependsOn`), and the message quotes the reference as written. For an unknown id passed to `execute`, `workflowId` is that id. |
-| `operation-not-found` | No operation answers a step's `operationId` or `operationPath`: the operation is not in its OpenAPI source description, the document has no OpenAPI source description, or the `operationPath` pointer locates no operation. `workflowId` and `stepId` name the step. |
-| `goto-target-not-found` | A `goto` names a step that does not exist. |
-| `goto-target-missing` | A `goto` names neither a `stepId` nor a `workflowId`. |
-| `retry-target-not-found` | A `retry` references a step the workflow does not have. |
-| `ambiguous-target` | A step, `goto`, or `retry` names more than one target. |
-| `missing-operation` | An operation step has neither an `operationId` nor an `operationPath`. |
-| `workflow-step` | `StepExecutor` was given a step that calls a workflow. `WorkflowExecutor` runs those itself. |
-| `unknown-action-type` | An action's `type` is not `end`, `goto`, or `retry`. |
-| `malformed-steps`, `malformed-dependsOn` | A workflow's `steps` or `dependsOn` is present but malformed. |
-| `workflow-cycle`, `dependsOn-cycle` | A workflow is entered again while it is still running. |
-| `workflow-depth` | Workflows nest deeper than `maxWorkflowDepth`. |
-| `step-budget` | The run made more than `maxSteps` step attempts. |
-| `aborted` | The run was cancelled. |
-| `invalid-workflow-reference` | A `$`-prefixed workflow reference is not `$sourceDescriptions.<name>.<workflowId>`. |
-| `invalid-operation-reference` | A `$`-prefixed `operationId` is not `$sourceDescriptions.<name>.<operationId>`, or an `operationPath` has no source URL or an invalid JSON Pointer. |
-| `source-description-not-found` | The named source description does not exist, whether a workflow reference or an operation reference names it. |
-| `source-description-not-arazzo` | A workflow reference points into a document that is not Arazzo. |
-| `source-description-not-openapi` | An operation reference points into a document that is not OpenAPI. |
+| `reason` | Static | Cause |
+|---|---|---|
+| `workflow-not-found` | `WorkflowNotFound` | No workflow has that id. The message names the document searched. For a reference to a missing workflow (a `dependsOn` entry, a step that calls a workflow, or a `goto` or `retry` action), `workflowId` is the workflow making the reference, `stepId` is the step it sits on (there is none for `dependsOn`), and the message quotes the reference as written. For an unknown id passed to `execute`, `workflowId` is that id. |
+| `operation-not-found` | `OperationNotFound` | No operation answers a step's `operationId` or `operationPath`: the operation is not in its OpenAPI source description, the document has no OpenAPI source description, or the `operationPath` pointer locates no operation. `workflowId` and `stepId` name the step. |
+| `goto-target-not-found` | `GotoTargetNotFound` | A `goto` names a step that does not exist. |
+| `goto-target-missing` | `GotoTargetMissing` | A `goto` names neither a `stepId` nor a `workflowId`. |
+| `retry-target-not-found` | `RetryTargetNotFound` | A `retry` references a step the workflow does not have. |
+| `ambiguous-target` | `AmbiguousTarget` | A step, `goto`, or `retry` names more than one target. |
+| `missing-operation` | `MissingOperation` | An operation step has neither an `operationId` nor an `operationPath`. |
+| `workflow-step` | `WorkflowStep` | `StepExecutor` was given a step that calls a workflow. `WorkflowExecutor` runs those itself. |
+| `unknown-action-type` | `UnknownActionType` | An action's `type` is not `end`, `goto`, or `retry`. |
+| `malformed-steps`, `malformed-dependsOn` | `MalformedSteps`, `MalformedDependsOn` | A workflow's `steps` or `dependsOn` is present but malformed. |
+| `workflow-cycle`, `dependsOn-cycle` | `WorkflowCycle`, `DependsOnCycle` | A workflow is entered again while it is still running. |
+| `workflow-depth` | `WorkflowDepth` | Workflows nest deeper than `maxWorkflowDepth`. |
+| `step-budget` | `StepBudget` | The run made more than `maxSteps` step attempts. |
+| `aborted` | `Aborted` | The run was cancelled. |
+| `invalid-workflow-reference` | `InvalidWorkflowReference` | A `$`-prefixed workflow reference is not `$sourceDescriptions.<name>.<workflowId>`. |
+| `invalid-operation-reference` | `InvalidOperationReference` | A `$`-prefixed `operationId` is not `$sourceDescriptions.<name>.<operationId>`, or an `operationPath` has no source URL or an invalid JSON Pointer. |
+| `source-description-not-found` | `SourceDescriptionNotFound` | The named source description does not exist, whether a workflow reference or an operation reference names it. |
+| `source-description-not-arazzo` | `SourceDescriptionNotArazzo` | A workflow reference points into a document that is not Arazzo. |
+| `source-description-not-openapi` | `SourceDescriptionNotOpenAPI` | An operation reference points into a document that is not OpenAPI. |
+| `unknown-execute-option` | `UnknownExecuteOption` | `execute` was passed an option it does not take. |
+| `retry-reference-unsupported` | `RetryReferenceUnsupported` | A `retry` action references a step or workflow, but the `StepRetryRunner` was given no way to run it. |
+| `unknown-transition-kind` | `UnknownTransitionKind` | A step produced a transition the workflow executor does not recognize. This is a runner bug, not a document mistake. |
+
+`ResolverError` names its cause in `reason`, with the field at fault in `target`:
+
+| `reason` | Static | Cause |
+|---|---|---|
+| `malformed-parameters` | `MalformedParameters` | `parameters` is present but is not a list. |
+| `missing-name` | `MissingName` | A parameter has a missing or non-string `name`. |
+| `missing-location` | `MissingLocation` | A parameter of a step that calls an operation has no `in`. |
+| `malformed-location` | `MalformedLocation` | A parameter's `in` is not a string. |
+| `invalid-location` | `InvalidLocation` | A parameter's `in` is not `path`, `query`, `header`, `cookie`, or `querystring`. |
+| `ambiguous-delivery` | `AmbiguousDelivery` | A parameter cannot be delivered unambiguously at its location. |
+| `malformed-request-body` | `MalformedRequestBody` | `requestBody` is present but is not a map. |
+| `malformed-replacements` | `MalformedReplacements` | `requestBody.replacements` is present but is not a list. |
+| `unsupported-target` | `UnsupportedTarget` | A `replacements` target is not a JSON Pointer. |
+| `unresolved-target` | `UnresolvedTarget` | A `replacements` target does not resolve in the payload. |
+| `unresolved-expression` | `UnresolvedExpression` | An expression in the request body did not resolve where it cannot be left out. |
+| `invalid-expression` | `InvalidExpression` | An `outputs` value or a `{$...}` in the request body is not a valid runtime expression. |
+| `malformed-outputs` | `MalformedOutputs` | A step's or workflow's `outputs` is present but is not a map. |
+| `malformed-criteria` | `MalformedCriteria` | A step's `successCriteria` or an action's `criteria` is present but is not a list. |
+| `malformed-criterion` | `MalformedCriterion` | A criteria list has an entry that is not a Criterion Object. |
+| `malformed-actions` | `MalformedActions` | A step's `onSuccess` or `onFailure` is present but is not a list. |
+| `malformed-action-entry` | `MalformedActionEntry` | An `onSuccess` or `onFailure` list has an entry that is not a Success or Failure Action Object. |
+
+`CriterionError` names its cause in `reason`, with the criterion's `condition` and `type`:
+{: #criterion-error-reasons}
+
+| `reason` | Static | Cause |
+|---|---|---|
+| `invalid-criterion` | `InvalidCriterion` | The element is not a Criterion Object. |
+| `missing-condition` | `MissingCondition` | The `condition` is missing or empty. |
+| `invalid-type` | `InvalidType` | The `type` is present but unreadable. |
+| `unknown-type` | `UnknownType` | The `type` names no known criterion type. |
+| `invalid-version` | `InvalidVersion` | The expression type `version` is present but not a string. |
+| `unsupported-version` | `UnsupportedVersion` | The expression type `version` is not one the runner supports. |
+| `invalid-context` | `InvalidContext` | The `context` is not a runtime expression. |
+| `missing-context` | `MissingContext` | A `regex`, `jsonpath`, or `xpath` criterion has no `context`. |
+| `invalid-simple` | `InvalidSimple` | The `simple` condition cannot be parsed. |
+| `invalid-regex` | `InvalidRegex` | The `regex` condition is not a valid regular expression. |
+| `invalid-jsonpath` | `InvalidJSONPath` | The `jsonpath` condition is not a valid JSONPath query. |
+| `invalid-xpath` | `InvalidXPath` | The `xpath` condition is invalid or fails to evaluate. |
+| `invalid-xpath-context` | `InvalidXPathContext` | The resolved `xpath` context is not XML. |
+
+The last five are thrown as `CriterionEvaluationError` and make the criterion unmet, with the reason as the record's diagnostic `code`; a run never throws them.
+
+`RuntimeExpressionError` names its cause in `reason`, with the `expression` as written:
+
+| `reason` | Static | Cause |
+|---|---|---|
+| `invalid-expression` | `InvalidExpression` | The expression is not a valid runtime expression. |
+| `parse-error` | `ParseError` | The runtime expression parser failed on the expression. |
+| `unresolved-reference` | `UnresolvedReference` | The expression cannot be resolved against the run. |
+| `unavailable-expression` | `UnavailableExpression` | The expression reads `$statusCode`, `$url`, `$method`, `$request`, or `$response` in a step that calls a workflow, which made no HTTP call. |
+| `unsupported-node` | `UnsupportedNode` | The parsed expression contains a node the runner does not evaluate. |
 
 A workflow's `steps`, `dependsOn`, and `outputs`, and every step's `successCriteria`, are checked before anything runs, so those mistakes never send a request. Other mistakes inside one step are found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
 
