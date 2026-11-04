@@ -212,6 +212,24 @@ const runner = await ArazzoRunner.load(uri, {
 
 `runner.document` is the loaded Arazzo document, and `runner.registry` the registry holding it and its source descriptions.
 
+To see what a document offers before running it, call `listWorkflows()` on `runner.document`. It returns a `WorkflowDescriptor` for every workflow `execute` accepts, in document order:
+
+```js
+const runner = await ArazzoRunner.load('https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml');
+
+runner.document.listWorkflows();
+// [
+//   {
+//     workflowId: 'authenticateAndOrderPet',
+//     jsonPointer: '/workflows/0',
+//     summary: 'Complete pet ordering workflow with authentication',
+//     description: 'Authenticate user, discover available pets, place order, retrieve details, and return comprehensive order summary'
+//   }
+// ]
+```
+
+`jsonPointer` locates the workflow in the document. `summary` and `description` are there only when the document gives them as strings; `description` is the CommonMark as written. A workflow without a `workflowId` cannot be run, so it is not listed. The call reads the loaded document only: source descriptions are not loaded, and workflows of other Arazzo documents they point at are not listed.
+
 ### One registry, one document {#arazzo-runner-registry}
 
 A registry backs one entry document. Loading the same document into a registry again is fine; loading a different one throws `InvalidEntryDocumentError`:
