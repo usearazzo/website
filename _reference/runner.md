@@ -230,6 +230,8 @@ runner.document.listWorkflows();
 
 `jsonPointer` locates the workflow in the document. `summary` and `description` are there only when the document gives them as strings; `description` is the CommonMark as written. A workflow without a `workflowId` cannot be run, so it is not listed. The call reads the loaded document only: source descriptions are not loaded, and workflows of other Arazzo documents they point at are not listed.
 
+A document that declares the same `workflowId` or `operationId` more than once is invalid, and the [validator](/docs/validator/) reports a duplicate `workflowId` as an error. The runner still loads such a document, so one from a third party stays usable, and the first occurrence wins: `execute` runs, and `listWorkflows` lists, the first workflow of a duplicated `workflowId`, and a step's `operationId` calls the first operation that declares it. To call a later one, address it by `operationPath`.
+
 ### One registry, one document {#arazzo-runner-registry}
 
 A registry backs one entry document. Loading the same document into a registry again is fine; loading a different one throws `InvalidEntryDocumentError`:
