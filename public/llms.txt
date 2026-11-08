@@ -1,0 +1,13 @@
+# Arazzo Specification & Ecosystem
+
+> Official website and documentation hub for the OpenAPI Initiative Arazzo Specification — describing deterministic multi-step API workflows for humans and AI agents.
+
+## Key Documentation
+
+- [Arazzo Website](https://usearazzo.com/): Guides, examples, and tooling for the Arazzo Specification.
+- [Website Repository](https://github.com/usearazzo/website): Source code and documentation content.
+
+## AI Agent & Tooling Guidance
+
+- Arazzo workflows define deterministic sequences of API calls with explicit inputs, outputs, and success criteria.
+- Validated for /llms.txt agent ingestion via [AccessGuard AI-Readiness Suite](https://ronanchnlps-bit.github.io/).
