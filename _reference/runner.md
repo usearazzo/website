@@ -477,7 +477,7 @@ A `retry` action runs the step again up to its `retryLimit` (default `1`), waiti
 
 Per the specification, the retries run out before later failure actions are considered. An exhausted `retry` falls through to the next matching failure action. That may be another `retry` with its own budget, or an `end` or a `goto`. When none is left, the run fails.
 
-A `retry` may also name a `stepId` or a `workflowId` to run before each attempt, for example a step that logs in again. The reference runs once per attempt, after the wait. A failed reference does not stop the retries: the specification speaks of the reference completing, not succeeding. A `workflowId` reference runs with no inputs, because the specification gives it no way to pass any. Its outputs are recorded under `$workflows.<id>`, as for a sub-workflow step. A `stepId` reference counts against the step budget like any other attempt. The reference's own success and failure actions are not followed.
+A `retry` may also name a `stepId` or a `workflowId` to run before each attempt, for example a step that logs in again. The reference runs once per attempt, after the wait. A failed reference does not stop the retries: the specification speaks of the reference completing, not succeeding. A `workflowId` reference receives the action's `parameters` as its inputs, resolved again before every attempt (see [Action parameters](#action-parameters)); without them it runs with no inputs. Its outputs are recorded under `$workflows.<id>`, as for a sub-workflow step. A `stepId` reference counts against the step budget like any other attempt. The reference's own success and failure actions are not followed.
 
 ### Transfer to another workflow {#transfer}
 
@@ -488,9 +488,35 @@ A `goto` that names a `workflowId` hands control over for good. The specificatio
 - its `steps` hold the trace up to the `goto`;
 - `transferredTo` holds the target's own result. A chain of transfers nests: `transferredTo.transferredTo`.
 
-The target runs with no inputs, because a `goto` carries no parameters. Entering it does not count against the [step budget](#budgets): a `goto` fires once per step, so it cannot spin the way a retry can.
+The target receives the action's `parameters` as its inputs (see [Action parameters](#action-parameters)); without them it runs with no inputs. Entering it does not count against the [step budget](#budgets): a `goto` fires once per step, so it cannot spin the way a retry can.
 
 A transfer stays on the caller's call stack. A workflow that transfers back to one already on the chain throws `workflow-cycle`, even when the loop would have ended on its own. A long chain of distinct workflows throws `workflow-depth` past `maxWorkflowDepth`. So model a state machine of workflows as a bounded sequence. A loop that polls until something changes belongs in a `goto` to a `stepId`, which has no such limit.
+
+### Action parameters {#action-parameters}
+
+Arazzo 1.1.0 lets a success or failure action that names a `workflowId` pass `parameters` to that workflow. The runner honors them on a `goto` transfer and on a `retry` reference:
+
+```yaml
+onFailure:
+  - name: reportError
+    type: goto
+    workflowId: handleError
+    parameters:
+      - name: status
+        value: $statusCode
+      - name: petId
+        value: $steps.findPet.outputs.petId
+```
+
+- **Names.** Each parameter becomes the input of the same `name`, as for a step that calls a workflow. If a name repeats, the first entry wins. `parameters: []` passes no inputs.
+- **Values.** They resolve against the step that took the action, in the same context as the action's `criteria`: `$statusCode`, `$response.*`, `$request.*`, `$url`, `$method`, `$inputs`, and, for a step that calls a workflow, `$outputs`. `$steps.<stepId>.outputs` holds the outputs that attempt just produced, even mid-retry, before the step's outputs are recorded. `$components` resolve against the calling document, also when the target lives in another one.
+- **When.** Only the action that fires is resolved, when it fires, so a broken parameter on an action that is never taken does not fail the run. A `retry` reference resolves its parameters again before every attempt, against the attempt that just failed, before the reference counts against the [step budget](#budgets).
+- **Recording.** A `retry` reference with `parameters` records the inputs it ran with under `$workflows.<id>.inputs`. Without `parameters`, inputs an earlier call to the same workflow recorded are kept. A `goto` transfer records nothing in the caller, which ends there.
+- **`in`.** The specification says the `in` field must not be used on these parameters. An `in` written on one throws `ResolverError` with `reason: 'action-parameter-location'`. One that arrives through a `$components.parameters` reference is fine and maps by name: a shared component carries `in` for the operation steps that use it.
+- **Checked up front.** An inline `in`, or a `parameters` that is not a list (`reason: 'malformed-parameters'`), throws before the workflow's first request, on any action of any of its steps, as a malformed `successCriteria` does.
+- **No `workflowId`.** Valid `parameters` on an action that names no `workflowId` (an `end`, a `goto` to a `stepId`, a `retry` with no reference or a `stepId` one) are ignored. The validator reports them as a warning.
+
+An action that names a `workflowId` and has no `parameters` runs its target with no inputs. The caller's own `$inputs` are not forwarded. Every 1.x document gets this behavior; the validator flags action `parameters` in a 1.0.x document.
 
 ### settledStatus {#settled-status}
 
@@ -664,6 +690,7 @@ outcome.outputs; // the step's outputs, by name
 outcome.action; // the selected onSuccess / onFailure action, or undefined
 outcome.successCriteria; // one CriterionEvaluationRecord per successCriterion
 outcome.actionCriteria; // one per criterion of the actions considered
+outcome.actionContext; // the context the step's actions are taken in
 outcome.response; // the response, with the request as sent
 
 // record the outputs so a later step can read $steps.findAvailablePets.outputs
@@ -683,7 +710,7 @@ Pass `workflowId`, the id of the workflow the step belongs to, and every error t
 
 Parameter and payload values may be literals, since the specification types them `Any`.
 
-A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria` and `selectActions`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`. Both take the same optional `workflowId` as `execute`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
+A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria`, `selectActions` and `actionContext`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`; `actionContext(context, stepId, outputs)` returns the context with `$steps.<stepId>.outputs` replaced by `outputs`, which is what [action parameters](#action-parameters) resolve against. Both take the same optional `workflowId` as `execute`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
 
 ### Request body payloads {#request-body}
 
@@ -919,6 +946,7 @@ try {
 | `reason` | Static | Cause |
 |---|---|---|
 | `malformed-parameters` | `MalformedParameters` | `parameters` is present but is not a list. |
+| `action-parameter-location` | `ActionParameterLocation` | A parameter of a success or failure action declares an `in`. Thrown before the workflow's first request. See [Action parameters](#action-parameters). |
 | `missing-name` | `MissingName` | A parameter has a missing or non-string `name`. |
 | `missing-location` | `MissingLocation` | A parameter of a step that calls an operation has no `in`. |
 | `malformed-location` | `MalformedLocation` | A parameter's `in` is not a string. |
