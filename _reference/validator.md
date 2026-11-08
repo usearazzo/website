@@ -639,6 +639,7 @@ The document root.
 | **9070601**<br><code class="rule-name">ARAZZO_<wbr>SUCCESS_<wbr>ACTION_<wbr>FIELD_<wbr>STEP_<wbr>ID_<wbr>MUTUALLY_<wbr>EXCLUSIVE</code> | <span class="badge badge-error">Error</span> | stepId is mutually exclusive with workflowId |  |
 | **9070700**<br><code class="rule-name">ARAZZO_<wbr>SUCCESS_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>TYPE</code> | <span class="badge badge-error">Error</span> | parameters must be an array of Parameter or Reusable Objects | <span class="badge badge-version">1.1.0</span> |
 | **9070701**<br><code class="rule-name">ARAZZO_<wbr>SUCCESS_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>ONLY_<wbr>WORKFLOW_<wbr>ID</code> | <span class="badge badge-warning">Warning</span> | parameters only applies when workflowId is set | <span class="badge badge-version">1.1.0</span> |
+| **9070702**<br><code class="rule-name">ARAZZO_<wbr>SUCCESS_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>NO_<wbr>IN</code> | <span class="badge badge-error">Error</span> | parameters must not use the in field | <span class="badge badge-version">1.1.0</span> |
 {: .rules-table}
 
 </div>
@@ -674,6 +675,7 @@ The document root.
 | **9080901**<br><code class="rule-name">ARAZZO_<wbr>FAILURE_<wbr>ACTION_<wbr>FIELD_<wbr>RETRY_<wbr>LIMIT_<wbr>ONLY_<wbr>RETRY</code> | <span class="badge badge-warning">Warning</span> | retryLimit only applies when type is \"retry\" |  |
 | **9081000**<br><code class="rule-name">ARAZZO_<wbr>FAILURE_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>TYPE</code> | <span class="badge badge-error">Error</span> | parameters must be an array of Parameter or Reusable Objects | <span class="badge badge-version">1.1.0</span> |
 | **9081001**<br><code class="rule-name">ARAZZO_<wbr>FAILURE_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>ONLY_<wbr>WORKFLOW_<wbr>ID</code> | <span class="badge badge-warning">Warning</span> | parameters only applies when workflowId is set | <span class="badge badge-version">1.1.0</span> |
+| **9081002**<br><code class="rule-name">ARAZZO_<wbr>FAILURE_<wbr>ACTION_<wbr>FIELD_<wbr>PARAMETERS_<wbr>NO_<wbr>IN</code> | <span class="badge badge-error">Error</span> | parameters must not use the in field | <span class="badge badge-version">1.1.0</span> |
 {: .rules-table}
 
 </div>
