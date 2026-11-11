@@ -46,6 +46,7 @@ permalink: /validator/
       <div class="font-bold text-primary-dark mb-4">Validator</div>
       <a href="#overview" class="block text-gray-600 hover:text-primary-light">Overview</a>
       <a href="#terminal" class="block text-gray-600 hover:text-primary-light">From the Terminal</a>
+      <a href="#code" class="block text-gray-600 hover:text-primary-light">From Your Code</a>
       <a href="#checks" class="block text-gray-600 hover:text-primary-light">What It Checks</a>
       <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#toolkit" class="block text-gray-600 hover:text-primary-light">Rest of the Toolkit</a>
@@ -107,7 +108,39 @@ permalink: /validator/
 
 <span class="t-warnsum">&#9888; 1 problem (1 warning)</span></span></pre>
       </div>
-      <p class="text-gray-600 text-sm">Need the diagnostics in your own code instead? They are one function call away. See <a href="#installation" class="text-primary-light underline hover:no-underline">Installation</a>.</p>
+    </section>
+
+    <!-- From your code -->
+    <section id="code" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">From Your Code</h2>
+      <p class="text-gray-700 mb-4">The Validator is a library first. The command above is a thin wrapper around one function, <code class="bg-gray-100 px-1 rounded">validateURI</code>, and your code can call it directly. Point it at a file or a URL and it returns every problem as a diagnostic. Here it reads the first document from the terminal:</p>
+      <pre class="code-block mb-4"><code class="language-js">import { validateURI, DiagnosticSeverity } from '@usearazzo/validator';
+
+const diagnostics = await validateURI('./adopt-a-pet.arazzo.yaml');
+const errors = diagnostics.filter((d) =&gt; d.severity === DiagnosticSeverity.Error);
+
+console.log(`${errors.length} errors`);
+console.log(diagnostics[0]);</code></pre>
+<!-- Verbatim output of the script above with @usearazzo/validator from npm, captured 2026-11-11. -->
+      <pre class="code-block mb-4"><code class="language-text">2 errors
+{
+  range: {
+    start: { line: 15, character: 8 },
+    end: { line: 17, character: 37 }
+  },
+  message: "Every step must have a unique 'stepId' within a workflow.",
+  severity: 1,
+  code: 9040403,
+  source: 'apilint',
+  data: {}
+}</code></pre>
+      <p class="text-gray-700 mb-4">The same two errors the terminal printed, as data. Positions count from zero here, and the terminal prints them from one.</p>
+      <ul class="list-disc ml-6 text-gray-700 space-y-2 mb-4">
+        <li><strong>A document with problems is not an exception.</strong> The call resolves with its diagnostics, and an empty array means nothing was found.</li>
+        <li><strong>Content already in memory.</strong> <code class="bg-gray-100 px-1 rounded">validate</code> takes the text itself, for an editor buffer or a document you built.</li>
+        <li><strong>Options.</strong> Turn JSON Schema validation on, or keep the Validator from reading anything beyond the document.</li>
+      </ul>
+      <p class="text-gray-700">Every function, option, and rule is in the <a href="{{ '/docs/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a>.</p>
     </section>
 
     <!-- What it checks -->
@@ -138,13 +171,7 @@ permalink: /validator/
     <section id="installation" class="mb-16">
       <h2 class="text-2xl font-bold text-primary-dark mb-4">Installation</h2>
       <pre class="code-block mb-6"><code class="language-bash">npm install @usearazzo/validator</code></pre>
-      <p class="text-gray-700 mb-3">Point it at a file or a URL, and count the errors:</p>
-      <pre class="code-block mb-6"><code class="language-js">import { validateURI, DiagnosticSeverity } from '@usearazzo/validator';
-
-const diagnostics = await validateURI('./adopt-a-pet.arazzo.yaml');
-const errors = diagnostics.filter((d) => d.severity === DiagnosticSeverity.Error);
-const isValid = errors.length === 0;</code></pre>
-      <p class="text-gray-700">Content already in memory, options, the shape of a diagnostic, and validating documents you do not trust are all in the <a href="{{ '/docs/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a>.</p>
+      <p class="text-gray-700">That is the library. For the command line, install the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> instead, or run it with <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli validate</code>.</p>
     </section>
 
     <!-- Rest of the Toolkit -->
@@ -205,6 +232,33 @@ const isValid = errors.length === 0;</code></pre>
         </div>
         <div class="py-4">
           <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-7">
+              <span>How do I validate an Arazzo document in JavaScript or TypeScript?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-7" class="faq-answer mt-3"><p class="text-gray-700">Call <code class="bg-gray-100 px-1 rounded">validateURI</code> from <code class="bg-gray-100 px-1 rounded">@usearazzo/validator</code> with a path or a URL. It resolves with an array of diagnostics, and an empty array means nothing was found. A document with problems is not an exception. For content already in memory, <code class="bg-gray-100 px-1 rounded">validate</code> takes the text itself. Both are covered in the <a href="{{ '/docs/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a>.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-8">
+              <span>What is the difference between the Validator and the CLI?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-8" class="faq-answer mt-3"><p class="text-gray-700">The Validator is the library that does the checking. The <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">UseArazzo CLI</a> is a command that calls it and prints the result. The rules and the diagnostics are the same. Use the library inside your own code, such as an editor plugin, a service, or a test. Use the CLI in a terminal or a CI pipeline.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-9">
+              <span>Can I use the Validator in an editor or a language server?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-9" class="faq-answer mt-3"><p class="text-gray-700">Yes. Every problem is a Language Server Protocol diagnostic with a range, a severity, a code, and a message, the shape editors already render. <code class="bg-gray-100 px-1 rounded">validate</code> takes a <code class="bg-gray-100 px-1 rounded">TextDocument</code>, so it fits a language server that already holds the open buffer.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
             <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
               <span>Is the Validator free?</span>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
@@ -260,6 +314,30 @@ const isValid = errors.length === 0;</code></pre>
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Yes. Run npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml. The UseArazzo CLI wraps the Validator, prints every problem with its location, and exits with 1 when there is an error, so it works in CI too. The CLI reference lists every option."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I validate an Arazzo document in JavaScript or TypeScript?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Call validateURI from @usearazzo/validator with a path or a URL. It resolves with an array of diagnostics, and an empty array means nothing was found. A document with problems is not an exception. For content already in memory, validate takes the text itself. Both are covered in the API reference."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between the Validator and the CLI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Validator is the library that does the checking. The UseArazzo CLI is a command that calls it and prints the result. The rules and the diagnostics are the same. Use the library inside your own code, such as an editor plugin, a service, or a test. Use the CLI in a terminal or a CI pipeline."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use the Validator in an editor or a language server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every problem is a Language Server Protocol diagnostic with a range, a severity, a code, and a message, the shape editors already render. validate takes a TextDocument, so it fits a language server that already holds the open buffer."
           }
         },
         {

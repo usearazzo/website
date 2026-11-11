@@ -3,7 +3,7 @@ title: "Arazzo Validator API Reference: @usearazzo/validator"
 description: "Validate and lint Arazzo documents in JavaScript, with LSP diagnostics. Every function, option, error, and rule of @usearazzo/validator."
 lead: "Validate and lint Arazzo documents in JavaScript, and get Language Server Protocol diagnostics back. Every function, option, diagnostic, error, and rule of @usearazzo/validator."
 date: 2026-10-03
-last_modified_at: 2026-10-04
+last_modified_at: 2026-11-11
 package:
   name: "@usearazzo/validator"
   npm: https://www.npmjs.com/package/@usearazzo/validator
@@ -96,6 +96,8 @@ toc:
 ---
 
 `@usearazzo/validator` checks an Arazzo document and reports every problem it finds. Problems come back as [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) diagnostics: a location, a severity, a code, and a message. An editor can underline them, a CI step can count them, and a terminal can print them.
+
+This page documents the library. The same checks run from a terminal through the [UseArazzo CLI](/cli/): `npx @usearazzo/cli validate <file>` calls [`validateURI`](#validate-uri) and prints the diagnostics. The [CLI reference](/docs/cli/) covers the command, its flags, and its exit codes.
 
 The checks come from the [SpecLynx ApiDOM Language Service](https://www.npmjs.com/package/@speclynx/api-languageservice). Documents are read with [`@usearazzo/parser`](/docs/parser/).
 
@@ -278,7 +280,7 @@ Every diagnostic has these five fields:
 
 | Field | What it holds |
 |---|---|
-| `range` | Where the problem is. Lines and characters count from `0`. |
+| `range` | Where the problem is. Lines and characters count from `0`. The CLI prints them from `1`. |
 | `severity` | `1` error, `2` warning, `4` hint. Compare against `DiagnosticSeverity`. |
 | `code` | Which rule fired. See [Codes and sources](#diagnostic-codes). |
 | `source` | Which part of the validator reported it. |

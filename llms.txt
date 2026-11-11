@@ -42,6 +42,7 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - [Validator product page]({{ site.url }}{{ site.baseurl }}/validator/): semantic validation and linting for Arazzo documents, with LSP-compatible diagnostics
 - [Validator source](https://github.com/usearazzo/arazzo-toolkit/tree/main/packages/validator): the package in the monorepo, with its README
 - [@usearazzo/validator API reference]({{ site.url }}{{ site.baseurl }}/docs/validator/): every function, option, diagnostic, error, and rule, checked against the package source
+- Used from JavaScript or TypeScript with `validateURI(uri)` (a path or URL) or `validate(textDocument)` (content in memory); both return Language Server Protocol diagnostics. From a terminal or CI, the same checks run through `npx @usearazzo/cli validate <file>`
 - Opt-in JSON Schema (AJV) validation
 - Supports Arazzo 1.0.0, 1.0.1, and 1.1.0
 - Pre-1.0, on npm as an alpha: `npm install @usearazzo/validator`

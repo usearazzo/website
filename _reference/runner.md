@@ -266,14 +266,42 @@ A document that is not Arazzo throws `InvalidEntryDocumentError` from `load`, an
 
 ### Document retrieval {#document-retrieval}
 
-Retrieving documents and calling APIs are two separate mechanisms, on purpose:
+The runner has two HTTP stacks, kept apart on purpose. One calls the APIs while a workflow runs. The other retrieves the documents: the entry document, its source descriptions, and every externally referenced document.
 
-- `reference` configures how documents are retrieved: the entry document, its source descriptions, and every externally referenced document. It never applies to an API call.
-- `httpClient`, `requestInterceptor`, and `executeOptions` configure API calls. They never apply to document retrieval.
+| Behaviour | Calling APIs | Retrieving documents |
+|---|---|---|
+| Sent by | The [`httpClient`](#http-client), global `fetch` by default | The HTTP resolver of [ApiDOM reference](https://github.com/speclynx/apidom/tree/main/packages/apidom-reference#resolver-plugin-options), built on Axios |
+| Configured with | `httpClient`, `requestInterceptor`, `executeOptions` | `reference` |
+| Timeout | None. Cancel with a [`signal`](#cancellation). | 15 seconds per document |
+| Redirects | Followed, as `fetch` does | Up to five |
+| Cache | None | Per process, see [The document cache](#retrieval-cache) |
+| Local files | Not applicable | `.json`, `.yaml`, and `.yml` |
 
-So credentials for an API cannot reach a host that only serves a document, and the other way round.
+Nothing crosses from one column to the other. `reference` never applies to an API call, and `httpClient`, `requestInterceptor`, and `executeOptions` never apply to document retrieval. So credentials for an API cannot reach a host that only serves a document, and the other way round.
 
-`reference` takes the `resolve` options of [ApiDOM reference](https://github.com/speclynx/apidom/tree/main/packages/apidom-reference#resolver-plugin-options), which fetches the documents. Only `resolve` is passed on, whatever else the object carries. Its type is `ArazzoRunnerReferenceOptions`.
+`reference` takes the `resolve` options of ApiDOM reference. Only `resolve` is passed on, whatever else the object carries. Its type is `ArazzoRunnerReferenceOptions`.
+
+#### Resolver options {#retrieval-options}
+
+The settings of the document stack live in `reference.resolve.resolverOpts`:
+
+| Option | Default | Meaning |
+|---|---|---|
+| `timeout` | `15000` | Milliseconds to wait for one document. |
+| `redirects` | `5` | The most redirects to follow. |
+| `withCredentials` | `false` | Whether cross-site requests carry credentials. It matters in a browser only. |
+| `axiosConfig` | none | An Axios request configuration, for headers, agents, a proxy, and request or response `interceptors`. |
+| `fileAllowList` | `.json`, `.yaml`, `.yml` | Patterns a local file must match to be read. A list you pass replaces the default. |
+
+```js
+const runner = await ArazzoRunner.load(uri, {
+  reference: {
+    resolve: { resolverOpts: { timeout: 3000 } },
+  },
+});
+```
+
+A document that takes longer throws `DocumentLoadError` from `load`. To replace the resolvers themselves, pass `resolve.resolvers`, as [The document cache](#retrieval-cache) shows.
 
 #### Documents behind a token {#protected-documents}
 
@@ -377,7 +405,7 @@ The providers load the entry document and the source descriptions. `reference` r
 
 #### The document cache {#retrieval-cache}
 
-Retrieved documents are cached per process, by URL, for all registries. A second runner that loads the same URL is served from the cache and sends no request, whatever its options are.
+Documents retrieved over HTTP are cached per process, by URL, for all registries. The cache holds the six most recent documents, each for two minutes. Within that time, a second runner that loads the same URL is served from the cache and sends no request, whatever its options are. Local files are not cached.
 
 To keep a cache private, give the providers an HTTP resolver of their own in `resolve.resolvers`. That list replaces the default one, so include a file resolver if you load local documents. A file resolver reads only the files its `fileAllowList` matches:
 

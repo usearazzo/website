@@ -48,6 +48,11 @@ permalink: /cli/
       <a href="#terminal" class="block text-gray-600 hover:text-primary-light">From the Terminal</a>
       <a href="#ci" class="block text-gray-600 hover:text-primary-light">In CI</a>
       <a href="#commands" class="block text-gray-600 hover:text-primary-light">Commands</a>
+      <div class="pl-3 space-y-2 mt-2">
+        <a href="#validate-command" class="block text-gray-500 hover:text-primary-light text-xs">validate</a>
+        <a href="#execution-commands" class="block text-gray-500 hover:text-primary-light text-xs">Execution</a>
+        <a href="#discovery-commands" class="block text-gray-500 hover:text-primary-light text-xs">Discovery</a>
+      </div>
       <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#built-with" class="block text-gray-600 hover:text-primary-light">Built With</a>
       <a href="#faq" class="block text-gray-600 hover:text-primary-light">FAQ</a>
@@ -264,6 +269,60 @@ usearazzo analyze-workflow &lt;uri&gt; &lt;workflowId&gt;</code></pre>
         </div>
         <div class="py-4">
           <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-6">
+              <span>Can I run UseArazzo CLI in CI?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-6" class="faq-answer mt-3"><p class="text-gray-700">Yes. Add one step that runs <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli validate</code> on your document. The command exits with <code class="bg-gray-100 px-1 rounded">1</code> when it finds an error, so the step fails and the build stops. Nothing else needs installing beyond Node.js. The <a href="{{ '/docs/cli/#ci' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI reference</a> has a complete GitHub Actions workflow.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-7">
+              <span>Can I fail the build on warnings too?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-7" class="faq-answer mt-3"><p class="text-gray-700">Yes. By default only errors fail a run. <code class="bg-gray-100 px-1 rounded">--fail-severity warning</code> fails it on warnings as well, and <code class="bg-gray-100 px-1 rounded">--fail-severity hint</code> fails it on any problem at all.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-8">
+              <span>What do the exit codes mean?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-8" class="faq-answer mt-3"><p class="text-gray-700"><code class="bg-gray-100 px-1 rounded">0</code> means no problem at or above the failing severity. <code class="bg-gray-100 px-1 rounded">1</code> means there is at least one, or the run could not finish, for example because the file does not exist. The exit code counts every problem, so <code class="bg-gray-100 px-1 rounded">--max-problems</code> shortens the report without hiding a failure.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-9">
+              <span>Can I get the results as JSON?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-9" class="faq-answer mt-3"><p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">--json</code> prints the diagnostics as a JSON array, and <code class="bg-gray-100 px-1 rounded">-o report.json</code> writes them to a file instead of the terminal. They are the same Language Server Protocol diagnostics the <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a> returns, so another tool can read them as they are.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-10">
+              <span>Can I validate a document from a URL?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-10" class="faq-answer mt-3"><p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">validate</code> takes a path or a URL: <code class="bg-gray-100 px-1 rounded">npx @usearazzo/cli validate https://example.com/workflow.arazzo.yaml</code>.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-11">
+              <span>Is there a configuration file?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-11" class="faq-answer mt-3"><p class="text-gray-700">Yes. <code class="bg-gray-100 px-1 rounded">usearazzo</code> reads <code class="bg-gray-100 px-1 rounded">.usearazzo.yaml</code> from the directory you run it in (<code class="bg-gray-100 px-1 rounded">.yml</code>, <code class="bg-gray-100 px-1 rounded">.json</code>, and the names without the leading dot work too), or the file you name with <code class="bg-gray-100 px-1 rounded">--config</code>. It holds the validation settings, so every run and everyone on the team uses the same ones. Flags on the command line win over the file. See <a href="{{ '/docs/cli/#config' | relative_url }}" class="text-primary-light underline hover:no-underline">Configuration file</a> in the CLI reference.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
             <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
               <span>Can it run workflows?</span>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
@@ -310,6 +369,54 @@ usearazzo analyze-workflow &lt;uri&gt; &lt;workflowId&gt;</code></pre>
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Run npx @usearazzo/cli validate adopt-a-pet.arazzo.yaml. It prints every problem with its location, severity, and rule code, and exits with 1 when there is an error. The argument can also be an HTTP(S) URL."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I run UseArazzo CLI in CI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Add one step that runs npx @usearazzo/cli validate on your document. The command exits with 1 when it finds an error, so the step fails and the build stops. Nothing else needs installing beyond Node.js. The CLI reference has a complete GitHub Actions workflow."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I fail the build on warnings too?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. By default only errors fail a run. --fail-severity warning fails it on warnings as well, and --fail-severity hint fails it on any problem at all."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What do the exit codes mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "0 means no problem at or above the failing severity. 1 means there is at least one, or the run could not finish, for example because the file does not exist. The exit code counts every problem, so --max-problems shortens the report without hiding a failure."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I get the results as JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. --json prints the diagnostics as a JSON array, and -o report.json writes them to a file instead of the terminal. They are the same Language Server Protocol diagnostics the Validator returns, so another tool can read them as they are."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I validate a document from a URL?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. validate takes a path or a URL: npx @usearazzo/cli validate https://example.com/workflow.arazzo.yaml."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a configuration file?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. usearazzo reads .usearazzo.yaml from the directory you run it in (.yml, .json, and the names without the leading dot work too), or the file you name with --config. It holds the validation settings, so every run and everyone on the team uses the same ones. Flags on the command line win over the file. See Configuration file in the CLI reference."
           }
         },
         {

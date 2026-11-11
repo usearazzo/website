@@ -343,12 +343,84 @@ const runner = await ArazzoRunner.load(uri, {
         </div>
         <div class="py-4">
           <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-11">
+              <span>How do I run a workflow against localhost or a staging server?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-11" class="faq-answer mt-3"><p class="text-gray-700">Pass <code class="bg-gray-100 px-1 rounded">server</code> in <code class="bg-gray-100 px-1 rounded">executeOptions</code>, under the name your workflow document gives the API's source description: <code class="bg-gray-100 px-1 rounded">{ petstoreAPI: { server: 'http://localhost:8080/api/v3' } }</code>. Every step that calls that API then goes there instead of the server its OpenAPI document declares. Include the base path, because an override replaces it too. Other APIs in the same workflow keep their own servers. See <a href="{{ '/docs/runner/#server' | relative_url }}" class="text-primary-light underline hover:no-underline">Choosing the server</a> in the API reference.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-12">
+              <span>How do I set OpenAPI server variables?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-12" class="faq-answer mt-3"><p class="text-gray-700">Pass <code class="bg-gray-100 px-1 rounded">serverVariables</code> in the same <code class="bg-gray-100 px-1 rounded">executeOptions</code> entry: <code class="bg-gray-100 px-1 rounded">{ petstoreAPI: { serverVariables: { region: 'us' } } }</code>. The variables you name change, and the rest keep the defaults the OpenAPI document declares. When the document declares several servers, also pass <code class="bg-gray-100 px-1 rounded">server</code> with the URL template of the one you mean, exactly as declared. Server variables are an OpenAPI 3.x feature. For OpenAPI 2.0, override the whole server.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-13">
+              <span>Does the Runner fill in default values for workflow inputs?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-13" class="faq-answer mt-3"><p class="text-gray-700">No. A <code class="bg-gray-100 px-1 rounded">default</code> in the workflow's <code class="bg-gray-100 px-1 rounded">inputs</code> schema is not applied, so pass every input a step reads. An input you leave out resolves to nothing, and a parameter built from it is not sent.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-14">
+              <span>How do I cancel a run or give it a timeout?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-14" class="faq-answer mt-3"><p class="text-gray-700">Pass an <code class="bg-gray-100 px-1 rounded">AbortSignal</code> as the <code class="bg-gray-100 px-1 rounded">signal</code> option of <code class="bg-gray-100 px-1 rounded">execute</code>. <code class="bg-gray-100 px-1 rounded">AbortSignal.timeout(5000)</code> gives the whole run five seconds. The signal is checked before each step and each retry, and it cancels the request in flight. A cancelled run throws an <code class="bg-gray-100 px-1 rounded">ExecutionError</code> with the reason <code class="bg-gray-100 px-1 rounded">aborted</code>. It does not come back as a failed result. See <a href="{{ '/docs/runner/#cancellation' | relative_url }}" class="text-primary-light underline hover:no-underline">Cancellation</a> in the API reference.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
             <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
               <span>Does the Runner handle authentication?</span>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
           <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Yes, with credentials you supply. Arazzo says nothing about credentials, so they come from outside the workflow. Static ones go in <code class="bg-gray-100 px-1 rounded">executeOptions</code>, per API: an API key, a bearer token, basic auth, or an OAuth token for the security schemes its OpenAPI document declares. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> covers credentials computed per request. The Runner runs no OAuth flow. Documents behind a token or a client certificate are configured separately with the <code class="bg-gray-100 px-1 rounded">reference</code> option, so credentials for an API never reach a host that only serves a document. The <a href="{{ '/docs/runner/' | relative_url }}#authentication" class="text-primary-light underline hover:no-underline">API reference</a> has the details.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-7">
+              <span>How do I pass an API key or a bearer token to the Runner?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-7" class="faq-answer mt-3"><p class="text-gray-700">In <code class="bg-gray-100 px-1 rounded">executeOptions</code>, under the name your workflow document gives the API's source description. Its <code class="bg-gray-100 px-1 rounded">securities</code> name the security schemes of that API's OpenAPI document: <code class="bg-gray-100 px-1 rounded">{ petstoreAPI: { securities: { authorized: { api_key: 'KEY' } } } }</code>. Each entry reaches only the steps that call that API, so one workflow can use different credentials for different APIs. See <a href="{{ '/docs/runner/#authentication' | relative_url }}" class="text-primary-light underline hover:no-underline">Authentication</a> in the API reference.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-8">
+              <span>Does the Runner run OAuth flows?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-8" class="faq-answer mt-3"><p class="text-gray-700">No. You obtain the token and the Runner sends it. A static token goes in <code class="bg-gray-100 px-1 rounded">securities</code>. A token you fetch or refresh goes in a <code class="bg-gray-100 px-1 rounded">requestInterceptor</code>, which runs before every request.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-9">
+              <span>Does the Runner support mutual TLS?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-9" class="faq-answer mt-3"><p class="text-gray-700">Yes. For API calls, plug in an <code class="bg-gray-100 px-1 rounded">httpClient</code> that presents the client certificate. For loading documents, pass the certificate through the <code class="bg-gray-100 px-1 rounded">reference</code> option. The two are configured separately. The <a href="{{ '/docs/runner/#mutual-tls' | relative_url }}" class="text-primary-light underline hover:no-underline">API reference</a> shows both in one example.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-10">
+              <span>Can the Runner load documents that require authentication?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-10" class="faq-answer mt-3"><p class="text-gray-700">Yes. Workflow and OpenAPI documents behind a token or a client certificate load through the <code class="bg-gray-100 px-1 rounded">reference</code> option of <code class="bg-gray-100 px-1 rounded">ArazzoRunner.load</code>. Document loading is separate from API calls, so credentials for an API never reach a host that only serves a document. See <a href="{{ '/docs/runner/#document-retrieval' | relative_url }}" class="text-primary-light underline hover:no-underline">Document retrieval</a> in the API reference.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -402,10 +474,74 @@ const runner = await ArazzoRunner.load(uri, {
         },
         {
           "@type": "Question",
+          "name": "How do I run a workflow against localhost or a staging server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pass server in executeOptions, under the name your workflow document gives the API's source description: { petstoreAPI: { server: 'http://localhost:8080/api/v3' } }. Every step that calls that API then goes there instead of the server its OpenAPI document declares. Include the base path, because an override replaces it too. Other APIs in the same workflow keep their own servers. See Choosing the server in the API reference."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I set OpenAPI server variables?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pass serverVariables in the same executeOptions entry: { petstoreAPI: { serverVariables: { region: 'us' } } }. The variables you name change, and the rest keep the defaults the OpenAPI document declares. When the document declares several servers, also pass server with the URL template of the one you mean, exactly as declared. Server variables are an OpenAPI 3.x feature. For OpenAPI 2.0, override the whole server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the Runner fill in default values for workflow inputs?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A default in the workflow's inputs schema is not applied, so pass every input a step reads. An input you leave out resolves to nothing, and a parameter built from it is not sent."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I cancel a run or give it a timeout?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pass an AbortSignal as the signal option of execute. AbortSignal.timeout(5000) gives the whole run five seconds. The signal is checked before each step and each retry, and it cancels the request in flight. A cancelled run throws an ExecutionError with the reason aborted. It does not come back as a failed result. See Cancellation in the API reference."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Does the Runner handle authentication?",
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Yes, with credentials you supply. Arazzo says nothing about credentials, so they come from outside the workflow. Static ones go in executeOptions, per API: an API key, a bearer token, basic auth, or an OAuth token for the security schemes its OpenAPI document declares. A requestInterceptor covers credentials computed per request. The Runner runs no OAuth flow. Documents behind a token or a client certificate are configured separately with the reference option, so credentials for an API never reach a host that only serves a document. The API reference has the details."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I pass an API key or a bearer token to the Runner?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In executeOptions, under the name your workflow document gives the API's source description. Its securities name the security schemes of that API's OpenAPI document: { petstoreAPI: { securities: { authorized: { api_key: 'KEY' } } } }. Each entry reaches only the steps that call that API, so one workflow can use different credentials for different APIs. See Authentication in the API reference."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the Runner run OAuth flows?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. You obtain the token and the Runner sends it. A static token goes in securities. A token you fetch or refresh goes in a requestInterceptor, which runs before every request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the Runner support mutual TLS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. For API calls, plug in an httpClient that presents the client certificate. For loading documents, pass the certificate through the reference option. The two are configured separately. The API reference shows both in one example."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can the Runner load documents that require authentication?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Workflow and OpenAPI documents behind a token or a client certificate load through the reference option of ArazzoRunner.load. Document loading is separate from API calls, so credentials for an API never reach a host that only serves a document. See Document retrieval in the API reference."
           }
         },
         {

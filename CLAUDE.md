@@ -50,6 +50,18 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   `resolve.resolvers` list cannot load a local document, it needs `fileAllowList`; a wrong
   credential form is sent broken, not dropped (`basicAuth: 'user:pass'` gives `Basic Og==`). An authenticating proxy through a custom `httpClient` (undici `ProxyAgent`) was run too.
   The 2026-10-26 post's example was updated to the keyed shape the same day (owner: "fix everything").
+  The reference's Document retrieval section opens with the two HTTP stacks (API calls: `httpClient`,
+  global `fetch`; documents: ApiDOM reference's Axios resolver, 15 s timeout, five redirects, a
+  per-process cache of six documents for two minutes) and lists `resolverOpts` (`#retrieval-options`).
+- **Product page structure, 2026-11-11 (owner's requests).** `/runner/` has an `#authentication`
+  section telling the fallback order (execute options, request interceptor, custom HTTP client)
+  with sidebar sub-entries; `/validator/` has "From Your Code" (`#code`) beside "From the
+  Terminal", with real `validateURI` output for the terminal demo's document, and a short
+  Installation; `/cli/` lists its command groups as sidebar sub-entries. Sidebar sub-entries use the
+  reference layout's markup (`<div class="pl-3 space-y-2 mt-2">`, links `text-gray-500 text-xs`).
+  The validator reference intro points at the CLI. FAQs were extended with practical questions
+  (Runner 14, CLI 11, Validator 9 entries), every answer run against the npm copies first; the
+  owner asks for these as "how do I" questions (server, server variables, CI, exit codes).
 
 **All five packages are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10; runner by 2026-10-25). For any future package, verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than
