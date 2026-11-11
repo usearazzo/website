@@ -3,6 +3,7 @@ title: "Arazzo Runner API Reference: @usearazzo/runner"
 description: "Run Arazzo workflows against live APIs from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 lead: "Run Arazzo workflows step by step against the live APIs behind their OpenAPI source descriptions, from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 date: 2026-10-25
+last_modified_at: 2026-11-11
 package:
   name: "@usearazzo/runner"
   npm: https://www.npmjs.com/package/@usearazzo/runner
@@ -21,6 +22,8 @@ toc:
         title: Load options
       - id: arazzo-runner-registry
         title: One registry, one document
+      - id: document-retrieval
+        title: Document retrieval
   - id: architecture
     title: Four building blocks
   - id: document-registry
@@ -32,6 +35,8 @@ toc:
         title: Constructor options
       - id: execute-options
         title: Execute options
+      - id: source-options
+        title: Options per API
       - id: result
         title: The result
   - id: control-flow
@@ -70,7 +75,7 @@ toc:
         title: Choosing the server
       - id: http-client
         title: The HTTP client
-      - id: request-interceptor
+      - id: authentication
         title: Authentication
       - id: standalone
         title: Without a workflow
@@ -119,7 +124,7 @@ const result = await runner.execute('authenticateAndOrderPet', {
     orderQuantity: 1,
     shipDate: '2026-11-01T10:00:00.000Z',
   },
-  executeOptions: { server: 'http://localhost:8080/api/v3' },
+  executeOptions: { petstoreAPI: { server: 'http://localhost:8080/api/v3' } },
 });
 
 console.log(result.status);
@@ -147,7 +152,7 @@ retrieveOrderedPetDetails true 1 8 ms
 verifyOrderConfirmation true 1 7 ms
 ```
 
-Five requests went out, each judged by its step's `successCriteria`, and the workflow's `outputs` were resolved from what came back. The `server` option points every step at your local Petstore instead of the server the OpenAPI document declares (see [Choosing the server](#server)).
+Five requests went out, each judged by its step's `successCriteria`, and the workflow's `outputs` were resolved from what came back. `executeOptions` is keyed by source description name. The workflow calls its API `petstoreAPI`, so that entry's `server` points those steps at your local Petstore instead of the server the OpenAPI document declares (see [Options per API](#source-options) and [Choosing the server](#server)).
 
 Notice that every input is passed in. The runner does not fill in `default` values from the workflow's `inputs` schema, so pass every input a step reads.
 
@@ -169,7 +174,7 @@ These are the main exports:
 | `ArazzoRunnerError` | class | Base class of every error the runner throws. |
 | `ExecutionError`, `ClientError`, `ResolverError`, `CriterionError`, `RuntimeExpressionError`, `InvalidEntryDocumentError`, `DocumentLoadError` | class | The errors you are most likely to catch. See [Errors](#errors). |
 
-Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
+Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `ArazzoRunnerReferenceOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `StepExecuteOptions`, `OpenAPIOperationSecurities`, `OpenAPIOperationSecurityCredential`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
 
 ## ArazzoRunner {#arazzo-runner}
 
@@ -198,8 +203,9 @@ Every option is a seam of a building block the runner wires:
 | Option | Goes to | Meaning |
 |---|---|---|
 | `registry` | `DocumentRegistry` | The registry to load into. A new one by default. |
+| `reference` | The registry's providers and the normalizers | How documents are retrieved. See [Document retrieval](#document-retrieval). |
 | `httpClient` | `OpenAPIOperationExecutor` | Sends the requests. See [The HTTP client](#http-client). |
-| `requestInterceptor` | `OpenAPIOperationExecutor` | Changes every request before it is sent. See [Authentication](#request-interceptor). |
+| `requestInterceptor` | `OpenAPIOperationExecutor` | Changes every request before it is sent. See [Authentication](#authentication). |
 | `maxSteps`, `maxWorkflowDepth`, `sleep`, `now` | `WorkflowExecutor` | See [Constructor options](#workflow-executor-options). |
 
 ```js
@@ -257,6 +263,137 @@ const runner = new ArazzoRunner({ document, registry });
 ```
 
 A document that is not Arazzo throws `InvalidEntryDocumentError` from `load`, and one that cannot be read or loaded throws `DocumentLoadError`, as they do from `acquireEntryDocument`.
+
+### Document retrieval {#document-retrieval}
+
+Retrieving documents and calling APIs are two separate mechanisms, on purpose:
+
+- `reference` configures how documents are retrieved: the entry document, its source descriptions, and every externally referenced document. It never applies to an API call.
+- `httpClient`, `requestInterceptor`, and `executeOptions` configure API calls. They never apply to document retrieval.
+
+So credentials for an API cannot reach a host that only serves a document, and the other way round.
+
+`reference` takes the `resolve` options of [ApiDOM reference](https://github.com/speclynx/apidom/tree/main/packages/apidom-reference#resolver-plugin-options), which fetches the documents. Only `resolve` is passed on, whatever else the object carries. Its type is `ArazzoRunnerReferenceOptions`.
+
+#### Documents behind a token {#protected-documents}
+
+Add the header with a request interceptor of the document fetcher, and check the origin in it:
+
+```js
+const documents = 'https://specs.example.com';
+
+const runner = await ArazzoRunner.load(`${documents}/orders.arazzo.yaml`, {
+  reference: {
+    resolve: {
+      resolverOpts: {
+        axiosConfig: {
+          interceptors: {
+            request: [
+              (config) => {
+                if (new URL(config.url).origin === documents) {
+                  config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+The origin check matters. Plain `axiosConfig.headers` are sent to every host a document or a reference points at.
+
+Every fetch goes through these options: the entry document, the source descriptions, and the external references of a workflow's `inputs` or of an OpenAPI operation, which are fetched lazily during a run. Without them, a protected entry document throws `DocumentLoadError` from `load`, and the `cause` chain ends at the HTTP error.
+
+#### Mutual TLS {#mutual-tls}
+
+A client certificate is configured once per mechanism. Here the same certificate serves both:
+
+```js
+import https from 'node:https';
+import { fetch, Agent } from 'undici';
+import { ArazzoRunner } from '@usearazzo/runner';
+
+const tls = { cert, key, ca };
+const dispatcher = new Agent({ connect: tls });
+
+const runner = await ArazzoRunner.load(uri, {
+  // document retrieval
+  reference: {
+    resolve: { resolverOpts: { axiosConfig: { httpsAgent: new https.Agent(tls) } } },
+  },
+  // API calls
+  httpClient: (request) => fetch(request.url, { ...request, dispatcher }),
+});
+```
+
+Leave out `reference` and the documents do not load. Leave out `httpClient` and the documents load, but the first API call throws `ClientError`.
+
+#### Credentials in errors {#retrieval-errors}
+
+A failed download throws with the HTTP error on its `cause` chain, and that error carries the request configuration. Standard credentials in it are masked: the `Authorization`, `Proxy-Authorization`, and `Cookie` headers, `auth`, `password`, and the agents.
+
+- A custom header is masked only when you list it in `axiosConfig.redact`.
+- That list replaces the default one. Spread `HTTPResolverAxios.defaultRedact` into it to keep the defaults.
+- Credentials embedded in a URL are not masked.
+
+```js
+import HTTPResolverAxios from '@speclynx/apidom-reference/resolve/resolvers/http-axios';
+
+const axiosConfig = {
+  headers: { 'X-Docs-Key': key },
+  redact: [...HTTPResolverAxios.defaultRedact, 'x-docs-key'],
+};
+```
+
+#### With your own registry {#retrieval-registry}
+
+A registry you build is configured through its providers, and both need the options. Pass the same options to `load` as `reference` too:
+
+```js
+import {
+  ArazzoRunner,
+  DocumentRegistry,
+  ArazzoDocumentRegistryProvider,
+  OpenAPIDocumentRegistryProvider,
+} from '@usearazzo/runner';
+
+const resolve = { resolverOpts: { axiosConfig } };
+
+const registry = new DocumentRegistry({
+  providers: [
+    new ArazzoDocumentRegistryProvider({ resolve }),
+    new OpenAPIDocumentRegistryProvider({ resolve }),
+  ],
+});
+
+const runner = await ArazzoRunner.load(uri, { registry, reference: { resolve } });
+```
+
+The providers load the entry document and the source descriptions. `reference` reaches the normalizers, which fetch external references. Without it, a workflow whose `inputs` reference a protected schema throws `NormalizationError` when it runs.
+
+#### The document cache {#retrieval-cache}
+
+Retrieved documents are cached per process, by URL, for all registries. A second runner that loads the same URL is served from the cache and sends no request, whatever its options are.
+
+To keep a cache private, give the providers an HTTP resolver of their own in `resolve.resolvers`. That list replaces the default one, so include a file resolver if you load local documents. A file resolver reads only the files its `fileAllowList` matches:
+
+```js
+import FileResolver from '@speclynx/apidom-reference/resolve/resolvers/file';
+import HTTPResolverAxios from '@speclynx/apidom-reference/resolve/resolvers/http-axios';
+
+const resolve = {
+  resolvers: [
+    new FileResolver({ fileAllowList: [/\.json$/i, /\.ya?ml$/i] }),
+    new HTTPResolverAxios({ axiosConfig }),
+  ],
+};
+```
+
+Give `resolve` to both providers of a registry, and to `load` as `reference`, as [above](#retrieval-registry).
 
 ## Four building blocks {#architecture}
 
@@ -391,16 +528,59 @@ All run state is local to one `execute` call, so concurrent runs on one executor
 | `maxWorkflowDepth` | `32` | How deeply workflows may nest, counting the one you called. |
 | `sleep` | a real timer | `(ms, signal) => Promise<void>`, awaited between retry attempts. Pass a no-op in tests. |
 | `now` | `performance.now` | The clock behind every `durationMs`. |
+| `workflowNormalizer` | a new `ArazzoWorkflowNormalizer` | Dereferences a workflow before it runs. Pass one built with `resolve` options when external references need them. See [Document retrieval](#document-retrieval). |
 
 ### Execute options {#execute-options}
 
 | Option | Meaning |
 |---|---|
 | `inputs` | The workflow's inputs, read through `$inputs`. |
-| `executeOptions` | Passed to every step's operation, for example a [`server`](#server) or a [`requestInterceptor`](#request-interceptor). |
+| `executeOptions` | Options for the APIs the workflow calls, keyed by source description name. See [Options per API](#source-options). |
 | `dependencyInputs` | Inputs for the workflows run to satisfy `dependsOn`, keyed by the entry as written. See [dependsOn](#depends-on). |
 | `runDependencies` | Run the `dependsOn` workflows first. Defaults to `true`. |
 | `signal` | An `AbortSignal` that cancels the run. See [Cancellation](#cancellation). |
+
+### Options per API {#source-options}
+
+`executeOptions` is a map. Each key is the `name` of a source description in the entry Arazzo document. Each value holds the options for the API that source description points at, and reaches only the steps that call it:
+
+```js
+const result = await runner.execute('buyPet', {
+  inputs,
+  executeOptions: {
+    petstoreAPI: {
+      server: 'http://localhost:8080/api/v3',
+      securities: { authorized: { api_key: 'KEY' } },
+    },
+    paymentsAPI: {
+      securities: { authorized: { bearerAuth: 'TOKEN' } },
+    },
+  },
+});
+```
+
+An entry takes the [execute options of the operation executor](#operation-executor). This is where the static settings of one API go: its [`server`](#server) and `serverVariables`, and its [credentials](#authentication).
+
+One rule decides who gets an entry: it configures one OpenAPI document, addressed by the name the entry Arazzo document gives it. So:
+
+- An API without an entry gets no options.
+- Two APIs that name a security scheme alike never see each other's credentials.
+- A workflow of another Arazzo document that calls the same OpenAPI document gets the entry too, whatever name that document uses for it.
+- A nested Arazzo document that reuses the name for a different document gets nothing.
+- An OpenAPI document that only a nested Arazzo document declares has no name here. Declare it in the entry document's `sourceDescriptions`, or use a [`requestInterceptor`](#request-interceptor).
+
+A mistake in the map throws `ExecutionError` before the first request:
+
+| Mistake | `reason` |
+|---|---|
+| A key names no source description of the entry document | `source-description-not-found` |
+| A key names an Arazzo source description | `source-description-not-openapi` |
+| Two keys point at the same document | `ambiguous-execute-options` |
+| An entry is not an object | `unknown-execute-option` |
+
+The first row is also what a flat bag such as `{ server: '...' }` gets: `server` is read as a source description name.
+
+A `signal` in an entry is dropped. Cancel a run with the [`signal`](#cancellation) option.
 
 ### The result {#result}
 
@@ -640,13 +820,13 @@ The runner checks the signal before each step, before each retry attempt, and be
 
 A cancelled run throws `ExecutionError` with `reason: 'aborted'`. The error names where the run stopped (`workflowId`, `stepId`, `path`), and its `cause` is the signal's reason. It does not resolve as a `failed` result: the steps that never ran did not fail. A request the HTTP client dropped because of the signal is reported the same way, as `aborted`, not as the `ClientError` a request failing on its own would raise.
 
-A client that ignores the signal costs one request in flight; the run still stops at the next boundary. A `signal` passed in `executeOptions` cancels the run too, and the `signal` option wins when both are given. `StepExecutor` honours a `signal` in its execute options on its own: an aborted signal throws `aborted` before any request goes out.
+A client that ignores the signal costs one request in flight; the run still stops at the next boundary. The `signal` option is the only way to cancel a run: a `signal` inside an `executeOptions` entry is dropped. `StepExecutor` honours a `signal` in its execute options on its own: an aborted signal throws `aborted` before any request goes out.
 
 ## StepExecutor {#step-executor}
 
 ```ts
 new StepExecutor(options: { document: ArazzoDocument; registry: DocumentRegistry; operationExecutor: OpenAPIOperationExecutor })
-stepExecutor.execute(step, state, executeOptions?, workflowId?): Promise<StepExecutionResult>
+stepExecutor.execute(step, state, executeOptions?: StepExecuteOptions, workflowId?): Promise<StepExecutionResult>
 ```
 
 Runs one step that calls an OpenAPI operation. It does four things in order:
@@ -656,7 +836,9 @@ Runs one step that calls an OpenAPI operation. It does four things in order:
 3. sends the operation through the `OpenAPIOperationExecutor`;
 4. evaluates `successCriteria`, resolves `outputs`, and selects the `onSuccess` or `onFailure` action against the response.
 
-`WorkflowExecutor` calls it for you. You call it directly to run one step on its own:
+`WorkflowExecutor` calls it for you. You call it directly to run one step on its own.
+
+Here `executeOptions` is not keyed by source description. It is one bag of [operation execute options](#operation-executor), or a function `(locator) => bag` that returns the bag for the operation the step was located to:
 
 ```js
 import {
@@ -748,7 +930,7 @@ Runs one OpenAPI operation and returns its response. It knows nothing about Araz
 | Constructor option | Meaning |
 |---|---|
 | `httpClient` | Sends the request. See [The HTTP client](#http-client). |
-| `requestInterceptor` | Changes every request before it is sent. See [Authentication](#request-interceptor). |
+| `requestInterceptor` | Changes every request before it is sent. See [Authentication](#authentication). |
 | `responseNormalizer`, `operationExtractor`, `operationNormalizer`, `documentAssembler` | Replace one stage of the pipeline. Rarely needed. |
 
 | Execute option | Meaning |
@@ -757,6 +939,7 @@ Runs one OpenAPI operation and returns its response. It knows nothing about Araz
 | `requestBody`, `requestContentType` | The body and its media type. |
 | `responseContentType` | Sent as `Accept`. Defaults to the media types of the operation's 2xx responses. |
 | `server`, `serverVariables` | Where the request goes. See [Choosing the server](#server). |
+| `securities` | Credentials for the security schemes the document declares. See [Authentication](#securities). |
 | `requestInterceptor` | Changes this request, after the constructor's interceptor. |
 | `signal` | An `AbortSignal`. |
 
@@ -784,7 +967,7 @@ await executor.execute(locator, { server: 'http://localhost:8080/api/v3' });
 
 There is no silent fallback. A `server` that matches nothing declared is never swapped for the first declared one, so a typo fails at the network instead of reaching the wrong host. An override replaces the base path too, so include it (`/api/v3`). Overrides work on Swagger 2.0; selection and `serverVariables` are OpenAPI 3.x only. For a document loaded from disk with relative servers, pass an absolute `server`.
 
-In a workflow, pass `server` in `executeOptions` and it applies to every step.
+In a workflow, pass `server` in the API's entry of `executeOptions`, and it applies to every step that calls that API. See [Options per API](#source-options).
 
 ### The HTTP client {#http-client}
 
@@ -826,9 +1009,61 @@ A client you write has three rules to follow:
 
 The response is read on the executor's side of the client, so `$response.body` means the same thing whichever client you plug in. A client that only adds behaviour around the request can call `httpClientFetch` instead of reimplementing it.
 
-### Authentication {#request-interceptor}
+The client is also where credentials of the connection go: a client certificate or an authenticating proxy. They never appear in a request, so `securities` and interceptors cannot carry them. See [Authentication](#authentication). [Mutual TLS](#mutual-tls) shows a client that presents a certificate.
 
-Arazzo says nothing about credentials, so the runner does not model them either. You add them with a `requestInterceptor`. It runs after the request is built and before it is sent. It may be async, and it may change the request or return a new one:
+### Authentication {#authentication}
+
+Arazzo says nothing about credentials, so they come from outside the workflow. There are three places to put them. Start with the first, and fall back to the next when it cannot express what you need:
+
+1. [**`securities`**](#securities), for static credentials of the security schemes an OpenAPI document declares.
+2. [**`requestInterceptor`**](#request-interceptor), for credentials computed per request, and for anything `securities` cannot express.
+3. [**Custom HTTP client**](#http-client), for credentials that belong to the connection and never appear in a request: a client certificate (mutual TLS) or an authenticating proxy.
+
+The three combine. Credentials from `securities` are already on the request when an interceptor sees it, and the client sends what the interceptors leave.
+
+The runner runs no OAuth flow. You supply the tokens.
+
+Credentials for an API never reach document retrieval. Documents behind a token or a client certificate are configured separately, see [Document retrieval](#document-retrieval).
+
+#### securities {#securities}
+
+`securities` is an execute option: `{ authorized: { <scheme name>: <credential> } }`. The names are the ones under `components.securitySchemes` in the API's OpenAPI document (`securityDefinitions` in OpenAPI 2.0). In a workflow, it goes in the API's entry of [`executeOptions`](#source-options):
+
+```js
+await runner.execute('buyPet', {
+  inputs,
+  executeOptions: {
+    petstoreAPI: {
+      securities: { authorized: { api_key: 'KEY' } },
+    },
+    paymentsAPI: {
+      securities: {
+        authorized: {
+          bearerAuth: 'TOKEN',
+          basicAuth: { username: 'user', password: 'pass' },
+        },
+      },
+    },
+  },
+});
+```
+
+The form of a credential depends on its scheme:
+
+| Scheme | Credential |
+|---|---|
+| `apiKey` | The key as a string, or `{ value }`. It goes in the header, query, or cookie the scheme names. |
+| `http` with `bearer` | The token as a string, or `{ value }`. |
+| `http` with `basic` | `{ username, password }`. |
+| `oauth2`, `openIdConnect` | `{ token: { access_token, token_type? } }`. `token_type` defaults to `Bearer`. |
+
+Each credential is applied only to the operations that require its scheme. An operation with `security: []` gets none.
+
+Nothing checks a credential against its scheme. A mistyped scheme name sends the request without the credential, a wrong form sends a broken one, and either way the API answers `401`.
+
+#### requestInterceptor {#request-interceptor}
+
+A `requestInterceptor` runs after the request is built and before it is sent. It may be async, and it may change the request or return a new one:
 
 ```js
 const executor = new OpenAPIOperationExecutor({
@@ -838,7 +1073,14 @@ const executor = new OpenAPIOperationExecutor({
 });
 ```
 
-A `requestInterceptor` in the execute options runs after this one. Since the interceptor sets headers directly, it works however the OpenAPI document declares its security schemes, or if it declares none. To apply credentials from those declarations instead, in the header, query, or cookie each scheme names, pass a `securities` object in the execute options. It reaches the request builder untouched; it is not part of the typed options.
+It sets headers directly, so it works however the OpenAPI document declares its security schemes, or if it declares none. A `requestInterceptor` in the execute options runs after this one.
+
+In a workflow, an interceptor given to `ArazzoRunner.load` sees every request. One inside an API's entry of [`executeOptions`](#source-options) sees only the requests to that API.
+
+`request.headers` is a plain object, and the case of a header name in it can differ. For an OpenAPI 2.0 document, credentials from `securities` arrive under lower-case `authorization`. So:
+
+- Match header names case-insensitively.
+- Delete the existing key before you replace a header. The same header under two spellings is sent as one header with both values.
 
 Change requests here rather than in a custom HTTP client. The runner records `response.request` after the interceptors run and before the client is called, so only interceptor changes show up in `$request.*` and the trace.
 
@@ -934,10 +1176,11 @@ try {
 | `aborted` | `Aborted` | The run was cancelled. |
 | `invalid-workflow-reference` | `InvalidWorkflowReference` | A `$`-prefixed workflow reference is not `$sourceDescriptions.<name>.<workflowId>`. |
 | `invalid-operation-reference` | `InvalidOperationReference` | A `$`-prefixed `operationId` is not `$sourceDescriptions.<name>.<operationId>`, or an `operationPath` has no source URL or an invalid JSON Pointer. |
-| `source-description-not-found` | `SourceDescriptionNotFound` | The named source description does not exist, whether a workflow reference or an operation reference names it. |
+| `source-description-not-found` | `SourceDescriptionNotFound` | The named source description does not exist, whether a workflow reference, an operation reference, or a key of `executeOptions` names it. |
 | `source-description-not-arazzo` | `SourceDescriptionNotArazzo` | A workflow reference points into a document that is not Arazzo. |
-| `source-description-not-openapi` | `SourceDescriptionNotOpenAPI` | An operation reference points into a document that is not OpenAPI. |
-| `unknown-execute-option` | `UnknownExecuteOption` | `execute` was passed an option it does not take. |
+| `source-description-not-openapi` | `SourceDescriptionNotOpenAPI` | An operation reference points into a document that is not OpenAPI, or a key of `executeOptions` names an Arazzo source description. |
+| `unknown-execute-option` | `UnknownExecuteOption` | `execute` was passed an option it does not take, or an `executeOptions` entry is not an object. |
+| `ambiguous-execute-options` | `AmbiguousExecuteOptions` | Two keys of `executeOptions` point at the same document. See [Options per API](#source-options). |
 | `retry-reference-unsupported` | `RetryReferenceUnsupported` | A `retry` action references a step or workflow, but the `StepRetryRunner` was given no way to run it. |
 | `unknown-transition-kind` | `UnknownTransitionKind` | A step produced a transition the workflow executor does not recognize. This is a runner bug, not a document mistake. |
 

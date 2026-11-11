@@ -54,7 +54,8 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - [@usearazzo/runner API reference]({{ site.url }}{{ site.baseurl }}/docs/runner/): every building block, option, result field, and error, checked against the package source, with a workflow you can run end to end
 - Step-by-step execution: criteria evaluation, output mapping, goto/retry/end, retry references, one-way transfer to another workflow, sub-workflows, dependsOn prerequisites, workflows in other Arazzo documents, cancellation via AbortSignal
 - Pluggable HTTP transport (a function from the built request to a WHATWG Response; global fetch by default)
-- Credentials are applied by decorating the outgoing request with a requestInterceptor, not modelled in the Arazzo document, because Arazzo is auth-agnostic
+- Credentials come from outside the Arazzo document, because Arazzo is auth-agnostic: static ones per API in `executeOptions`, keyed by source description name (`securities` for the security schemes the OpenAPI document declares), computed ones through a requestInterceptor. The runner runs no OAuth flow
+- Document retrieval is separate from API calls: documents behind a token or a client certificate (mutual TLS) load through the `reference` option, and API credentials never reach a host that only serves a document
 - Server selection or override per call, with no silent fallback: a server matching nothing declared is never swapped for the first declared one
 - Workflow-level successActions/failureActions replace a step's wholesale; workflow-level parameters merge, keyed by the (name, in) pair
 - Pre-1.0, on npm as an alpha: `npm install @usearazzo/runner`. Used from JavaScript or TypeScript today: `ArazzoRunner.load(uri)` then `runner.execute(workflowId, { inputs })`. The four building blocks it wires (DocumentRegistry, OpenAPIOperationExecutor, StepExecutor, WorkflowExecutor) stay public for swapping one

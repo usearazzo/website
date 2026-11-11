@@ -39,6 +39,17 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   apply `default`s from a workflow's `inputs` schema; a missing entry file threw ApiDOM's
   `ResolveError`, not a runner error (fixed in 1.0.1-alpha.18, toolkit#272: now `DocumentLoadError`);
   the README's sample URL `ui.usearazzo.com` does not resolve in DNS.
+  **Since 1.0.1-alpha.29 (2026-11-11, toolkit#346, breaking) `executeOptions` is a map keyed by the
+  source description name of the entry document** (`{ petstoreAPI: { server } }`; the old flat bag
+  throws `source-description-not-found`), and `securities` is a typed option given per API. alpha.28
+  (toolkit#343) added the `reference` load option for document retrieval, kept separate from API
+  calls. Reference sections `#document-retrieval`, `#source-options`, `#authentication` (with
+  `#securities` and `#request-interceptor` under it); `/runner/` has a short `#authentication`
+  section. Every claim there was run against the npm copies on 2026-11-11 with local servers
+  (mutual TLS with openssl certificates). Findings: a bare `new FileResolver()` in a private
+  `resolve.resolvers` list cannot load a local document, it needs `fileAllowList`; a wrong
+  credential form is sent broken, not dropped (`basicAuth: 'user:pass'` gives `Basic Og==`). An authenticating proxy through a custom `httpClient` (undici `ProxyAgent`) was run too.
+  The 2026-10-26 post's example was updated to the keyed shape the same day (owner: "fix everything").
 
 **All five packages are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10; runner by 2026-10-25). For any future package, verify with
 `curl -s -o /dev/null -w "%{http_code}" https://registry.npmjs.org/@usearazzo/<pkg>` rather than

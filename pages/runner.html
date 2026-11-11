@@ -47,6 +47,12 @@ permalink: /runner/
       <a href="#overview" class="block text-gray-600 hover:text-primary-light">Overview</a>
       <a href="#run" class="block text-gray-600 hover:text-primary-light">Run a Workflow</a>
       <a href="#handles" class="block text-gray-600 hover:text-primary-light">What It Handles</a>
+      <a href="#authentication" class="block text-gray-600 hover:text-primary-light">Authentication</a>
+      <div class="pl-3 space-y-2 mt-2">
+        <a href="#auth-execute-options" class="block text-gray-500 hover:text-primary-light text-xs">Execute options</a>
+        <a href="#auth-request-interceptor" class="block text-gray-500 hover:text-primary-light text-xs">Request interceptor</a>
+        <a href="#auth-http-client" class="block text-gray-500 hover:text-primary-light text-xs">Custom HTTP client</a>
+      </div>
       <a href="#architecture" class="block text-gray-600 hover:text-primary-light">Architecture</a>
       <a href="#installation" class="block text-gray-600 hover:text-primary-light">Installation</a>
       <a href="#toolkit" class="block text-gray-600 hover:text-primary-light">Rest of the Toolkit</a>
@@ -104,7 +110,9 @@ const result = await runner.execute('authenticateAndOrderPet', {
     preferredPetStatus: 'available',
     orderQuantity: 1,
   },
-  executeOptions: { server: 'http://localhost:8080/api/v3' }, // a local Petstore
+  executeOptions: {
+    petstoreAPI: { server: 'http://localhost:8080/api/v3' }, // a local Petstore
+  },
 });
 
 for (const step of result.steps) {
@@ -147,13 +155,57 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
         </div>
         <div class="product-card">
           <h3 class="product-card-title">Your HTTP stack, your credentials</h3>
-          <p class="product-card-description">Requests go out through global <code class="bg-gray-100 px-1 rounded">fetch</code> by default, or through any client you plug in. Credentials are added by a request interceptor, because Arazzo itself is auth-agnostic.</p>
+          <p class="product-card-description">Requests go out through global <code class="bg-gray-100 px-1 rounded">fetch</code> by default, or through any client you plug in. Arazzo itself is auth-agnostic, so <a href="#authentication" class="text-primary-light underline hover:no-underline">credentials</a> come from you.</p>
         </div>
         <div class="product-card">
           <h3 class="product-card-title">A trace, not a verdict</h3>
           <p class="product-card-description">Every step in run order: whether it passed, which action was picked, how many attempts it took, and how long it ran. A failed step is a result you read, not an exception you catch.</p>
         </div>
       </div>
+    </section>
+
+    <!-- Authentication -->
+    <section id="authentication" class="mb-16">
+      <h2 class="text-2xl font-bold text-primary-dark mb-4">Authentication</h2>
+      <p class="text-gray-700 mb-8">Arazzo says nothing about credentials, so they come from you. There are three places to put them. Start with the first, and fall back to the next when it cannot express what you need.</p>
+
+      <h3 id="auth-execute-options" class="text-xl font-semibold text-primary-dark mb-3">1. Execute options: static credentials per API</h3>
+      <p class="text-gray-700 mb-4">Each entry of <code class="bg-gray-100 px-1 rounded">executeOptions</code> is named after a source description of your workflow document and reaches only the steps that call that API. Its <code class="bg-gray-100 px-1 rounded">securities</code> name the security schemes the API's OpenAPI document declares:</p>
+      <pre class="code-block mb-4"><code class="language-js">const result = await runner.execute('buyPet', {
+  inputs,
+  executeOptions: {
+    petstoreAPI: {
+      securities: { authorized: { api_key: 'KEY' } },
+    },
+    paymentsAPI: {
+      securities: { authorized: { bearerAuth: 'TOKEN' } },
+    },
+  },
+});</code></pre>
+      <p class="text-gray-700 mb-8">Each credential goes where its scheme says (header, query, or cookie), and only to the operations that require it. API keys, bearer tokens, basic auth, and OAuth tokens are covered. The key for one API is never sent to another, even when both name a scheme alike.</p>
+
+      <h3 id="auth-request-interceptor" class="text-xl font-semibold text-primary-dark mb-3">2. Request interceptor: credentials computed per request</h3>
+      <p class="text-gray-700 mb-4">A token you fetch or refresh, a signed request, or an API whose OpenAPI document declares no security scheme: none of these fit a static entry. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> runs after each request is built and before it is sent, and changes it as you see fit:</p>
+      <pre class="code-block mb-4"><code class="language-js">const runner = await ArazzoRunner.load(uri, {
+  requestInterceptor: async (request) =&gt; {
+    request.headers.Authorization = `Bearer ${await acquireToken()}`;
+  },
+});</code></pre>
+      <p class="text-gray-700 mb-8">Credentials from the execute options are already on the request when the interceptor sees it, so the two combine. An interceptor can also sit inside one API's entry of <code class="bg-gray-100 px-1 rounded">executeOptions</code>, where it touches only that API's requests.</p>
+
+      <h3 id="auth-http-client" class="text-xl font-semibold text-primary-dark mb-3">3. Custom HTTP client: credentials in the connection</h3>
+      <p class="text-gray-700 mb-4">Some credentials never appear in a request at all. A client certificate (mutual TLS) or an authenticating proxy belongs to the connection, so it belongs to the <code class="bg-gray-100 px-1 rounded">httpClient</code>, the function that sends every request:</p>
+      <pre class="code-block mb-4"><code class="language-js">import { fetch, Agent } from 'undici';
+
+const dispatcher = new Agent({ connect: { cert, key, ca } });
+
+const runner = await ArazzoRunner.load(uri, {
+  httpClient: (request) =&gt; fetch(request.url, { ...request, dispatcher }),
+});</code></pre>
+      <p class="text-gray-700 mb-8">Keep changes to the request itself in the interceptor. What a client changes on its own does not show up in the trace.</p>
+
+      <p class="text-gray-700 mb-4">All three are about API calls. Loading documents is a separate path: workflow and OpenAPI documents behind a token or a client certificate load through the <code class="bg-gray-100 px-1 rounded">reference</code> option, and credentials for an API never reach a host that only serves a document.</p>
+      <p class="text-gray-700">The Runner runs no OAuth flow: you supply the tokens. Every credential form is in the <a href="{{ '/docs/runner/' | relative_url }}#authentication" class="text-primary-light underline hover:no-underline">API reference</a>, and document retrieval has <a href="{{ '/docs/runner/' | relative_url }}#document-retrieval" class="text-primary-light underline hover:no-underline">its own section</a>.</p>
     </section>
 
     <!-- Architecture -->
@@ -296,7 +348,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
-          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> adds them to each request after it is built and before it is sent: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport concerns such as client certificates or a proxy belong in a replacement <code class="bg-gray-100 px-1 rounded">httpClient</code>.</p></dd>
+          <dd id="faq-answer-3" class="faq-answer mt-3"><p class="text-gray-700">Yes, with credentials you supply. Arazzo says nothing about credentials, so they come from outside the workflow. Static ones go in <code class="bg-gray-100 px-1 rounded">executeOptions</code>, per API: an API key, a bearer token, basic auth, or an OAuth token for the security schemes its OpenAPI document declares. A <code class="bg-gray-100 px-1 rounded">requestInterceptor</code> covers credentials computed per request. The Runner runs no OAuth flow. Documents behind a token or a client certificate are configured separately with the <code class="bg-gray-100 px-1 rounded">reference</code> option, so credentials for an API never reach a host that only serves a document. The <a href="{{ '/docs/runner/' | relative_url }}#authentication" class="text-primary-light underline hover:no-underline">API reference</a> has the details.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -353,7 +405,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
           "name": "Does the Runner handle authentication?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not directly, and that is deliberate. Arazzo says nothing about credentials, so the Runner does not model them either. A requestInterceptor adds them to each request after it is built and before it is sent: bearer tokens, API keys, basic auth, anything that ends up as a header, query parameter, or cookie. Transport concerns such as client certificates or a proxy belong in a replacement httpClient."
+            "text": "Yes, with credentials you supply. Arazzo says nothing about credentials, so they come from outside the workflow. Static ones go in executeOptions, per API: an API key, a bearer token, basic auth, or an OAuth token for the security schemes its OpenAPI document declares. A requestInterceptor covers credentials computed per request. The Runner runs no OAuth flow. Documents behind a token or a client certificate are configured separately with the reference option, so credentials for an API never reach a host that only serves a document. The API reference has the details."
           }
         },
         {

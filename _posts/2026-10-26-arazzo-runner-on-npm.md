@@ -76,7 +76,7 @@ const result = await runner.execute('authenticateAndOrderPet', {
     preferredPetStatus: 'available',
     orderQuantity: 1,
   },
-  executeOptions: { server: 'http://localhost:8080/api/v3' },
+  executeOptions: { petstoreAPI: { server: 'http://localhost:8080/api/v3' } },
 });
 
 for (const step of result.steps) {
