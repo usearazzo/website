@@ -151,6 +151,16 @@ h4:hover .heading-anchor {
     background-color: #2A3A18;
 }
 
+/* "Get started" in the header: brand green, so it is not a black block beside the leaf logo */
+.nav-cta {
+    background-color: var(--color-primary-light);
+    transition: background-color 0.2s ease;
+}
+
+.nav-cta:hover {
+    background-color: var(--color-primary-dark);
+}
+
 /* RSS subscribe button (blog index) — outline style; #C2410C keeps 4.5:1 text contrast on light backgrounds */
 .rss-cta {
     border: 2px solid #C2410C;
