@@ -96,9 +96,9 @@ UseArazzo is built end to end on [SpecLynx](https://github.com/speclynx): the se
 
 ## Docs
 
-- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): tutorials (one use case, one package, runnable end to end), guides written by the founders, a reference for each package that has one, and links to the README of each other package in the monorepo
-{% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
-{% endfor %}{% for guide in site.guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+- [Docs hub]({{ site.url }}{{ site.baseurl }}/docs/): guides written by the founders (start with Getting Started), tutorials (one use case, one package, runnable end to end), a reference for each package that has one, and links to the README of each other package in the monorepo
+{% assign guides = site.guides | sort: "order", "last" %}{% for guide in guides %}- [Guide: {{ guide.title }}]({{ site.url }}{{ site.baseurl }}{{ guide.url }}): {{ guide.description }}
+{% endfor %}{% for tutorial in site.tutorials %}- [Tutorial: {{ tutorial.title }}]({{ site.url }}{{ site.baseurl }}{{ tutorial.url }}): {{ tutorial.description }}
 {% endfor %}{% for ref in site.reference %}- [{% if ref.package.name == '@usearazzo/cli' %}CLI reference{% else %}API reference{% endif %}: {{ ref.package.name }}]({{ site.url }}{{ site.baseurl }}{{ ref.url }}): {{ ref.description }}
 {% endfor %}
 ## Arazzo Ecosystem

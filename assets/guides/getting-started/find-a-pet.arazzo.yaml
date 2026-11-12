@@ -1,0 +1,47 @@
+arazzo: 1.0.1
+info:
+  title: Find a pet
+  summary: Find a pet by status, then fetch its details
+  description: A two-step workflow against the Swagger Petstore.
+  version: 1.0.0
+sourceDescriptions:
+  - name: petstore
+    url: https://petstore3.swagger.io/api/v3/openapi.json
+    type: openapi
+workflows:
+  - workflowId: findAPet
+    summary: Find a pet by status, then fetch its details
+    description: Lists the pets with the given status and fetches the first one.
+    inputs:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    steps:
+      - stepId: findPets
+        description: List the pets that have the given status
+        operationId: findPetsByStatus
+        parameters:
+          - name: status
+            in: query
+            value: $inputs.status
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          petId: $response.body#/0/id
+      - stepId: getPet
+        description: Fetch the first pet from the list
+        operationId: getPetById
+        parameters:
+          - name: petId
+            in: paths
+            value: $steps.findPets.outputs.petId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          name: $response.body#name
+    outputs:
+      petId: $steps.findPets.outputs.petId
+      name: $steps.getPet.outputs.name

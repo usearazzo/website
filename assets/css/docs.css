@@ -200,3 +200,17 @@
 .docs-card-cta-secondary:hover {
     background: #F3F4F6;
 }
+
+/* The getting started guide (front matter `featured: true`): the same card as its neighbours,
+   marked with a pale green ground behind the text and a "Start here" label. */
+.docs-card-featured {
+    background: #F0F5E7;
+}
+
+.docs-card-start {
+    color: var(--color-primary-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}

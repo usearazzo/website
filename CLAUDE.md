@@ -189,9 +189,10 @@ pages/
   homepage.html                  # Landing page (permalink: /)
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
   docs.html                      # Docs hub (permalink: /docs/), redone 2026-09-10 on the shape of
-                                 # stoplight.io/guides at the owner's request: no sidebar, centred
-                                 # full-width page. Hero gradient band (title, intro, three jump
-                                 # pills #tutorials #guides #packages), then three bands alternating
+                                 # stoplight.io/guides at the owner's request: no sidebar,
+                                 # full-width page, left-aligned headings and leads like
+                                 # speclynx.com's hub since 2026-11-12 (owner; it was centred). Hero gradient band (title, intro, three jump
+                                 # pills #guides #tutorials #packages; guides come first), then three bands alternating
                                  # white / #F0F5E7 tint, each a centred heading, one-line lead, and
                                  # a row of compact cards (assets/css/docs.css, loaded via the
                                  # page's `stylesheets` front matter). .docs-grid is a plain
@@ -293,6 +294,10 @@ llms.txt                         # LLM crawler discovery file
   history for the exact commands if regenerating. (Pillow *is* available now, so resizing and
   cropping can be done in Python; ImageMagick and rsvg-convert are still absent.) `favicon.ico` is a hand-built PNG-in-ICO container (Python stdlib `struct`).
 - No LaunchList/newsletter widget — SpecLynx's site had one, UseArazzo's doesn't.
+
+## Header "Get started" button
+
+`_includes/nav.html` ends with a "Get started" button linking to `/docs/guides/getting-started/` (owner, 2026-11-12, as on speclynx.com). It is `.nav-cta` (brand green `--color-primary-light`, not the ink `.primary-cta`: the owner found black wrong beside the logo). On desktop it shows from `lg` up only, because between 768px and 1023px the nav has no room and it wrapped; the mobile menu carries it as its last item.
 
 ## Page sidebars on mobile
 
@@ -485,6 +490,24 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   out: a `jsonpath` criterion, since RFC 9535 quotes member names (`$.pets[?@['a=b'] == 1]`, checked
   with `@swaggerexpert/jsonpath`). The article and both issues were corrected the same day. The guide's sample files stay under `assets/guides/arazzo-document-parsing/`; copy
   what a tutorial needs into its own `assets/tutorials/<slug>/`.
+- **The getting started guide** (`_guides/getting-started.md`, `/docs/guides/getting-started/`,
+  drafted by AI 2026-11-12 at the owner's request, on the shape of speclynx.com's; prose is the
+  owner's). It is the first guide (`order: 1`; the hub and `llms.txt` sort guides by `order`, guides
+  without one follow; `featured: true` gives its hub card a pale green ground (no outline), a
+  "Start here" label, and a "Get started" button, `.docs-card-featured` in `docs.css`; a full-width dark
+  card was built first and judged too much, owner's request) and **the one exception to "guides are vendor-neutral"**: it is the canonical
+  getting-started path and the target for every future "Get started" CTA (the homepage hero was held
+  back until it existed). The docs hub, footer, and `llms.txt` list Guides before Tutorials since
+  the same day (owner). One file, six steps: a two-step read-only workflow against the public
+  Petstore (`findPetsByStatus`, `getPetById`; read-only because the public server answers
+  `placeOrder` with a 500) with two one-character mistakes (`in: paths` on line 39,
+  `$response.body#name` on line 44), CLI `validate`, fix, CI, `ArazzoRunner`, then `validateURI` as
+  a guard before the run. Samples in `assets/guides/getting-started/` (`find-a-pet.arazzo.yaml` is
+  the BROKEN file the reader fixes; `run.mjs` is the finished script, keep it byte-identical to the
+  step 6 listing). Every output was captured on 2026-11-12 from the npm copies (1.0.1-alpha.29). Its hero is the Fork mark, a play button, and an open book, at the owner's request: the one hero that carries the logo.
+  Findings: the Runner on the broken file sends the first request and throws `ResolverError` at the
+  second step (the motivation for step 6); `validate` does not catch a misspelt `operationId` or a
+  `$steps.<unknown>` reference; `validateURI` returns diagnostics in a different order from the CLI.
 - **The resolving guide** (`_guides/arazzo-document-resolving.md`, drafted by AI 2026-09-22 at the
   owner's request; prose is theirs) is the parsing guide's sibling and, on the owner's instruction,
   names `@usearazzo/resolver` exactly once, as the first Next steps bullet (the parser guide's

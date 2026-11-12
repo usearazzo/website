@@ -1,7 +1,7 @@
 ---
 layout: base
-title: Docs - Tutorials, Guides, and Package Reference
-description: Tutorials, guides, and API reference for working with Arazzo documents in JavaScript and TypeScript, from the UseArazzo toolkit.
+title: Docs - Guides, Tutorials, and Package Reference
+description: Guides, tutorials, and API reference for working with Arazzo documents in JavaScript and TypeScript, from the UseArazzo toolkit.
 permalink: /docs/
 stylesheets:
   - /assets/css/docs.css
@@ -22,26 +22,72 @@ stylesheets:
 
   <!-- Hero -->
   <div class="docs-hero">
-    <div class="max-w-6xl mx-auto px-6 py-16 text-center">
+    <div class="max-w-6xl mx-auto px-6 py-16">
       <h1 class="text-4xl font-extrabold text-primary-dark mb-4">Docs</h1>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        <strong>Tutorials</strong> that get one job done with one package, <strong>guides</strong> that unpack a problem and how the toolkit approaches it, and the <strong>reference</strong> for every published package.
+      <p class="text-xl text-gray-600 max-w-3xl">
+        <strong>Guides</strong> that get you started and unpack one problem each, <strong>tutorials</strong> that get one job done with one package, and the <strong>reference</strong> for every published package.
       </p>
       <p class="text-gray-500 text-xs uppercase tracking-wider mt-10 mb-4">What are you looking for?</p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <a href="#tutorials" class="docs-jump">Tutorials</a>
+      <div class="flex flex-wrap gap-3">
         <a href="#guides" class="docs-jump">Guides</a>
+        <a href="#tutorials" class="docs-jump">Tutorials</a>
         <a href="#packages" class="docs-jump">Package reference</a>
       </div>
     </div>
   </div>
 
-  <!-- Tutorials -->
-  <section id="tutorials" class="bg-white">
+  <!-- Guides -->
+  <section id="guides" class="bg-white">
     <div class="max-w-6xl mx-auto px-6 py-14">
-      <div class="text-center mb-10">
+      <div class="mb-10">
+        <h2 class="text-3xl font-bold text-primary-dark mb-3">Guides</h2>
+        <p class="text-gray-600 max-w-3xl">New here? Start with the first one. The rest are longer reads on one problem each: what it is, how you would solve it by hand, and what a good tool gives you.</p>
+      </div>
+      {% assign guides = site.guides | sort: "order", "last" %}
+      <div class="docs-grid">
+        {% for guide in guides %}
+        <article class="docs-card{% if guide.featured %} docs-card-featured{% endif %}">
+          <a href="{{ guide.url | relative_url }}" aria-hidden="true" tabindex="-1">
+            <img loading="lazy" src="{{ guide.image.webp | default: guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="{{ guide.image.alt | escape }}" class="docs-card-thumb">
+          </a>
+          <div class="docs-card-body">
+            {% if guide.featured %}
+            <p class="docs-card-meta"><span class="docs-card-start">Start here</span></p>
+            {% elsif guide.status %}
+            <p class="docs-card-meta"><span class="badge badge-secondary">{{ guide.status | escape }}</span></p>
+            {% endif %}
+            <h3 class="docs-card-title"><a href="{{ guide.url | relative_url }}">{{ guide.title | escape }}</a></h3>
+            <p class="docs-card-text">{{ guide.summary | default: guide.description | escape }}</p>
+            <a href="{{ guide.url | relative_url }}" class="docs-card-cta">
+              {% if guide.featured %}Get started{% else %}Read guide{% endif %}
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+        {% endfor %}
+        {% assign fill = 3 | minus: site.guides.size %}
+        {% if fill > 0 %}
+        {% for i in (1..fill) %}
+        <div class="docs-card docs-card-placeholder"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
+          {% if forloop.first %}
+          <p class="docs-card-title">More guides on the way</p>
+          <p class="docs-card-text">The next ones are being written. Follow <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> to hear when they land.</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Tutorials -->
+  <section id="tutorials" class="docs-band-tint">
+    <div class="max-w-6xl mx-auto px-6 py-14">
+      <div class="mb-10">
         <h2 class="text-3xl font-bold text-primary-dark mb-3">Tutorials</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">One use case, one package, finished in a sitting. Every command runs against the published package today, and the sample files are yours to download.</p>
+        <p class="text-gray-600 max-w-3xl">One use case, one package, finished in a sitting. Every command runs against the published package today, and the sample files are yours to download.</p>
       </div>
       <div class="docs-grid">
         {% for tutorial in site.tutorials %}
@@ -79,55 +125,12 @@ stylesheets:
     </div>
   </section>
 
-  <!-- Guides -->
-  <section id="guides" class="docs-band-tint">
-    <div class="max-w-6xl mx-auto px-6 py-14">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl font-bold text-primary-dark mb-3">Guides</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Longer reads on one problem each: what it is, how you would solve it by hand, and how the toolkit approaches it. Kept up to date as the packages change.</p>
-      </div>
-      <div class="docs-grid">
-        {% for guide in site.guides %}
-        <article class="docs-card">
-          <a href="{{ guide.url | relative_url }}" aria-hidden="true" tabindex="-1">
-            <img loading="lazy" src="{{ guide.image.webp | default: guide.image.path | relative_url }}" width="{{ guide.image.width }}" height="{{ guide.image.height }}" alt="{{ guide.image.alt | escape }}" class="docs-card-thumb">
-          </a>
-          <div class="docs-card-body">
-            {% if guide.status %}
-            <p class="docs-card-meta"><span class="badge badge-secondary">{{ guide.status | escape }}</span></p>
-            {% endif %}
-            <h3 class="docs-card-title"><a href="{{ guide.url | relative_url }}">{{ guide.title | escape }}</a></h3>
-            <p class="docs-card-text">{{ guide.summary | default: guide.description | escape }}</p>
-            <a href="{{ guide.url | relative_url }}" class="docs-card-cta">
-              Read guide
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-              </svg>
-            </a>
-          </div>
-        </article>
-        {% endfor %}
-        {% assign fill = 3 | minus: site.guides.size %}
-        {% if fill > 0 %}
-        {% for i in (1..fill) %}
-        <div class="docs-card docs-card-placeholder"{% unless forloop.first %} aria-hidden="true"{% endunless %}>
-          {% if forloop.first %}
-          <p class="docs-card-title">More guides on the way</p>
-          <p class="docs-card-text">The next ones are being written. Follow <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Discussions</a> to hear when they land.</p>
-          {% endif %}
-        </div>
-        {% endfor %}
-        {% endif %}
-      </div>
-    </div>
-  </section>
-
   <!-- Package reference -->
   <section id="packages" class="bg-white">
     <div class="max-w-6xl mx-auto px-6 py-14">
-      <div class="text-center mb-10">
+      <div class="mb-10">
         <h2 class="text-3xl font-bold text-primary-dark mb-3">Package reference</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Every function, option, and error of each package, checked against its source in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo.</p>
+        <p class="text-gray-600 max-w-3xl">Every function, option, and error of each package, checked against its source in the <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">arazzo-toolkit</a> monorepo.</p>
       </div>
       <div class="docs-grid">
         <article class="docs-card">
