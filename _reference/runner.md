@@ -3,7 +3,7 @@ title: "Arazzo Runner API Reference: @usearazzo/runner"
 description: "Run Arazzo workflows against live APIs from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 lead: "Run Arazzo workflows step by step against the live APIs behind their OpenAPI source descriptions, from JavaScript. Every building block, option, result field, and error of @usearazzo/runner."
 date: 2026-10-25
-last_modified_at: 2026-11-11
+last_modified_at: 2026-11-13
 package:
   name: "@usearazzo/runner"
   npm: https://www.npmjs.com/package/@usearazzo/runner
@@ -174,7 +174,7 @@ These are the main exports:
 | `ArazzoRunnerError` | class | Base class of every error the runner throws. |
 | `ExecutionError`, `ClientError`, `ResolverError`, `CriterionError`, `RuntimeExpressionError`, `InvalidEntryDocumentError`, `DocumentLoadError` | class | The errors you are most likely to catch. See [Errors](#errors). |
 
-Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `ArazzoRunnerReferenceOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `StepExecuteOptions`, `OpenAPIOperationSecurities`, `OpenAPIOperationSecurityCredential`, `HTTPClient`, `RequestInterceptor`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
+Every type on this page is exported too: `ArazzoRunnerLoadOptions`, `ArazzoRunnerOptions`, `ArazzoRunnerReferenceOptions`, `WorkflowExecutionResult`, `StepRunRecord`, `WorkflowExecuteOptions`, `StepExecuteOptions`, `OpenAPIOperationSecurities`, `OpenAPIOperationSecurityCredential`, `HTTPClient`, `RequestInterceptor`, `RequestContext`, `OpenAPIOperationSourceDescription`, and the rest. The package also exports the lower-level pieces the four building blocks are made of (normalizers, resolvers, criterion evaluators, document providers). Among them, `OpenAPIOperationLocatorNormalizer` resolves a step's `operationId` or `operationPath` to an operation, and `ArazzoWorkflowLocatorNormalizer` resolves a `workflowId` to a workflow, both through `$sourceDescriptions` and both extending `SourceDescriptionsLocatorNormalizer`. Those are for replacing one part of the pipeline; the TypeScript declarations document them.
 
 ## ArazzoRunner {#arazzo-runner}
 
@@ -595,7 +595,7 @@ One rule decides who gets an entry: it configures one OpenAPI document, addresse
 - Two APIs that name a security scheme alike never see each other's credentials.
 - A workflow of another Arazzo document that calls the same OpenAPI document gets the entry too, whatever name that document uses for it.
 - A nested Arazzo document that reuses the name for a different document gets nothing.
-- An OpenAPI document that only a nested Arazzo document declares has no name here. Declare it in the entry document's `sourceDescriptions`, or use a [`requestInterceptor`](#request-interceptor).
+- An OpenAPI document that only a nested Arazzo document declares has no name here. Declare it in the entry document's `sourceDescriptions`, or use a [`requestInterceptor`](#request-interceptor), which can pick out its requests by [source description](#request-context).
 
 A mistake in the map throws `ExecutionError` before the first request:
 
@@ -946,7 +946,7 @@ An expression that does not resolve counts as not provided. An object member is 
 
 ```ts
 new OpenAPIOperationExecutor(options?: OpenAPIOperationExecutorOptions)
-executor.execute(locator: { document; jsonPointer }, options?): Promise<OpenAPIOperationResponse>
+executor.execute(locator: { document; jsonPointer; sourceDescription? }, options?): Promise<OpenAPIOperationResponse>
 ```
 
 Runs one OpenAPI operation and returns its response. It knows nothing about Arazzo: it does not find operations or resolve expressions. Given the operation's document and JSON Pointer, it:
@@ -969,6 +969,7 @@ Runs one OpenAPI operation and returns its response. It knows nothing about Araz
 | `server`, `serverVariables` | Where the request goes. See [Choosing the server](#server). |
 | `securities` | Credentials for the security schemes the document declares. See [Authentication](#securities). |
 | `requestInterceptor` | Changes this request, after the constructor's interceptor. |
+| `step` | The Arazzo step the request is for, `{ stepId, workflowId? }`, handed to the interceptors. The step executor sets it. |
 | `signal` | An `AbortSignal`. |
 
 The response has `status`, `statusText`, `ok`, `url`, `headers`, and `body`. `body` is the content parsed by its media type, which is what `$response.body` reads. The content itself is read with `text()`, `blob()`, and `bytes()`, named after the `fetch` `Response` methods but synchronous. They return empty values when the response has no body, as with `204` or `304`. `bytes()` and `blob()` always return the bytes the server sent, in any charset. Header values stay strings, as the server sent them. A repeated header, `Set-Cookie` included, is joined with `", "`. `response.request` is the request **as it was sent**: final URL, method, headers, and body. That is what `$url`, `$method`, and `$request.*` read.
@@ -1104,6 +1105,61 @@ const executor = new OpenAPIOperationExecutor({
 It sets headers directly, so it works however the OpenAPI document declares its security schemes, or if it declares none. A `requestInterceptor` in the execute options runs after this one.
 
 In a workflow, an interceptor given to `ArazzoRunner.load` sees every request. One inside an API's entry of [`executeOptions`](#source-options) sees only the requests to that API.
+
+Interceptors run after the body is serialized, so a plain-object body is already a JSON string and a signature covers the exact bytes sent. They run before the request is recorded for `$request.*` and handed to the HTTP client.
+
+##### The request context {#request-context}
+
+An interceptor gets a second argument that says what the request is for. Use it to change the requests of one step, one operation, or one source description, without matching on the URL:
+
+```js
+const runner = await ArazzoRunner.load(
+  'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
+  {
+    requestInterceptor: (request, ctx) => {
+      if (ctx.step?.stepId === 'placeOrder') {
+        request.headers['Idempotency-Key'] = crypto.randomUUID();
+      }
+    },
+  },
+);
+```
+
+For the `loginUser` step of the [sample workflow](#quick-start), `ctx` is:
+
+```json
+{
+  "operation": {
+    "documentURI": "https://petstore3.swagger.io/api/v3/openapi.json",
+    "jsonPointer": "/paths/~1user~1login/get",
+    "operationId": "loginUser",
+    "sourceDescription": {
+      "name": "petstoreAPI",
+      "documentURI": "https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml"
+    }
+  },
+  "step": { "workflowId": "authenticateAndOrderPet", "stepId": "loginUser" }
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `operation.documentURI`, `operation.jsonPointer` | The operation: its OpenAPI document and where it is in it. Always present. |
+| `operation.operationId` | The `operationId` the OpenAPI document declares. Absent when it declares none. |
+| `operation.sourceDescription` | The source description the step reached the operation through: its `name`, and the `documentURI` of the Arazzo document that declares it. Names belong to the document that declares them, so the pair tells an entry document's `petstoreAPI` from a nested document's own. Absent for an `operationPath` with a literal URL. |
+| `step` | `{ stepId, workflowId }` of the step the request is for. |
+
+Where a field is missing, it is left out rather than set to `undefined`. Which fields arrive depends on what sends the request:
+
+| Called through | `operation` | `step` |
+|---|---|---|
+| `ArazzoRunner`, `WorkflowExecutor` | ✓ | `stepId` and `workflowId` |
+| `StepExecutor` on its own | ✓ | `stepId`, and `workflowId` if you pass one |
+| `OpenAPIOperationExecutor` on its own | ✓, without `sourceDescription` unless the locator carries one | only if you pass `step` in the execute options |
+
+Two source descriptions can point at the same OpenAPI document, one API used with two accounts, say. Their requests share a `documentURI` and a `jsonPointer`, so `sourceDescription.name` is the only field that tells them apart.
+
+Interceptors that take one argument keep working.
 
 `request.headers` is a plain object, and the case of a header name in it can differ. For an OpenAPI 2.0 document, credentials from `securities` arrive under lower-case `authorization`. So:
 
