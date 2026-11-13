@@ -589,13 +589,17 @@ const result = await runner.execute('buyPet', {
 
 An entry takes the [execute options of the operation executor](#operation-executor). This is where the static settings of one API go: its [`server`](#server) and `serverVariables`, and its [credentials](#authentication).
 
-One rule decides who gets an entry: it configures one OpenAPI document, addressed by the name the entry Arazzo document gives it. So:
+An entry configures a source description name of the entry Arazzo document. A step that calls its API through that name gets the entry. A step that reaches the API's OpenAPI document any other way gets the one entry configuring that document. That covers a name without an entry, a name of another Arazzo document, and an `operationPath` with a literal URL. So:
 
 - An API without an entry gets no options.
 - Two APIs that name a security scheme alike never see each other's credentials.
+- Two source descriptions pointing at the same OpenAPI document, one API used with two accounts say, take an entry each and get their own options.
+- A second name for a document gets the entry of the first, as long as it has none of its own.
 - A workflow of another Arazzo document that calls the same OpenAPI document gets the entry too, whatever name that document uses for it.
 - A nested Arazzo document that reuses the name for a different document gets nothing.
 - An OpenAPI document that only a nested Arazzo document declares has no name here. Declare it in the entry document's `sourceDescriptions`, or use a [`requestInterceptor`](#request-interceptor), which can pick out its requests by [source description](#request-context).
+
+When a step falls back to a document that several entries configure, nothing says which entry applies. That step throws `ExecutionError` with reason `ambiguous-execute-options`, and the steps before it have already run. Give the name the step uses an entry of its own.
 
 A mistake in the map throws `ExecutionError` before the first request:
 
@@ -603,7 +607,6 @@ A mistake in the map throws `ExecutionError` before the first request:
 |---|---|
 | A key names no source description of the entry document | `source-description-not-found` |
 | A key names an Arazzo source description | `source-description-not-openapi` |
-| Two keys point at the same document | `ambiguous-execute-options` |
 | An entry is not an object | `unknown-execute-option` |
 
 The first row is also what a flat bag such as `{ server: '...' }` gets: `server` is read as a source description name.
@@ -866,7 +869,7 @@ Runs one step that calls an OpenAPI operation. It does four things in order:
 
 `WorkflowExecutor` calls it for you. You call it directly to run one step on its own.
 
-Here `executeOptions` is not keyed by source description. It is one bag of [operation execute options](#operation-executor), or a function `(locator) => bag` that returns the bag for the operation the step was located to:
+Here `executeOptions` is not keyed by source description. It is one bag of [operation execute options](#operation-executor), or a function `(locator, step) => bag` that returns the bag for the operation the step was located to. `step` is `{ stepId, workflowId }`, the step it is called for:
 
 ```js
 import {
@@ -1264,7 +1267,7 @@ try {
 | `source-description-not-arazzo` | `SourceDescriptionNotArazzo` | A workflow reference points into a document that is not Arazzo. |
 | `source-description-not-openapi` | `SourceDescriptionNotOpenAPI` | An operation reference points into a document that is not OpenAPI, or a key of `executeOptions` names an Arazzo source description. |
 | `unknown-execute-option` | `UnknownExecuteOption` | `execute` was passed an option it does not take, or an `executeOptions` entry is not an object. |
-| `ambiguous-execute-options` | `AmbiguousExecuteOptions` | Two keys of `executeOptions` point at the same document. See [Options per API](#source-options). |
+| `ambiguous-execute-options` | `AmbiguousExecuteOptions` | A step without an `executeOptions` entry of its own reaches a document that several entries configure. See [Options per API](#source-options). |
 | `retry-reference-unsupported` | `RetryReferenceUnsupported` | A `retry` action references a step or workflow, but the `StepRetryRunner` was given no way to run it. |
 | `unknown-transition-kind` | `UnknownTransitionKind` | A step produced a transition the workflow executor does not recognize. This is a runner bug, not a document mistake. |
 
