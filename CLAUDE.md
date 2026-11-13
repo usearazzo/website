@@ -301,6 +301,8 @@ Reworked 2026-11-13 on the shape of speclynx.com's GTM homepage (owner: "similar
 
 ## Header "Get started" button
 
+The header has no "Open Source" dropdown since 2026-11-13 (owner, as on speclynx.com): the GitHub icon covers it on desktop and a plain "GitHub" link in the mobile menu; Discussions stays in the footer and the homepage Community section.
+
 `_includes/nav.html` ends with a "Get started" button linking to `/docs/guides/getting-started/` (owner, 2026-11-12, as on speclynx.com). It is `.nav-cta` (brand green `--color-primary-light`: the owner found black wrong beside the logo). Since 2026-11-13 `.primary-cta` is the same green sitewide, with ink as its hover state; no primary button is black. On desktop it shows from `lg` up only, because between 768px and 1023px the nav has no room and it wrapped; the mobile menu carries it as its last item.
 
 ## Page sidebars on mobile
