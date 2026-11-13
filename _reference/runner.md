@@ -1033,11 +1033,12 @@ const offlineExecutor = new OpenAPIOperationExecutor({
 });
 ```
 
-A client you write has three rules to follow:
+A client you write has four rules to follow:
 
 - **Resolve with a `Response` for every HTTP status.** A 404 or a 500 is a valid outcome for a step's `successCriteria` to judge, not an error.
 - **Throw only when the request could not be made.** The executor wraps the error in a `ClientError`, with the original as `cause`.
 - **Honor `request.signal`** when it is present, so a cancelled run cancels the request.
+- **Encode a `FormData` body** as `multipart/form-data` and set the `Content-Type` with its boundary, as `fetch` does. The executor removes the request's own multipart `Content-Type` for such a body, since only the encoder knows the boundary.
 
 The response is read on the executor's side of the client, so `$response.body` means the same thing whichever client you plug in. A client that only adds behaviour around the request can call `httpClientFetch` instead of reimplementing it.
 
@@ -1110,6 +1111,8 @@ It sets headers directly, so it works however the OpenAPI document declares its 
 In a workflow, an interceptor given to `ArazzoRunner.load` sees every request. One inside an API's entry of [`executeOptions`](#source-options) sees only the requests to that API.
 
 Interceptors run after the body is serialized, so a plain-object body is already a JSON string and a signature covers the exact bytes sent. They run before the request is recorded for `$request.*` and handed to the HTTP client.
+
+An interceptor can build a multipart body of its own. Set `request.body` to it and `Content-Type` to `multipart/form-data; boundary=<yours>`, and both are sent as they are. While the body is still the `FormData` the runner built, a multipart `Content-Type` is removed, boundary or not, and the [HTTP client](#http-client) sets one that matches the body.
 
 ##### The request context {#request-context}
 
