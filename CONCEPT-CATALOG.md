@@ -229,6 +229,14 @@ cross-document workflow references via
 architecture diagram on `/runner/` already explains visually; content here
 can lean on that diagram as the "show the end result" step.
 
+**Answer-engine signal (owner's observation, recorded 2026-11-13):** the
+question "what is the best arazzo specification runner out there?", asked
+of Perplexity, Gemini, and ChatGPT, listed UseArazzo in the first three
+positions every time. Running content already reaches answer engines, so
+pieces here should keep answering that kind of question directly (what it
+runs, against what, how to start). Re-ask the same question after each
+Running piece lands to see whether the position holds.
+
 **Tutorial backlog (owner, website#33, recorded 2026-11-13):** three
 tutorials, one per unit of execution, smallest first. Each still needs a
 headline that passes the search test before drafting.
