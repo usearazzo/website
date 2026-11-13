@@ -141,14 +141,18 @@ h4:hover .heading-anchor {
 .text-primary-dark { color: var(--color-primary-dark); }
 .text-primary-light { color: var(--color-primary-light); }
 .bg-primary-dark { background-color: var(--color-primary-dark); }
+.border-primary-dark { border-color: var(--color-primary-dark); }
+.border-primary-light { border-color: var(--color-primary-light); }
 
+/* Primary buttons are brand green everywhere, like "Get started" in the header (owner, 2026-11-13:
+   an ink block reads as black beside the leaf logo). Ink is the hover state. */
 .primary-cta {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-primary-light);
     transition: background-color 0.2s ease;
 }
 
 .primary-cta:hover {
-    background-color: #2A3A18;
+    background-color: var(--color-primary-dark);
 }
 
 /* "Get started" in the header: brand green, so it is not a black block beside the leaf logo */
@@ -302,6 +306,15 @@ h4:hover .heading-anchor {
     text-wrap: balance;
 }
 
+/* Homepage headline: full width above the two columns, one sentence per line from md up */
+@media (min-width: 769px) {
+    .hero-title-wide { font-size: 1.875rem; }
+}
+
+@media (min-width: 1024px) {
+    .hero-title-wide { font-size: 2.5rem; }
+}
+
 @media (max-width: 768px) {
     .hero-title {
         font-size: 1.75rem;
@@ -408,6 +421,55 @@ h4:hover .heading-anchor {
 .t-warn { color: #FBBF24; }
 .t-warnsum { color: #FBBF24; font-weight: 700; }
 
+/* Terminal tabs (homepage hero demo switcher) */
+.terminal-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.terminal-tab {
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    background: transparent;
+    border: 0;
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.terminal-tab:hover { color: #E5E7EB; }
+
+.terminal-tab[aria-selected="true"] {
+    background: #1F2937;
+    color: #E5E7EB;
+}
+
+/* Homepage "What it does" pipeline diagram (inline SVG, wide and stacked variants) */
+#what-it-does .pl-card { fill: #FFFFFF; stroke: #C9DDB0; stroke-width: 2; }
+#what-it-does .pl-code { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; font-size: 11px; fill: #17210D; }
+#what-it-does .pl-key { fill: #3A6B1F; }
+#what-it-does .pl-strong { font-weight: 700; }
+#what-it-does .pl-good { font-weight: 700; fill: #3A6B1F; }
+#what-it-does .pl-bad { font-weight: 700; fill: #B91C1C; }
+#what-it-does .pl-badline { fill: #FEE2E2; }
+#what-it-does .pl-badpill { fill: #FFFFFF; stroke: #DC2626; stroke-width: 1.5; }
+#what-it-does .pl-step { fill: #F0F5E7; stroke: #6BA543; stroke-width: 1.5; }
+#what-it-does .pl-api { fill: #17210D; }
+#what-it-does .pl-api + .pl-code { fill: #FFFFFF; }
+#what-it-does .pl-rail { stroke: #6BA543; stroke-width: 2; stroke-dasharray: 3 4; fill: none; }
+#what-it-does .pl-edge { stroke: #6BA543; stroke-width: 2; fill: none; }
+#what-it-does .pl-rule { stroke: #E5E7EB; stroke-width: 1.5; }
+#what-it-does .pl-tick { fill: #94C83D; }
+#what-it-does .pl-tickmark { stroke: #17210D; stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+#what-it-does .pl-num { font-family: 'Fira Code', 'Monaco', 'Consolas', monospace; font-size: 13px; font-weight: 700; fill: #3A6B1F; }
+#what-it-does .pl-lbl { font-family: inherit; font-weight: 700; font-size: 18px; fill: #17210D; }
+#what-it-does .pl-cap { font-family: inherit; font-size: 13.5px; fill: #4B5563; }
+
 /* Typewriter demo (ported from speclynx.com's hero). Long lines wrap instead of scrolling. While
    animating, the panel holds a fixed height so the page does not jump as runs are typed and
    cleared, and the script keeps the newest line in view; the static fallback (no JS, or reduced
@@ -421,6 +483,14 @@ h4:hover .heading-anchor {
     height: 16rem;
     overflow-y: auto;
 }
+
+/* The homepage hero shows a whole script and its output, so its panels are taller */
+.terminal-hero .terminal-panel.is-animating { height: 16rem; }
+@media (max-width: 767px) {
+    /* long lines wrap on a phone, so the same script needs more rows */
+    .terminal-hero .terminal-panel.is-animating { height: 24rem; }
+}
+.t-str { color: #A3D977; }
 
 .terminal-run { display: block; }
 .terminal-run + .terminal-run { margin-top: 0.7em; }

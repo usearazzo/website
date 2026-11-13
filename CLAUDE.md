@@ -186,7 +186,7 @@ assets/guides/<slug>/            # Sample documents a guide's code runs against,
 assets/tutorials/<slug>/         # Same for tutorials, plus the finished script the tutorial builds
                                  # (readers download it; keep it byte-identical to the final listing)
 pages/
-  homepage.html                  # Landing page (permalink: /)
+  homepage.html                  # Landing page (permalink: /), see "Homepage" below
   blog.html                      # Blog index (permalink: /blog/); empty-state when site.posts is empty
   docs.html                      # Docs hub (permalink: /docs/), redone 2026-09-10 on the shape of
                                  # stoplight.io/guides at the owner's request: no sidebar,
@@ -295,9 +295,13 @@ llms.txt                         # LLM crawler discovery file
   cropping can be done in Python; ImageMagick and rsvg-convert are still absent.) `favicon.ico` is a hand-built PNG-in-ICO container (Python stdlib `struct`).
 - No LaunchList/newsletter widget — SpecLynx's site had one, UseArazzo's doesn't.
 
+## Homepage
+
+Reworked 2026-11-13 on the shape of speclynx.com's GTM homepage (owner: "similar things where it applies"). Hero: the eyebrow and H1 span the full width above the two columns so each sentence is one line from `md` up (`.hero-title-wide`; beside the terminal it wrapped to four lines), then "Get started" (the getting started guide) and "GitHub" CTAs, and a tabbed terminal (`data-terminal-tabs`, tabs `run` / `validate`) in place of the logo; `run` is the first tab (owner: run is primary) and is a real Node REPL session (owner's idea, 2026-11-13): import, `ArazzoRunner.load`, `execute`, then `result.status` and `result.outputs`, captured against the public Petstore with 1.0.1-alpha.29 and the guide's fixed `find-a-pet.arazzo.yaml` (feed the REPL one line at a time, it does not wait for an `await` on piped stdin). The `undefined` lines the REPL prints after each `const` and the welcome banner are left out ("lot of noise"). Rejected on the way: a bare `node run.mjs` with step ticks ("doesn't demonstrate anything") and `cat run.mjs` plus its output ("a lot of noise"). `validate` is the guide's captured output. Sections are left-aligned, never centred. "What it does" is one inline SVG pipeline (Describe, Validate, Run, Read the trace; `#what-it-does .pl-*` in `main.css`), four cards whose contents mirror the getting started sample and its run, with a stacked variant below `lg`; a first version of four small icons over HTML captions was replaced as too weak. "The tools" is one bordered list of rows, including Parser and Resolver rows that link to their references. "Community" pairs "Built in the open" with "Get help from the maintainers". No testimonials until there are real, attributed quotes. Not ported: SpecLynx's featured-product panel. Compatibility and Roadmap stay; the roadmap is the same compact row list as the tools (eight big cards outweighed the five tools that exist). The `validate` tab shows only the run with the two errors (a second "No problems found" run left the terminal empty). The `run` session ends with `result.steps.map(...)` and `result.outputs`, so the hero's "what happened at each step" is shown. The `<title>` ("The Foundational OS for Arazzo API Workflows") is the owner's, leave it. No "we" in homepage copy (owner). `.border-primary-dark` / `.border-primary-light` were used on several pages but defined nowhere until this pass; they are plain rules in `main.css` now.
+
 ## Header "Get started" button
 
-`_includes/nav.html` ends with a "Get started" button linking to `/docs/guides/getting-started/` (owner, 2026-11-12, as on speclynx.com). It is `.nav-cta` (brand green `--color-primary-light`, not the ink `.primary-cta`: the owner found black wrong beside the logo). On desktop it shows from `lg` up only, because between 768px and 1023px the nav has no room and it wrapped; the mobile menu carries it as its last item.
+`_includes/nav.html` ends with a "Get started" button linking to `/docs/guides/getting-started/` (owner, 2026-11-12, as on speclynx.com). It is `.nav-cta` (brand green `--color-primary-light`: the owner found black wrong beside the logo). Since 2026-11-13 `.primary-cta` is the same green sitewide, with ink as its hover state; no primary button is black. On desktop it shows from `lg` up only, because between 768px and 1023px the nav has no room and it wrapped; the mobile menu carries it as its last item.
 
 ## Page sidebars on mobile
 

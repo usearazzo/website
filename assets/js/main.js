@@ -198,6 +198,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+// Terminal tabs (the homepage hero's demo switcher). Selecting a tab restarts its typewriter.
+document.querySelectorAll('[data-terminal-tabs]').forEach(function (root) {
+  var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+  var panels = tabs.map(function (tab) {
+    return document.getElementById(tab.getAttribute('aria-controls'));
+  });
+  function select(index) {
+    tabs.forEach(function (tab, i) {
+      var active = i === index;
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      tab.tabIndex = active ? 0 : -1;
+      panels[i].hidden = !active;
+    });
+    if (panels[index]._typewriter) panels[index]._typewriter.restart();
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { select(i); });
+    tab.addEventListener('keydown', function (e) {
+      var next = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : null;
+      if (next === null) return;
+      e.preventDefault();
+      next = (next + tabs.length) % tabs.length;
+      select(next);
+      tabs[next].focus();
+    });
+  });
+});
+
 // Terminal demos (ported from speclynx.com's hero): type each command, reveal its output, hold,
 // then move to the next run, looping when a panel has several. Falls back to the static markup
 // under reduced motion or without JS.
@@ -217,11 +245,15 @@ document.querySelectorAll('[data-terminal-typewriter]').forEach(function (panel)
   panel.appendChild(live);
 
   var TYPE_MS = 25, LINE_MS = 40, AFTER_TYPE_MS = 300, HOLD_MS = 4000, BETWEEN_MS = 600;
+  var generation = 0; // bumped on restart so timers from the previous pass stop themselves
 
-  // Pause while the tab is in the background instead of racing through runs unseen.
+  // Pause while the browser tab is in the background, or the panel sits behind another terminal
+  // tab, instead of racing through runs unseen.
   function wait(ms, cb) {
+    var gen = generation;
     setTimeout(function () {
-      if (document.hidden) { wait(400, cb); return; }
+      if (gen !== generation) return;
+      if (panel.hidden || document.hidden) { wait(400, cb); return; }
       cb();
     }, ms);
   }
@@ -277,7 +309,12 @@ document.querySelectorAll('[data-terminal-typewriter]').forEach(function (panel)
           // Idle at a fresh prompt, like a real shell.
           var idle = document.createElement('span');
           idle.className = 'terminal-prompt';
-          idle.innerHTML = '<span class="t-dollar">$</span> ';
+          // A REPL panel idles at its own prompt (data-terminal-idle=">"), a shell at "$".
+          var idleDollar = document.createElement('span');
+          idleDollar.className = 't-dollar';
+          idleDollar.textContent = panel.getAttribute('data-terminal-idle') || '$';
+          idle.appendChild(idleDollar);
+          idle.appendChild(document.createTextNode(' '));
           live.appendChild(document.createTextNode('\n'));
           live.appendChild(idle);
           live.appendChild(cursor);
@@ -293,5 +330,8 @@ document.querySelectorAll('[data-terminal-typewriter]').forEach(function (panel)
     typeNext();
   }
 
-  showRun(0);
+  panel._typewriter = {
+    restart: function () { generation += 1; showRun(0); }
+  };
+  panel._typewriter.restart();
 });

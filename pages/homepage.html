@@ -9,38 +9,72 @@ permalink: /
 <!-- Hero Section -->
 <section class="hero-section py-16 md:py-24">
   <div class="container mx-auto px-4 max-w-6xl">
-    <div class="flex flex-col md:flex-row gap-12 items-center">
+    <!-- The headline spans the full width so each sentence stays on one line from md up -->
+    <p class="text-primary-light text-xs font-bold uppercase tracking-wider mb-4">Open source &middot; Apache 2.0</p>
+    <h1 class="hero-title hero-title-wide mb-10"><span class="block">OpenAPI Describes Each Call.</span> <span class="block">Arazzo Describes the API Workflow.</span></h1>
+    <div class="flex flex-col lg:flex-row gap-12 lg:items-center">
       <!-- Left: Text Content -->
-      <div class="flex-1">
-        <h1 class="hero-title mb-6"><span class="block">OpenAPI Describes Each Call.</span> <span class="block">Arazzo Describes the API Workflow.</span></h1>
+      <div class="flex-1 min-w-0">
         <p class="hero-subtitle mb-6">You've probably scripted your API workflow by hand, and it breaks quietly when the API changes. Write it as an <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a> document instead. UseArazzo validates it, runs it against live APIs, and shows you exactly what happened at each step.</p>
         <!-- Credibility -->
         <div class="border-t border-gray-200 pt-5 mb-8">
           <p class="text-gray-500 text-sm">Founded by two industry veterans with over 15 years of combined experience building and maintaining core Swagger/OpenAPI tooling. <a href="{{ '/about/' | relative_url }}" class="product-card-link">Meet the team &rarr;</a></p>
         </div>
         <!-- CTAs -->
-        <div class="mt-2 flex flex-wrap gap-4">
-          <a href="#products" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
-            Explore the toolkit
+        <div class="mt-2 flex flex-wrap items-center gap-4">
+          <a href="{{ '/docs/guides/getting-started/' | relative_url }}" class="nav-cta text-white font-bold py-3 px-6 rounded inline-block">
+            Get started
           </a>
-          <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-            View on GitHub
+          <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded hover:bg-gray-100 transition-colors">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.83 9.504.471.085.678-.231.678-.519 0-.256-.009-.96-.014-1.881-2.782.603-3.371-1.341-3.371-1.341-.454-1.151-1.11-1.459-1.11-1.459-.908-.621.069-.608.069-.608 1.006.07 1.532 1.03 1.532 1.03.89 1.529 2.341 1.089 2.91.831.091-.645.35-.916.635-1.127-2.22-.253-4.555-1.114-4.555-4.945 0-1.091.39-1.984 1.029-2.682-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025.799-.224 1.649-.336 2.5-.341.85.005 1.7.117 2.5.341 1.909-1.295 2.747-1.025 2.747-1.025.546 1.378.202 2.397.098 2.65.64.698 1.029 1.591 1.029 2.682 0 3.84-2.339 4.686-4.566 4.935.359.308.675.918.675 1.85 0 1.341-.012 2.427-.012 2.75 0 .289.206.608.683.503C20.146 20.198 23 16.443 23 12.017 23 6.484 18.522 2 13 2h-1z" clip-rule="evenodd"/></svg>
+            GitHub
           </a>
         </div>
       </div>
-      <!-- Right: Hero Graphic -->
-      <div class="hidden md:flex md:w-1/3 justify-center flex-shrink-0">
-        <img src="{{ '/assets/images/logos/usearazzo-logo.svg' | relative_url }}" alt="The UseArazzo Fork mark: one step splits, two run, they rejoin" class="w-56 h-56">
+      <!-- Right: Hero Terminal Demos -->
+      <div class="w-full lg:w-1/2 flex-shrink-0 min-w-0">
+        <div class="terminal terminal-hero" data-terminal-tabs>
+          <div class="terminal-titlebar">
+            <span class="terminal-dot terminal-dot-red"></span>
+            <span class="terminal-dot terminal-dot-yellow"></span>
+            <span class="terminal-dot terminal-dot-green"></span>
+            <div class="terminal-tabs" role="tablist" aria-label="UseArazzo demos">
+              <button type="button" role="tab" id="hero-tab-run" aria-controls="hero-panel-run" aria-selected="true" class="terminal-tab">run</button>
+              <button type="button" role="tab" id="hero-tab-validate" aria-controls="hero-panel-validate" aria-selected="false" tabindex="-1" class="terminal-tab">validate</button>
+            </div>
+          </div>
+<!-- Run panel: a real Node REPL session, tidied (the banner and the `undefined` the REPL prints
+     after each const are left out; owner found them noise), captured 2026-11-13 against the public
+     Petstore with the npm copy of @usearazzo/runner and the getting started guide's fixed
+     find-a-pet.arazzo.yaml. Re-run it before changing a character. Validate panel: verbatim from
+     the getting started guide (captured 2026-11-12), the sample with its two mistakes. JS types each command and reveals its output; without JS (or with reduced motion)
+     the runs render stacked. -->
+<pre class="terminal-body terminal-panel" role="tabpanel" id="hero-panel-run" aria-labelledby="hero-tab-run" tabindex="0" data-terminal-typewriter data-terminal-idle="&gt;"><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> node</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">const { ArazzoRunner } = await import(<span class="t-str">'@usearazzo/runner'</span>)</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">const runner = await ArazzoRunner.load(<span class="t-str">'find-a-pet.arazzo.yaml'</span>)</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">const inputs = { status: <span class="t-str">'available'</span> }</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">const result = await runner.execute(<span class="t-str">'findAPet'</span>, { inputs })</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">result.steps.map((step) =&gt; [step.stepId, step.successful])</span>
+<span class="t-ok">[ [ 'findPets', true ], [ 'getPet', true ] ]</span>
+<span class="t-dollar">&gt;</span> <span class="t-msg">result.outputs</span>
+<span class="t-ok">{ petId: 11, name: 'doggie' }</span></span></pre>
+<pre class="terminal-body terminal-panel" role="tabpanel" id="hero-panel-validate" aria-labelledby="hero-tab-validate" tabindex="0" hidden data-terminal-typewriter><span class="terminal-run"><span class="terminal-prompt"><span class="t-dollar">$</span> npx @usearazzo/cli validate <span class="t-arg">find-a-pet.arazzo.yaml</span></span>
+<span class="t-file">find-a-pet.arazzo.yaml</span>
+  <span class="t-loc">39:17-39:22</span>  <span class="t-error">error</span>  <span class="t-code">9060201</span>  <span class="t-msg">in must be one of: 'path', 'query', 'header', 'cookie'</span>
+  <span class="t-loc">44:11-44:36</span>  <span class="t-error">error</span>  <span class="t-code">9050804</span>  <span class="t-msg">Step output values must be valid Arazzo Runtime Expressions.</span>
+
+<span class="t-fail">&#10006; 2 problems (2 errors)</span></span></pre>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Supported Specs Strip -->
-<section class="py-8 bg-white border-y border-gray-100">
+<section class="py-10 bg-white border-y border-gray-100">
   <div class="container mx-auto px-4 max-w-6xl">
-    <p class="text-gray-500 text-xs uppercase tracking-wider text-center mb-5">Works with</p>
-    <div class="flex flex-wrap justify-center items-center gap-x-10 gap-y-6">
+    <p class="text-gray-500 text-xs uppercase tracking-wider mb-5">Works with</p>
+    <div class="flex flex-wrap items-center gap-x-10 gap-y-6">
       <div class="relative group inline-flex items-center">
         <img src="{{ '/assets/images/logos/arazzo-logo.png' | relative_url }}" width="124" height="32" alt="Arazzo" class="h-8 object-contain" loading="lazy">
         <span class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">Arazzo Specification</span>
@@ -56,50 +90,103 @@ permalink: /
 <!-- Problem Framing Section -->
 <section class="py-12 md:py-16 bg-gray-50">
   <div class="container mx-auto px-4 max-w-6xl">
-    <div class="max-w-2xl mx-auto text-center mb-10">
+    <div class="max-w-2xl">
       <h2 class="text-3xl font-extrabold text-primary-dark mb-4">Why API workflows still get improvised</h2>
-      <p class="text-gray-600">Even with an OpenAPI description in hand, agent frameworks still improvise the call order at runtime, and improvisation is exactly what you don't want in production.<br><br><a href="{{ '/blog/api-workflows-are-still-improvised/' | relative_url }}" class="text-primary-light underline hover:no-underline">Read why it still happens &rarr;</a></p>
+      <p class="text-gray-600 mb-4">A single API call is a solved problem. OpenAPI describes it, generators wrap it, and every HTTP client can make it. The order you call the endpoints in, what you carry from one response into the next request, and how you know you are done have no such home. That part lives in scripts, in tribal knowledge, and in agents that work out the call order at runtime. If you maintain an API, test one, or build agents on top of one, you have written that glue yourself. It is rarely reviewed, rarely versioned alongside the API it drives, and it breaks quietly when the API changes. Improvisation is exactly what you don't want in production.</p>
+      <p><a href="{{ '/blog/api-workflows-are-still-improvised/' | relative_url }}" class="text-primary-light underline hover:no-underline">Read why it still happens &rarr;</a></p>
     </div>
   </div>
 </section>
 
 <!-- What It Does Section -->
-<section class="section-padding bg-white">
+<section id="what-it-does" class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">What it does</h2>
-    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-4">What it does</h2>
+    <p class="text-gray-600 mb-12 max-w-2xl">
       Plenty of tools will tell you whether an Arazzo document is well formed. Far fewer will run it. UseArazzo does both, and tells you what happened.
     </p>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="feature-card">
-        <div class="text-primary-light font-extrabold text-2xl mb-2" aria-hidden="true">1</div>
-        <h3 class="feature-card-title">Validate</h3>
-        <p class="text-gray-600">The document, against the Arazzo specification. Every violation, with the location that caused it.</p>
-      </div>
-      <div class="feature-card">
-        <div class="text-primary-light font-extrabold text-2xl mb-2" aria-hidden="true">2</div>
-        <h3 class="feature-card-title">Run</h3>
-        <p class="text-gray-600">The workflow, against live APIs described by your OpenAPI source descriptions.</p>
-      </div>
-      <div class="feature-card">
-        <div class="text-primary-light font-extrabold text-2xl mb-2" aria-hidden="true">3</div>
-        <h3 class="feature-card-title">Read the trace</h3>
-        <p class="text-gray-600">Each step in run order: whether it succeeded, which action was selected, and how many attempts it took, alongside the workflow's outputs and final status.</p>
-      </div>
+    <!-- Pipeline diagram: inline SVG so the text stays real (styles: #what-it-does .pl-* in main.css).
+         The card contents mirror the getting started guide's sample and its run. A stacked variant
+         renders below lg. -->
+    <div class="hidden lg:block mb-10">
+    <svg class="w-full h-auto" viewBox="0 0 1164 230" role="img" aria-labelledby="pl-title-wide" xmlns="http://www.w3.org/2000/svg">
+      <title id="pl-title-wide">The UseArazzo pipeline: an Arazzo document is described once, validated with every violation located, run step by step against live APIs, and read back as a trace of each step with the outputs and final status.</title>
+      <defs>
+        <filter id="pl-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>
+        <marker id="pl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6BA543"/></marker>
+      </defs>
+      <circle cx="420" cy="90" r="120" fill="#E3EFCF" opacity=".6" filter="url(#pl-glow)"/>
+      <circle cx="1020" cy="90" r="110" fill="#E3EFCF" opacity=".45" filter="url(#pl-glow)"/>
+      <g transform="translate(0,10)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><text class="pl-code" x="14" y="28"><tspan class="pl-key">arazzo:</tspan> 1.0.1</text><text class="pl-code" x="14" y="45"><tspan class="pl-key">workflows:</tspan></text><text class="pl-code" x="27.24" y="62"><tspan class="pl-key">- workflowId:</tspan> findAPet</text><text class="pl-code" x="40.48" y="79"><tspan class="pl-key">steps:</tspan></text><text class="pl-code" x="53.72" y="96"><tspan class="pl-key">- stepId:</tspan> findPets</text><text class="pl-code" x="53.72" y="113"><tspan class="pl-key">- stepId:</tspan> getPet</text>
+        <text class="pl-num" x="0" y="172">01</text>
+        <text class="pl-lbl" x="28" y="172">Describe</text>
+        <text class="pl-cap" x="0" y="194">an Arazzo document in your repository</text>
+      </g>
+      <path class="pl-edge" d="M214 80 H304" marker-end="url(#pl-arrow)"/>
+      <g transform="translate(320,10)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><text class="pl-code" x="14" y="30"><tspan class="pl-key">- name:</tspan> petId</text><rect class="pl-badline" x="8" y="36" width="184" height="18" rx="3"/><text class="pl-code pl-bad" x="27.24" y="49">in: paths</text><text class="pl-code" x="27.24" y="68"><tspan class="pl-key">value:</tspan> $steps.findPets…</text><rect class="pl-badpill" x="14" y="92" width="172" height="28" rx="14"/><text class="pl-code pl-bad" x="100" y="110" text-anchor="middle">&#10006; error at 39:17</text>
+        <text class="pl-num" x="0" y="172">02</text>
+        <text class="pl-lbl" x="28" y="172">Validate</text>
+        <text class="pl-cap" x="0" y="194">every violation, with its location</text>
+      </g>
+      <path class="pl-edge" d="M534 80 H624" marker-end="url(#pl-arrow)"/>
+      <g transform="translate(640,10)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><path class="pl-edge" d="M104 40 C124 40 122 70 138 70" marker-end="url(#pl-arrow)"/><path class="pl-edge" d="M104 100 C124 100 122 70 138 70"/><path class="pl-rail" d="M24 53 V87"/><rect class="pl-step" x="14" y="27" width="90" height="26" rx="13"/><text class="pl-code" x="59" y="44" text-anchor="middle">findPets</text><rect class="pl-step" x="14" y="87" width="90" height="26" rx="13"/><text class="pl-code" x="59" y="104" text-anchor="middle">getPet</text><rect class="pl-api" x="142" y="44" width="46" height="52" rx="8"/><text class="pl-code pl-strong" x="165" y="74" text-anchor="middle">API</text>
+        <text class="pl-num" x="0" y="172">03</text>
+        <text class="pl-lbl" x="28" y="172">Run</text>
+        <text class="pl-cap" x="0" y="194">each step, against live APIs</text>
+      </g>
+      <path class="pl-edge" d="M854 80 H944" marker-end="url(#pl-arrow)"/>
+      <g transform="translate(960,10)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><circle class="pl-tick" cx="24" cy="30" r="8"/><path class="pl-tickmark" d="M20 30 l3 3 l5 -6"/><text class="pl-code" x="40" y="34">findPets</text><circle class="pl-tick" cx="24" cy="56" r="8"/><path class="pl-tickmark" d="M20 56 l3 3 l5 -6"/><text class="pl-code" x="40" y="60">getPet</text><path class="pl-rule" d="M14 78 H186"/><text class="pl-code pl-good" x="14" y="100">completed</text><text class="pl-code" x="14" y="120">petId: 11, name: 'doggie'</text>
+        <text class="pl-num" x="0" y="172">04</text>
+        <text class="pl-lbl" x="28" y="172">Read the trace</text>
+        <text class="pl-cap" x="0" y="194">steps, outputs, final status</text>
+      </g>
+    </svg>
     </div>
-    <p class="text-center text-gray-500 text-sm mt-10">
-      The <a href="{{ '/validator/' | relative_url }}" class="text-primary-light underline hover:no-underline">Validator</a>, the <a href="{{ '/runner/' | relative_url }}" class="text-primary-light underline hover:no-underline">Runner</a>, and the <a href="{{ '/cli/' | relative_url }}" class="text-primary-light underline hover:no-underline">CLI</a> are on npm as alphas. Running a workflow takes a few lines of JavaScript.
-    </p>
+    <div class="lg:hidden mb-10">
+    <svg class="w-full h-auto max-w-xs" viewBox="0 0 280 1000" role="img" aria-labelledby="pl-title-narrow" xmlns="http://www.w3.org/2000/svg">
+      <title id="pl-title-narrow">The UseArazzo pipeline: an Arazzo document is described once, validated with every violation located, run step by step against live APIs, and read back as a trace of each step with the outputs and final status.</title>
+      <defs><marker id="pl-arrow-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6BA543"/></marker></defs>
+      <g transform="translate(2,6)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><text class="pl-code" x="14" y="28"><tspan class="pl-key">arazzo:</tspan> 1.0.1</text><text class="pl-code" x="14" y="45"><tspan class="pl-key">workflows:</tspan></text><text class="pl-code" x="27.24" y="62"><tspan class="pl-key">- workflowId:</tspan> findAPet</text><text class="pl-code" x="40.48" y="79"><tspan class="pl-key">steps:</tspan></text><text class="pl-code" x="53.72" y="96"><tspan class="pl-key">- stepId:</tspan> findPets</text><text class="pl-code" x="53.72" y="113"><tspan class="pl-key">- stepId:</tspan> getPet</text>
+        <text class="pl-num" x="0" y="172">01</text>
+        <text class="pl-lbl" x="28" y="172">Describe</text>
+        <text class="pl-cap" x="0" y="194">an Arazzo document in your repository</text>
+      </g>
+      <path class="pl-edge" d="M102 214 V246" marker-end="url(#pl-arrow-n)"/>
+      <g transform="translate(2,258)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><text class="pl-code" x="14" y="30"><tspan class="pl-key">- name:</tspan> petId</text><rect class="pl-badline" x="8" y="36" width="184" height="18" rx="3"/><text class="pl-code pl-bad" x="27.24" y="49">in: paths</text><text class="pl-code" x="27.24" y="68"><tspan class="pl-key">value:</tspan> $steps.findPets…</text><rect class="pl-badpill" x="14" y="92" width="172" height="28" rx="14"/><text class="pl-code pl-bad" x="100" y="110" text-anchor="middle">&#10006; error at 39:17</text>
+        <text class="pl-num" x="0" y="172">02</text>
+        <text class="pl-lbl" x="28" y="172">Validate</text>
+        <text class="pl-cap" x="0" y="194">every violation, with its location</text>
+      </g>
+      <path class="pl-edge" d="M102 466 V498" marker-end="url(#pl-arrow-n)"/>
+      <g transform="translate(2,510)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><path class="pl-edge" d="M104 40 C124 40 122 70 138 70" marker-end="url(#pl-arrow-n)"/><path class="pl-edge" d="M104 100 C124 100 122 70 138 70"/><path class="pl-rail" d="M24 53 V87"/><rect class="pl-step" x="14" y="27" width="90" height="26" rx="13"/><text class="pl-code" x="59" y="44" text-anchor="middle">findPets</text><rect class="pl-step" x="14" y="87" width="90" height="26" rx="13"/><text class="pl-code" x="59" y="104" text-anchor="middle">getPet</text><rect class="pl-api" x="142" y="44" width="46" height="52" rx="8"/><text class="pl-code pl-strong" x="165" y="74" text-anchor="middle">API</text>
+        <text class="pl-num" x="0" y="172">03</text>
+        <text class="pl-lbl" x="28" y="172">Run</text>
+        <text class="pl-cap" x="0" y="194">each step, against live APIs</text>
+      </g>
+      <path class="pl-edge" d="M102 718 V750" marker-end="url(#pl-arrow-n)"/>
+      <g transform="translate(2,762)">
+        <rect class="pl-card" width="200" height="140" rx="10"/><circle class="pl-tick" cx="24" cy="30" r="8"/><path class="pl-tickmark" d="M20 30 l3 3 l5 -6"/><text class="pl-code" x="40" y="34">findPets</text><circle class="pl-tick" cx="24" cy="56" r="8"/><path class="pl-tickmark" d="M20 56 l3 3 l5 -6"/><text class="pl-code" x="40" y="60">getPet</text><path class="pl-rule" d="M14 78 H186"/><text class="pl-code pl-good" x="14" y="100">completed</text><text class="pl-code" x="14" y="120">petId: 11, name: 'doggie'</text>
+        <text class="pl-num" x="0" y="172">04</text>
+        <text class="pl-lbl" x="28" y="172">Read the trace</text>
+        <text class="pl-cap" x="0" y="194">steps, outputs, final status</text>
+      </g>
+    </svg>
+    </div>
+    <a href="{{ '/docs/guides/getting-started/' | relative_url }}" class="nav-cta text-white font-bold py-3 px-6 rounded inline-block">Get started</a>
   </div>
 </section>
 
 <!-- Why UseArazzo Pillars Section -->
-<section class="section-padding bg-white">
+<section class="section-padding bg-white border-t border-gray-100">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Why UseArazzo</h2>
-    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-      As maintainers of UseArazzo, we believe multi-step API workflows deserve the same rigor OpenAPI brought to single endpoints: described once, in a standard, and executed the same way every time. That's what <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Arazzo</a> is for, and UseArazzo exists to validate and run it: deterministically, on your machine, in CI, or through an agent. It's one shared engine, not three separate tools that happen to sound related.
-    </p>
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-12">Why UseArazzo</h2>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-dark">
         <h3 class="text-lg font-bold text-primary-dark mb-3">Deterministic execution</h3>
@@ -107,7 +194,7 @@ permalink: /
       </div>
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-light">
         <h3 class="text-lg font-bold text-primary-dark mb-3">The standard is the product</h3>
-        <p class="text-gray-600">We implement Arazzo exactly as the specification defines it. When something needs fixing, we fix it in the specification by contributing upstream, instead of adding private extensions that only our tools can read.</p>
+        <p class="text-gray-600">UseArazzo implements Arazzo exactly as the specification defines it. When something needs fixing, the fix goes upstream into the specification, not into private extensions that only one tool can read.</p>
       </div>
       <div class="bg-gray-50 rounded-lg p-8 border-t-4 border-primary-dark">
         <h3 class="text-lg font-bold text-primary-dark mb-3">Portable artifacts</h3>
@@ -120,73 +207,41 @@ permalink: /
 <!-- Products Section -->
 <section id="products" class="section-padding bg-gray-50">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Validate and run workflows</h2>
-    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-      The entire toolkit is pre-1.0, and APIs may change without notice. The Validator, the Runner, and the CLI are on npm as alphas. Everything below is built in the open, so you can read the code, follow along, and tell exactly where each piece stands.
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-4">The tools</h2>
+    <p class="text-gray-600 mb-12 max-w-2xl">
+      Five packages, all on npm as alphas. The toolkit is pre-1.0, and APIs may change before the stable release. Everything is built in the open, so you can read the code and tell exactly where each piece stands.
     </p>
-
-    <div class="grid md:grid-cols-3 gap-8">
-      <!-- CLI Card -->
-      <div class="product-card relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-[#94C83D]"></div>
-        <h3 class="product-card-title">CLI</h3>
-        <p class="product-card-description">
-          One command-line interface across the toolchain, on your machine and in CI. Validate Arazzo documents from your terminal or CI.
-        </p>
-        <ul class="text-sm text-gray-600 mb-4 space-y-1">
-          <li>&#10003; <code class="bg-gray-100 px-1 rounded">validate</code> from the terminal</li>
-          <li>&#10003; CI-friendly exit codes</li>
-          <li>&#10003; Same engine as the libraries</li>
-        </ul>
-        <a href="{{ '/cli/' | relative_url }}" class="product-card-link">
-          Explore CLI
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-
-      <!-- Validator Card -->
-      <div class="product-card relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-[#94C83D]"></div>
-        <h3 class="product-card-title">Validator</h3>
-        <p class="product-card-description">
-          Every violation against the Arazzo specification, pinned to the exact place in the document that caused it.
-        </p>
-        <ul class="text-sm text-gray-600 mb-4 space-y-1">
-          <li>&#10003; Semantic validation &amp; linting</li>
-          <li>&#10003; LSP-compatible diagnostics</li>
-          <li>&#10003; Opt-in JSON Schema validation</li>
-          <li>&#10003; On npm as an alpha</li>
-        </ul>
-        <a href="{{ '/validator/' | relative_url }}" class="product-card-link">
-          Explore Validator
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-
-      <!-- Runner Card -->
-      <div class="product-card relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-[#94C83D]"></div>
-        <h3 class="product-card-title">Runner</h3>
-        <p class="product-card-description">
-          Executes workflows step by step: criteria evaluation, output mapping, failure actions, and retries, returning a per-step record of the run.
-        </p>
-        <ul class="text-sm text-gray-600 mb-4 space-y-1">
-          <li>&#10003; Full control-flow (goto/retry/end)</li>
-          <li>&#10003; Sub-workflows &amp; <code class="bg-gray-100 px-1 rounded">dependsOn</code></li>
-          <li>&#10003; Pluggable HTTP transport</li>
-          <li>&#10003; On npm as an alpha</li>
-        </ul>
-        <a href="{{ '/runner/' | relative_url }}" class="product-card-link">
-          Explore Runner
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
+    <div class="rounded-lg border border-gray-200 divide-y divide-gray-200 overflow-hidden shadow-sm">
+      <a href="{{ '/cli/' | relative_url }}" class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white hover:bg-gray-50 transition-colors group">
+        <span class="w-32 flex-shrink-0 font-bold text-primary-dark group-hover:text-primary-light transition-colors">CLI</span>
+        <span class="text-gray-600 flex-1">Validate Arazzo documents from the terminal and CI.</span>
+        <span class="text-sm text-gray-500 flex-shrink-0">Command line</span>
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-light flex-shrink-0 self-center transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="{{ '/validator/' | relative_url }}" class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white hover:bg-gray-50 transition-colors group">
+        <span class="w-32 flex-shrink-0 font-bold text-primary-dark group-hover:text-primary-light transition-colors">Validator</span>
+        <span class="text-gray-600 flex-1">Every violation of the Arazzo specification, pinned to the place in the document that caused it.</span>
+        <span class="text-sm text-gray-500 flex-shrink-0">Library</span>
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-light flex-shrink-0 self-center transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="{{ '/runner/' | relative_url }}" class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white hover:bg-gray-50 transition-colors group">
+        <span class="w-32 flex-shrink-0 font-bold text-primary-dark group-hover:text-primary-light transition-colors">Runner</span>
+        <span class="text-gray-600 flex-1">Run workflows step by step against live APIs, with a record of every step.</span>
+        <span class="text-sm text-gray-500 flex-shrink-0">Library</span>
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-light flex-shrink-0 self-center transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="{{ '/docs/parser/' | relative_url }}" class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white hover:bg-gray-50 transition-colors group">
+        <span class="w-32 flex-shrink-0 font-bold text-primary-dark group-hover:text-primary-light transition-colors">Parser</span>
+        <span class="text-gray-600 flex-1">Parse Arazzo documents, runtime expressions, and criterion conditions.</span>
+        <span class="text-sm text-gray-500 flex-shrink-0">Building block</span>
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-light flex-shrink-0 self-center transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a href="{{ '/docs/resolver/' | relative_url }}" class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white hover:bg-gray-50 transition-colors group">
+        <span class="w-32 flex-shrink-0 font-bold text-primary-dark group-hover:text-primary-light transition-colors">Resolver</span>
+        <span class="text-gray-600 flex-1">Dereference, bundle, and resolve the references in Arazzo documents.</span>
+        <span class="text-sm text-gray-500 flex-shrink-0">Building block</span>
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-light flex-shrink-0 self-center transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
     </div>
   </div>
 </section>
@@ -194,9 +249,9 @@ permalink: /
 <!-- Compatibility Section -->
 <section id="compatibility" class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">Compatibility</h2>
-    <p class="text-gray-600 text-center mb-10 max-w-2xl mx-auto">What the toolkit can validate and run today.</p>
-    <div class="overflow-x-auto max-w-3xl mx-auto">
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-4">Compatibility</h2>
+    <p class="text-gray-600 mb-10 max-w-2xl">What the toolkit can validate and run today.</p>
+    <div class="overflow-x-auto max-w-3xl">
       <table class="w-full text-sm text-left spec-table">
         <thead>
           <tr>
@@ -244,95 +299,79 @@ permalink: /
 </section>
 
 <!-- Roadmap Section -->
-<section id="roadmap" class="section-padding bg-white border-t border-gray-100">
+<section id="roadmap" class="section-padding bg-gray-50">
   <div class="container mx-auto px-4 max-w-6xl">
-    <h2 class="text-3xl font-extrabold text-primary-dark text-center mb-4">On the roadmap</h2>
-    <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-4">On the roadmap</h2>
+    <p class="text-gray-600 mb-12 max-w-2xl">
       None of this is built yet. It's where the toolkit is headed, published here so you can tell what exists today from what doesn't.
     </p>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">Language Service</h3>
-        <p class="text-gray-600 text-sm">An LSP-compatible library bringing Arazzo intelligence to any editor or tool: validation, completion, hover, go-to-definition, and find references.</p>
+    <div class="rounded-lg border border-gray-200 divide-y divide-gray-200 overflow-hidden shadow-sm">
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">Language Service</h3>
+        <p class="text-gray-600 flex-1">An LSP-compatible library bringing Arazzo intelligence to any editor or tool: validation, completion, hover, go-to-definition, and find references.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">Editor</h3>
-        <p class="text-gray-600 text-sm">A browser-based editor for authoring and validating Arazzo workflows with real-time feedback.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">Editor</h3>
+        <p class="text-gray-600 flex-1">A browser-based editor for authoring and validating Arazzo workflows with real-time feedback.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">VS Code Extension</h3>
-        <p class="text-gray-600 text-sm">Arazzo authoring inside VS Code: real-time validation, semantic linting, autocompletion, and live preview.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">VS Code Extension</h3>
+        <p class="text-gray-600 flex-1">Arazzo authoring inside VS Code: real-time validation, semantic linting, autocompletion, and live preview.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">GitHub Actions</h3>
-        <p class="text-gray-600 text-sm">Validation and run results reported where the work happens: violations annotated on the diff, the step-by-step run trace rendered into the job summary, and the check status driven by step outcomes rather than a single pass or fail.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">GitHub Actions</h3>
+        <p class="text-gray-600 flex-1">Validation and run results reported where the work happens: violations annotated on the diff, the step-by-step run trace rendered into the job summary, and the check status driven by step outcomes rather than a single pass or fail.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">Agent Skills</h3>
-        <p class="text-gray-600 text-sm">A set of task-shaped skills teaching agents to work the toolchain: authoring workflows from an API description, validating and fixing them, and reading a run trace when a step fails.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">Agent Skills</h3>
+        <p class="text-gray-600 flex-1">A set of task-shaped skills teaching agents to work the toolchain: authoring workflows from an API description, validating and fixing them, and reading a run trace when a step fails.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">MCP Server</h3>
-        <p class="text-gray-600 text-sm">A generic <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Model Context Protocol</a> server exposing validation and execution over any Arazzo document, so agents can check and run workflows with no build step.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">MCP Server</h3>
+        <p class="text-gray-600 flex-1">A generic <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Model Context Protocol</a> server exposing validation and execution over any Arazzo document, so agents can check and run workflows with no build step.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">MCP Compiler</h3>
-        <p class="text-gray-600 text-sm">Compiles a specific workflow into a dedicated MCP server: one typed tool per workflow, with real input schemas, for production agent deployments.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">MCP Compiler</h3>
+        <p class="text-gray-600 flex-1">Compiles a specific workflow into a dedicated MCP server: one typed tool per workflow, with real input schemas, for production agent deployments.</p>
       </div>
-      <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-[#94C83D]">
-        <h3 class="text-lg font-bold text-primary-dark mb-2">Arazzo Transformers</h3>
-        <p class="text-gray-600 text-sm">Explicit, versioned transformations for reshaping data between steps, declared as ordinary API calls the toolchain can validate rather than arbitrary code that needs a sandbox to run.</p>
+      <div class="flex flex-wrap md:flex-nowrap items-baseline gap-x-6 gap-y-1 px-6 py-5 bg-white">
+        <h3 class="w-44 flex-shrink-0 font-bold text-primary-dark">Arazzo Transformers</h3>
+        <p class="text-gray-600 flex-1">Explicit, versioned transformations for reshaping data between steps, declared as ordinary API calls the toolchain can validate rather than arbitrary code that needs a sandbox to run.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Work with us Section -->
-<section class="section-padding bg-gray-50">
+<!-- Community Section -->
+<section id="community" class="section-padding bg-white">
   <div class="container mx-auto px-4 max-w-6xl">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <h2 class="text-3xl font-extrabold text-primary-dark mb-4">Get help from the maintainers</h2>
-        <p class="text-gray-600 mb-8">
-          UseArazzo is free and open source. If you have a question, an idea, or a bug to report, Discussions is a good place to start, and you are welcome to email the maintainers directly about anything else.
+    <h2 class="text-3xl font-extrabold text-primary-dark mb-12">Community</h2>
+    <div class="grid md:grid-cols-2 gap-12">
+      <div class="flex flex-col">
+        <h3 class="text-base uppercase tracking-wider text-gray-500 mb-4">Built in the open</h3>
+        <p class="text-gray-600 mb-8 flex-1">
+          Every part of UseArazzo is open source under Apache 2.0, and it runs on your machine. Contributions, issues, and questions are welcome.
         </p>
-        <div class="flex flex-wrap gap-4">
-          <a href="mailto:info@usearazzo.com?subject=Help%20with%20UseArazzo" class="primary-cta text-white font-bold py-3 px-6 rounded inline-block">
-            Talk to the maintainers
+        <div class="flex flex-wrap gap-3">
+          <a href="https://github.com/usearazzo/arazzo-toolkit" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white border border-gray-300 text-primary-dark font-semibold py-2 px-4 rounded hover:bg-gray-100 transition-colors">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+            Star on GitHub
           </a>
-          <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="border-2 border-primary-dark text-primary-dark font-bold py-3 px-6 rounded inline-block hover:bg-gray-100 transition-colors">
-            Open a discussion
+          <a href="https://github.com/orgs/usearazzo/discussions" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white border border-gray-300 text-primary-dark font-semibold py-2 px-4 rounded hover:bg-gray-100 transition-colors">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            Join the discussions
           </a>
         </div>
       </div>
-      <div>
-        <h3 class="text-xl font-bold text-primary-dark mb-6">Free and open source</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-white rounded-lg px-4 py-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-primary-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s4.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <span class="text-sm font-semibold text-primary-dark">Open source</span>
-          </div>
-          <div class="bg-white rounded-lg px-4 py-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-primary-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-sm font-semibold text-primary-dark">Apache 2.0</span>
-          </div>
-          <div class="bg-white rounded-lg px-4 py-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-primary-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            <span class="text-sm font-semibold text-primary-dark">Runs locally</span>
-          </div>
-          <div class="bg-white rounded-lg px-4 py-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-primary-light flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
-            </svg>
-            <span class="text-sm font-semibold text-primary-dark">No lock-in</span>
-          </div>
-        </div>
+      <div class="flex flex-col">
+        <h3 class="text-base uppercase tracking-wider text-gray-500 mb-4">Get help from the maintainers</h3>
+        <p class="text-gray-600 mb-8 flex-1">
+          UseArazzo is free to use. If you have a question, an idea, or a bug to report, Discussions is a good place to start, and you are welcome to email the maintainers directly about anything else.
+        </p>
+        <a href="mailto:info@usearazzo.com?subject=Help%20with%20UseArazzo" class="self-start inline-flex items-center gap-2 bg-white border border-gray-300 text-primary-dark font-semibold py-2 px-4 rounded hover:bg-gray-100 transition-colors">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Talk to the maintainers
+        </a>
       </div>
     </div>
   </div>
