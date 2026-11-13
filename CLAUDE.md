@@ -514,6 +514,12 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   Findings: the Runner on the broken file sends the first request and throws `ResolverError` at the
   second step (the motivation for step 6); `validate` does not catch a misspelt `operationId` or a
   `$steps.<unknown>` reference; `validateURI` returns diagnostics in a different order from the CLI.
+- **The "What Is an API?" guide** (`_guides/what-is-an-api.md`, drafted by AI 2026-11-13; prose is
+  the owner's) is the bottom rung of the guide ladder in `CONCEPT-CATALOG.md`. Rules from the owner:
+  it is NOT the OpenAPI guide (OpenAPI gets its own, so no excerpt here, only a mention), and it
+  must not read as if REST were all an API is. Petstore data is mutable, so name no pet beyond the
+  two captured ones (99, and 987654321 for the 404). The captures use `curl --http1.1` so the request and response
+  blocks come from one run (plain `curl` negotiates HTTP/2, whose request has no text form).
 - **The resolving guide** (`_guides/arazzo-document-resolving.md`, drafted by AI 2026-09-22 at the
   owner's request; prose is theirs) is the parsing guide's sibling and, on the owner's instruction,
   names `@usearazzo/resolver` exactly once, as the first Next steps bullet (the parser guide's

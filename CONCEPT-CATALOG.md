@@ -36,9 +36,9 @@ a sequence of API calls, with state, branching, and success criteria
 carried across steps, is a fundamentally different thing from a single API
 call. That distinction is rarely spelled out anywhere, which makes it a
 genuine, underserved angle rather than a rehash of "what is an API"
-(deliberately not a concept here: too broad, no distinctive position, and
-it doesn't reach UseArazzo's actual audience, who already know what an API
-is).
+(not a concept of its own: too broad. Since 2026-11-13 it exists as one
+guide, the bottom rung of the ladder below, at the owner's request: build
+understanding from the bottom up).
 
 **What it covers:** What makes something a "workflow" instead of a call;
 why state and step-to-step dependencies are the hard part; why treating a
@@ -49,6 +49,26 @@ treating it as a script (something you can only run).
 toolkit, and the natural companion to the first blog post ("API Workflows
 Are Still Improvised"), which asserts the problem without fully defining
 the term.
+
+**The ladder (owner, 2026-11-13):** four definitional guides, each
+handing over to the next, the last handing over to Getting Started. Their
+job is search traffic (SEO, GEO, AEO) and understanding built from the
+bottom up, so each title is the search phrase and each FAQ carries the
+neighbouring questions.
+1. "What Is an API?" (`_guides/what-is-an-api.md`, DRAFTED 2026-11-13;
+   angle: an API is a contract, not a server; one real Petstore call taken
+   apart; a "What is a REST API?" section; a short OpenAPI introduction;
+   ends on "one call is not enough").
+2. "What Is OpenAPI?" (the contract written down). Its own guide: the
+   phrase has its own search demand, and guide 1 only introduces it. Not
+   started.
+3. "What Is an API Workflow?" (below), including how it differs from an
+   API. Not started.
+4. "What Is an Arazzo API Workflow?" (the API workflow written down, as
+   OpenAPI is the API written down; the owner's working title, website#33).
+   Not started.
+When a rung lands, point the previous guide's closing section and Next
+steps at it.
 
 **Backlog / candidate topics:**
 - **A definitional guide, "What is an API workflow?"** (`_guides/`, not a
@@ -192,9 +212,9 @@ Parsing concept as the template (guide + tutorial + reference together).
 
 ## Running
 
-**Status:** Planning-only. `@usearazzo/runner` is not yet published.
-(Its `package.json` carries `"private": true` as a publish guard only —
-never describe the source itself as private; it's public in the monorepo.)
+**Status:** Live. `@usearazzo/runner` is published as an alpha (on the site
+since 2026-10-25), with an API reference at `/docs/runner/` and a release
+post. The Getting Started guide runs a two-step workflow with it.
 
 **Why it matters:** This is where a hand-maintained script that calls an
 API step by step gets replaced with a document that can be validated,
@@ -209,7 +229,20 @@ cross-document workflow references via
 architecture diagram on `/runner/` already explains visually; content here
 can lean on that diagram as the "show the end result" step.
 
-**Backlog / candidate topics (do not draft until published):**
+**Tutorial backlog (owner, website#33, recorded 2026-11-13):** three
+tutorials, one per unit of execution, smallest first. Each still needs a
+headline that passes the search test before drafting.
+- Execute a single OpenAPI operation.
+- Execute a single Arazzo step.
+- Execute a single Arazzo workflow.
+
+**Guide backlog (owner, website#33):** a guide around Runner
+authorization: how credentials reach the API calls a workflow makes. The
+facts are already in the reference (`/docs/runner/#authentication`) and
+the `/runner/` page's Authentication section; the guide is the
+problem-space reading on top of them.
+
+**Backlog / candidate topics:**
 - **"Build Your Own Arazzo Runner" series** — the guide-stage (pre-publish)
   companion to the parser series; doesn't need the package to exist to
   write honestly, since it's about the real problems, not the package:
@@ -251,6 +284,12 @@ pitch.
 **Existing pieces:** the resolver reference page (`_reference/`), the
 resolver npm announcement post, and the "Resolving Arazzo Documents" guide
 (`_guides/`, drafted 2026-09-22; vendor-neutral, names no package).
+
+**Tutorial backlog (owner, website#33, recorded 2026-11-13):** two
+tutorials, one on dereferencing and one on bundling an Arazzo document.
+The owner's note says the CLI interface is "included already"; check what
+the published CLI offers for these before drafting, and show only commands
+that exist.
 
 **Backlog / candidate topics:**
 - "What does this workflow actually call?" (parked here from Parsing, see
