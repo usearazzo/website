@@ -526,11 +526,25 @@ registry.clear(); // drop every cached document
 |---|---|
 | `acquireEntryDocument(uri)` | Loads the Arazzo document a run starts from. Throws `InvalidEntryDocumentError` when the document is not Arazzo, and `DocumentLoadError` when it cannot be read or loaded. |
 | `acquire(uri)` | Loads any Arazzo or OpenAPI document, or returns the cached one. Throws `DocumentLoadError` when the document cannot be read or loaded. |
-| `get(uri)` | Returns a document already loaded, or `undefined`. Never loads. |
+| `canLoad(type)` | Whether some provider loads source descriptions of that `type` (`'openapi'`, `'arazzo'`). Answered without fetching anything; a source with no `type` (`undefined`) is `true`. |
 | `entryDocument` | The entry document, once acquired. |
 | `clear()` | Drops every cached document. |
 
-A relative path resolves against the working directory. The executors load each source description when a step first needs it, so you never have to acquire them yourself.
+A relative path resolves against the working directory. The executors load each source description when a step, or an expression such as `$sourceDescriptions.petstoreAPI.getPetById`, first needs it, so you never have to acquire them yourself.
+
+Each provider names the source description `type` it loads in `sourceDescriptionType`: `'openapi'` and `'arazzo'` for the built-in two. A custom provider that leaves it out may load a source of any type.
+
+### $sourceDescriptions expressions {#source-description-expressions}
+
+`$sourceDescriptions.<name>.<reference>` first looks `<reference>` up as an `operationId` or `workflowId` in the source's document, then as a field of the Source Description Object (`url`, `type`, and so on). The document is acquired from the registry: returned from its cache, or loaded.
+
+| The source's document | `$sourceDescriptions.petstoreAPI.url` | `$sourceDescriptions.petstoreAPI.getPetById` |
+|---|---|---|
+| loads (cached or not) | the URL, unless the document has an `operationId` named `url` | the Operation Object |
+| is of a `type` no provider loads (e.g. `asyncapi`) | the URL; nothing is fetched | `undefined`; nothing is fetched |
+| cannot be loaded | the URL | throws the load error, usually `DocumentLoadError` |
+
+When the document cannot be loaded, a reference other than a field throws rather than resolving to `undefined`, so a run that reads it stops with the error instead of sending a request built on a missing value.
 
 An Arazzo document from the registry also answers `resolveSourceDescriptionURI(name)`, `resolveSourceDescriptionField(name, field)`, and `sourceDescriptionURIs()`. An OpenAPI document carries an `operationIndex`, which maps an `operationId` to its JSON Pointer (see [Without a workflow](#standalone)). Both serialize with `toJSON()` and `toYAML()`.
 
@@ -923,7 +937,7 @@ Pass `workflowId`, the id of the workflow the step belongs to, and every error t
 
 Parameter and payload values may be literals, since the specification types them `Any`.
 
-A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria`, `selectActions` and `actionContext`, which are public for that reason. `evaluateCriteria` returns the `successCriteria` records; `selectActions` returns `{ matchedActions, actionCriteria }`; `actionContext(context, stepId, outputs)` returns the context with `$steps.<stepId>.outputs` replaced by `outputs`, which is what [action parameters](#action-parameters) resolve against. Both take the same optional `workflowId` as `execute`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
+A step that calls a workflow is not an operation step, and `execute` throws on it. `WorkflowExecutor` runs those itself, through `evaluateCriteria`, `selectActions` and `actionContext`, which are public for that reason. `evaluateCriteria` resolves to the `successCriteria` records; `selectActions` resolves to `{ matchedActions, actionCriteria }`; `actionContext(context, stepId, outputs)` returns the context with `$steps.<stepId>.outputs` replaced by `outputs`, which is what [action parameters](#action-parameters) resolve against. Both take the same optional `workflowId` as `execute`. `forDocument(document)` returns a sibling executor bound to another Arazzo document.
 
 ### Request body payloads {#request-body}
 
@@ -1220,9 +1234,9 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | `CriterionError` | A criterion is malformed as written: a missing `condition`, an unknown `type`, an unsupported expression `version`, a `context` that is missing or not an expression. A condition that cannot be evaluated is not an error; the criterion is unmet. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
 | `InvalidEntryDocumentError` | The entry document is not Arazzo, or a registry passed to `ArazzoRunner` backs a different entry document. | `uri` |
-| `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run. The underlying error is on `cause`. | `uri` |
+| `DocumentLoadError` | A document cannot be read or loaded: a missing file, an HTTP error, an unresolvable reference. Applies to the entry document and to a source description loaded during a run, including one a `$sourceDescriptions` expression loads. The underlying error is on `cause`. | `uri` |
 
-`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate, and `CriterionEvaluator` turns it into an unmet criterion: `evaluate` returns a `CriterionOutcome`, `{ met, error? }`, whose `error` is that `CriterionEvaluationError`. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. It carries the same reasons as `CriterionError`, so `CriterionEvaluationError.InvalidRegex` is `CriterionError.InvalidRegex`.
+`CriterionEvaluationError` extends `CriterionError`. The criterion evaluators (`RegexCriterionEvaluator`, `JSONPathCriterionEvaluator`, `XPathCriterionEvaluator`, `SimpleCriterionEvaluator`) throw it for a condition they cannot evaluate (the asynchronous `SimpleCriterionEvaluator` rejects with it), and `CriterionEvaluator` turns it into an unmet criterion: `evaluate` resolves to a `CriterionOutcome`, `{ met, error? }`, whose `error` is that `CriterionEvaluationError`. Call an evaluator directly and you catch it yourself; an evaluator you inject through `CriterionEvaluatorOptions` throws it to fail a criterion, and anything else it throws propagates. It carries the same reasons as `CriterionError`, so `CriterionEvaluationError.InvalidRegex` is `CriterionError.InvalidRegex`.
 
 `ExecutionError`, `ResolverError`, `CriterionError`, and `RuntimeExpressionError` list the reasons they carry as static fields on the class: `ExecutionError.WorkflowNotFound` is `'workflow-not-found'`. Compare `error.reason` against the static rather than a string literal; in TypeScript, `reason` is typed as the class's own union (`ExecutionErrorReason`, `ResolverErrorReason`, `CriterionErrorReason`, `RuntimeExpressionErrorReason`), so a misspelled reason does not compile. The tables below list every reason.
 
