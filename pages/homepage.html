@@ -6,16 +6,16 @@ permalink: /
 faq:
   - question: "What is UseArazzo?"
     answer: |
-      UseArazzo is a free, open-source JavaScript and TypeScript toolkit for Arazzo, the OpenAPI Initiative's specification for multi-step API workflows. It validates Arazzo documents, runs workflows against live APIs, and returns a trace of every step. It ships as a [CLI](/cli/), a [Validator](/validator/), and a [Runner](/runner/), with a parser and a resolver underneath.
+      UseArazzo is a free, open-source JavaScript and TypeScript toolkit for Arazzo, the OpenAPI Initiative's specification for multi-step API workflows. It validates Arazzo documents, runs workflows against live APIs, and returns a trace of every step. It ships as a [CLI](/cli/), a [Validator](/validator/), and a [Runner](/runner/).
   - question: "What is Arazzo, and when is an OpenAPI description not enough?"
     answer: |
-      Arazzo is the OpenAPI Initiative's specification for multi-step API workflows. OpenAPI describes each operation on its own. Arazzo describes how to use them together: which calls to make in which order, how the output of one call feeds the next, and what counts as success.
+      Arazzo is the OpenAPI Initiative's specification for multi-step API workflows. OpenAPI describes each operation on its own, which is not enough once a task takes more than one call. Arazzo describes how to use the operations together: which calls to make in which order, how the output of one call feeds the next, and what counts as success.
   - question: "How do I validate an Arazzo document?"
     answer: |
-      Run `npx @usearazzo/cli validate workflow.arazzo.yaml`. It prints every problem with its location, severity, and rule code, and exits with `1` on an error, so it works as a CI step as is. In code, `validateURI` from `@usearazzo/validator` returns the same problems as data. The checks cover the Arazzo document itself, so an `operationId` that is missing from the OpenAPI description is not reported. The [getting started guide](/docs/guides/getting-started/) walks through it.
+      Run `npx @usearazzo/cli validate workflow.arazzo.yaml`. It prints every problem with its location and exits with `1` on an error, so it works in CI as is. In code, `validateURI` from `@usearazzo/validator` returns the same problems as data. An `operationId` that is missing from the OpenAPI description is not reported.
   - question: "How do I run an Arazzo workflow?"
     answer: |
-      Install `@usearazzo/runner`, then call `ArazzoRunner.load(uri)` and `runner.execute(workflowId, { inputs })`. The result carries the final status, the workflow outputs, and a trace of every step. Success criteria, `goto`, `retry`, `end`, sub-workflows, and `dependsOn` are supported. The Runner is a library: the CLI has no run command. The [Runner API reference](/docs/runner/) covers every option.
+      Install `@usearazzo/runner`, then call `ArazzoRunner.load(uri)` and `runner.execute(workflowId, { inputs })`. The result carries the final status, the outputs, and a trace of every step. The Runner is a library: the CLI has no run command. See the [Runner API reference](/docs/runner/).
   - question: "How do I run an Arazzo workflow in CI?"
     answer: |
       Write a short Node.js script and run it as a CI step. Load the document with `ArazzoRunner.load`, call `execute`, and set the exit code from the result: `process.exitCode = result.status === 'completed' ? 0 : 1`. The [getting started guide](/docs/guides/getting-started/#check-before-run) builds a complete script that validates first and then runs.
@@ -24,13 +24,13 @@ faq:
       Yes. Five packages are on npm: `@usearazzo/cli`, `@usearazzo/validator`, `@usearazzo/runner`, `@usearazzo/parser`, and `@usearazzo/resolver`. They are for JavaScript and TypeScript and need Node.js 20.10 or newer.
   - question: "Is UseArazzo production ready?"
     answer: |
-      Yes. The packages are alphas, and that label describes the API surface, which may still change before the stable release. It does not describe quality: the test suite runs on every pull request and every night, and it includes end-to-end workflow runs against a real API server. Pin an exact version and upgrade when you choose to.
+      Yes. The packages are alphas because the API may still change before the stable release, not because of quality. Tests run on every pull request and every night, and each pull request also runs workflows end to end against a real API server. Pin an exact version.
   - question: "Which Arazzo and OpenAPI versions are supported?"
     answer: |
       Arazzo 1.0.0, 1.0.1, and 1.1.0 workflow documents validate and run, in JSON and YAML. Source descriptions can be OpenAPI 2.0, 3.0.x, or 3.1.x documents, or other Arazzo documents. OpenAPI 3.2.x and AsyncAPI source descriptions are not supported. The [compatibility table](/#compatibility) has every row.
   - question: "How does UseArazzo authenticate against the APIs a workflow calls?"
     answer: |
-      With credentials you supply, because Arazzo itself says nothing about them. Pass them per API in `executeOptions`: `{ petstoreAPI: { securities: { authorized: { api_key: 'KEY' } } } }`. API keys, bearer tokens, basic auth, and OAuth tokens are covered. A `requestInterceptor` handles credentials computed per request. The Runner runs no OAuth flow. See [Authentication](/docs/runner/#authentication) in the Runner API reference.
+      With credentials you supply per API in `executeOptions`: `{ petstoreAPI: { securities: { authorized: { api_key: 'KEY' } } } }`. API keys, bearer tokens, basic auth, and OAuth tokens are covered, and a `requestInterceptor` handles computed ones. The Runner runs no OAuth flow. See [Authentication](/docs/runner/#authentication) in the Runner API reference.
   - question: "Do my API keys or data leave my machine?"
     answer: |
       Only to the APIs your workflow calls. UseArazzo runs on your own machine, with no account and no hosted service in between. A credential is sent only to the API it belongs to, never to another API in the same workflow or to a host that only serves a document.
@@ -39,13 +39,13 @@ faq:
       Yes. Every package is free, open source, and licensed under Apache 2.0. All of the source is in the [arazzo-toolkit repository](https://github.com/usearazzo/arazzo-toolkit) on GitHub.
   - question: "Who is behind UseArazzo?"
     answer: |
-      Vladimír Gorej and Francesco Tumanischvili. Both were core contributors to the Swagger open-source tools (Swagger UI, Swagger Editor, Swagger Core, Swagger Codegen), and they contribute to the API specifications themselves, Arazzo among them. The toolkit is built on SpecLynx, their own API tooling foundation. The [About page](/about/) has the track record.
+      Vladimír Gorej and Francesco Tumanischvili, former core contributors to the Swagger open-source tools and contributors to the Arazzo specification. The toolkit is built on SpecLynx, their own API tooling foundation. The [About page](/about/) has the track record.
   - question: "Can AI agents use UseArazzo?"
     answer: |
-      Yes, through the CLI and the libraries. `npx @usearazzo/cli validate --json` prints the problems as JSON and sets an exit code, so an agent can check a workflow it wrote and fix what is reported. The Runner executes a workflow exactly as the document describes it, so an agent chooses which workflow to run instead of improvising the calls inside it. There is no MCP server today.
+      Yes. `npx @usearazzo/cli validate --json` prints problems as JSON and sets an exit code, so an agent can check and fix a workflow it wrote. The Runner executes a workflow exactly as written, so an agent chooses which workflow to run instead of improvising the calls. There is no MCP server today.
   - question: "How is UseArazzo different from other Arazzo tools?"
     answer: |
-      UseArazzo is built from small parts that also work alone. The Runner runs a whole workflow, a single step, or a single OpenAPI operation. The HTTP stack and each of the Runner's [four building blocks](/docs/runner/#architecture) can be replaced. Everything is a library as well as a CLI, so problems and step traces come back as data. It follows the Arazzo specification as closely as it can, with no private extensions. The [Arazzo Ecosystem](/ecosystem/#tools) page lists the other tools.
+      UseArazzo is built from small parts that also work alone. The Runner runs a whole workflow, a single step, or a single OpenAPI operation, and its HTTP stack can be replaced. Problems and step traces come back as data. It follows the Arazzo specification as closely as it can, with no private extensions. The [Arazzo Ecosystem](/ecosystem/#tools) page lists the other tools.
 ---
 
 <main>
