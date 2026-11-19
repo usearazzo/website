@@ -77,6 +77,12 @@ The entire toolkit (CLI, Validator, Runner, plus the lower-level parser and reso
 - The standard is the product: Arazzo implemented exactly as specified, with fixes contributed back to the specification instead of private extensions only our tools can read
 - Portable artifacts: plain Arazzo documents in your repository, API workflows keep working even without the toolkit
 
+## Frequently asked questions
+{% assign home = site.pages | where: "permalink", "/" | first %}{% capture faq_link_prefix %}]({{ site.url }}{{ site.baseurl }}/{% endcapture %}{% for item in home.faq %}
+### {{ item.question }}
+
+{{ item.answer | replace: '](/', faq_link_prefix | strip }}
+{% endfor %}
 ## On the roadmap
 
 None of these are built yet. They are planned, not shipping:
