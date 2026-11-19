@@ -252,6 +252,28 @@ facts are already in the reference (`/docs/runner/#authentication`) and
 the `/runner/` page's Authentication section; the guide is the
 problem-space reading on top of them.
 
+**Observability backlog (owner, recorded 2026-11-19):** the runner's
+event stream shipped in 1.0.1-alpha.34 (toolkit#355, #356, #362; reference
+at `/docs/runner/#observability`). Three pieces, in this order, one job
+each. Each still needs a headline that passes the search test before
+drafting.
+1. **Blog post, with the release.** The announcement: until now a run
+   reported only at the end, which left a failing workflow in CI, or an
+   agent's run, opaque. What shipped: events from every building block,
+   `Redactor` for credentials, and document locations (URI, JSON Pointer,
+   LSP range with `sourceMap`). One short example, then what comes next:
+   the logging, stream, and OpenTelemetry adapters (toolkit#85).
+2. **Tutorial, next.** One use case, runner only, verb-first steps: debug
+   a failing workflow with runner events. Break the Petstore workflow,
+   attach an observer writing redacted JSON lines, find the failing
+   criterion from its `values`, open it in the editor from
+   `location.range`, then turn on `captureBodies` to see the response
+   behind it. Every feature appears for a reason, not as a tour.
+3. **Guide, after the OpenTelemetry adapter ships.** The problem-space
+   reading: observability for API workflows (what to log, events versus
+   traces, keeping credentials out of telemetry). It waits for the adapter
+   so it can show spans instead of describing them.
+
 **Backlog / candidate topics:**
 - **"Build Your Own Arazzo Runner" series** — the guide-stage (pre-publish)
   companion to the parser series; doesn't need the package to exist to
