@@ -5,6 +5,7 @@ summary: "What an API is, and what a REST API is, shown with one real call."
 lead: "An API is how one piece of software asks another for something. This guide explains what that means, what makes an API a REST API, and takes one real call apart, piece by piece."
 order: 2
 date: 2026-11-13
+last_modified_at: 2026-11-19
 image:
   path: /assets/images/guides/what-is-an-api.png
   webp: /assets/images/guides/what-is-an-api.webp
@@ -87,7 +88,7 @@ faq:
       An API key is a secret string that tells an API who is calling. The caller sends it with every request, usually in a header. The API uses it to decide whether the call is allowed and to count how many calls that caller has made. It works like a password for a program, so keep it out of source code and public repositories.
   - question: "What is an API description?"
     answer: |
-      An API description is the API's contract written down in a form a program can read. It is also called an API definition or an API specification. It lists every operation, the parameters each one takes, and the responses each one can give. For REST APIs the common format is [OpenAPI](https://spec.openapis.org/oas/latest.html). Documentation, tests, and ready-made code for calling the API can all be generated from the same description.
+      An API description is the API's contract written down in a form a program can read. It is also called an API definition or an API specification. It lists every operation, the parameters each one takes, and the responses each one can give. For REST APIs the common format is [OpenAPI](https://spec.openapis.org/oas/latest.html). Documentation, tests, and ready-made code for calling the API can all be generated from the same description. [What Is OpenAPI?](/docs/guides/what-is-openapi/) shows a real one.
   - question: "What is an API workflow?"
     answer: |
       An API workflow is a sequence of API calls with a purpose: log in, then create an order, then check that it went through. It differs from a single call in what it has to carry. Something from one answer goes into the next request, each call needs a test for whether it succeeded, and the order matters. An API description covers the calls one at a time, not the sequence. [Arazzo](https://spec.openapis.org/arazzo/latest.html) is the OpenAPI Initiative's format for writing the sequence down. UseArazzo is one option for checking and running Arazzo documents, and its [getting started guide](/docs/guides/getting-started/) walks through a first one.
@@ -293,7 +294,7 @@ Look back at what happened. Pet 99 gave us a `200` and a pet. The pet that does 
 
 Every API has such a contract, local ones too. For `JSON.parse` it is short: give it text that is valid JSON and you get the value back. Give it text that is not, and it throws a `SyntaxError`.
 
-A contract can be written down, in a form that both people and programs can read. Such a document is called an **API description**. For REST APIs the common format is [OpenAPI](https://spec.openapis.org/oas/latest.html), and the Petstore publishes one.
+A contract can be written down, in a form that both people and programs can read. Such a document is called an **API description**. For REST APIs the common format is [OpenAPI](https://spec.openapis.org/oas/latest.html), and the Petstore publishes one. [What Is OpenAPI?]({{ '/docs/guides/what-is-openapi/' | relative_url }}) takes it apart.
 
 It's important to realize what a contract does not promise:
 
@@ -319,6 +320,6 @@ So there it is. One API call is a request, a response, and a contract that says 
 ## Next steps {#next-steps}
 
 - Try it yourself. The [Swagger Petstore](https://petstore3.swagger.io/) page has a "Try it out" button on every operation, so you can send the calls from this guide without installing anything.
-- Read a contract. The Petstore's [API description](https://petstore3.swagger.io/api/v3/openapi.json) is a small, complete one, written in OpenAPI.
+- Read a contract. [What Is OpenAPI?]({{ '/docs/guides/what-is-openapi/' | relative_url }}) is the next guide: it finds the call from this page in the Petstore's [API description](https://petstore3.swagger.io/api/v3/openapi.json), piece by piece.
 - [API Workflows Are Still Improvised]({{ '/blog/api-workflows-are-still-improvised/' | relative_url }}) picks up where this guide stops: what happens when the order of the calls is written down nowhere.
 - Ready to describe a sequence of calls as a document, check it, and run it? [Getting Started with UseArazzo]({{ '/docs/guides/getting-started/' | relative_url }}) does that with the two calls from the last section: list the pets, then fetch one.

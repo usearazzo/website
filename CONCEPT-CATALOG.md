@@ -59,9 +59,11 @@ neighbouring questions.
    angle: an API is a contract, not a server; one real Petstore call taken
    apart; a "What is a REST API?" section; a short OpenAPI introduction;
    ends on "one call is not enough").
-2. "What Is OpenAPI?" (the contract written down). Its own guide: the
-   phrase has its own search demand, and guide 1 only introduces it. Not
-   started.
+2. "What Is OpenAPI?" (`_guides/what-is-openapi.md`, DRAFTED 2026-11-19;
+   angle: the contract written down; the call from guide 1 found piece by
+   piece in the Petstore's own description; an "OpenAPI and Swagger"
+   section; a versions table; ends on "it describes operations one at a
+   time, and `operationId` is the hook a sequence hangs on").
 3. "What Is an API Workflow?" (below), including how it differs from an
    API. Not started.
 4. "What Is an Arazzo API Workflow?" (the API workflow written down, as

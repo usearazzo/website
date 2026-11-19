@@ -524,6 +524,22 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   must not read as if REST were all an API is. Petstore data is mutable, so name no pet beyond the
   two captured ones (99, and 987654321 for the 404). The captures use `curl --http1.1` so the request and response
   blocks come from one run (plain `curl` negotiates HTTP/2, whose request has no text form).
+- **The "What Is OpenAPI?" guide** (`_guides/what-is-openapi.md`, drafted by AI 2026-11-19; prose is
+  the owner's) is rung 2 of the ladder, `order: 3`. It finds guide 1's call (`GET /pet/99`) in the
+  Petstore's own description, captured 2026-11-19 and saved as
+  `assets/guides/what-is-openapi/petstore.openapi.json` (as served) and `.yaml` (PyYAML conversion,
+  `sort_keys=False`); the counts on the page (13 paths, 19 operations, 6 schemas) come from that file.
+  The excerpts are trimmed (tags, XML) and the page says so. The owner approved a full "OpenAPI and
+  Swagger" section (`#swagger`): Swagger as the format's first name and a tool family, the donor
+  never named. Dates come from the specification's own revision history (3.2.0). The body names
+  neither Arazzo nor UseArazzo; both appear only in the last FAQ answer and Next steps. Guide 1 links
+  to it from its contract section, Next steps, and the "API description" FAQ answer. The FAQ answer
+  "How do I check that an OpenAPI description is valid?" names the SpecLynx CLI
+  (`npx @speclynx/cli validate`, run against 1.5.4 on 2026-11-19) as "one option". This is a
+  temporary exception to "SpecLynx only on About" (owner, 2026-11-19): **replace it with the
+  UseArazzo CLI once `usearazzo validate` handles OpenAPI documents.** The page says nothing about
+  that plan. When rung 3
+  ("What Is an API Workflow?") lands, point this guide's `#limits` section and Next steps at it.
 - **The resolving guide** (`_guides/arazzo-document-resolving.md`, drafted by AI 2026-09-22 at the
   owner's request; prose is theirs) is the parsing guide's sibling and, on the owner's instruction,
   names `@usearazzo/resolver` exactly once, as the first Next steps bullet (the parser guide's
