@@ -159,7 +159,7 @@ console.log(`\n${result.status} in ${Math.round(result.durationMs)} ms`);</code>
         </div>
         <div class="product-card">
           <h3 class="product-card-title">A trace, not a verdict</h3>
-          <p class="product-card-description">Every step in run order: whether it passed, which action was picked, how many attempts it took, and how long it ran. A failed step is a result you read, not an exception you catch.</p>
+          <p class="product-card-description">Every step in run order: whether it passed, which action was picked, how many attempts it took, and how long it ran. A failed step is a result you read, not an exception you catch. Pass an <a href="{{ '/docs/runner/#observability' | relative_url }}" class="text-primary-light underline hover:no-underline">observer</a> and the same story arrives as events while the run happens, every request included.</p>
         </div>
       </div>
     </section>
@@ -379,6 +379,15 @@ const runner = await ArazzoRunner.load(uri, {
         </div>
         <div class="py-4">
           <dt>
+            <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-15">
+              <span>How do I log or watch what the Runner does during a run?</span>
+              <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
+            </button>
+          </dt>
+          <dd id="faq-answer-15" class="faq-answer mt-3"><p class="text-gray-700">Pass an <code class="bg-gray-100 px-1 rounded">observer</code> to <code class="bg-gray-100 px-1 rounded">ArazzoRunner.load</code>. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through <code class="bg-gray-100 px-1 rounded">new Redactor().event(event)</code> before you log it. <code class="bg-gray-100 px-1 rounded">captureBodies: true</code> adds request and response bodies. See <a href="{{ '/docs/runner/#observability' | relative_url }}" class="text-primary-light underline hover:no-underline">Observing a run</a> in the API reference.</p></dd>
+        </div>
+        <div class="py-4">
+          <dt>
             <button type="button" class="faq-toggle group flex w-full items-center justify-between gap-4 text-left font-semibold text-primary-dark" aria-expanded="false" aria-controls="faq-answer-3">
               <span>Does the Runner handle authentication?</span>
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
@@ -502,6 +511,14 @@ const runner = await ArazzoRunner.load(uri, {
           "acceptedAnswer": {
             "@type": "Answer",
             "text": "Pass an AbortSignal as the signal option of execute. AbortSignal.timeout(5000) gives the whole run five seconds. The signal is checked before each step and each retry, and it cancels the request in flight. A cancelled run throws an ExecutionError with the reason aborted. It does not come back as a failed result. See Cancellation in the API reference."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I log or watch what the Runner does during a run?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pass an observer to ArazzoRunner.load. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through new Redactor().event(event) before you log it. captureBodies: true adds request and response bodies. See Observing a run in the API reference."
           }
         },
         {

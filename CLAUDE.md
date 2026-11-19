@@ -53,6 +53,17 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   The reference's Document retrieval section opens with the two HTTP stacks (API calls: `httpClient`,
   global `fetch`; documents: ApiDOM reference's Axios resolver, 15 s timeout, five redirects, a
   per-process cache of six documents for two minutes) and lists `resolverOpts` (`#retrieval-options`).
+- **Observability, 2026-11-19 (toolkit#355, #356, #362, released as 1.0.1-alpha.34).** The runner
+  reference has an `#observability` section (the toolkit README links to it) with `#observer`,
+  `#events`, `#request-events`, `#redactor`, and `#locations`, plus `captureBodies`, `observer`,
+  and `sourceMap` rows in the option tables and `location` / `values` on the result records ("Records
+  never hold request or response data" was dropped: `values` holds what a criterion read, a whole
+  body only as `[body]`). Every output was captured from the alpha.34 code on 2026-11-19 against
+  `swaggerapi/petstore3:1.0.28`, run on port 8081 because 8080 was taken on the capture machine;
+  the page shows 8080. Findings: an `async` observer that rejects is ignored by the runner, so Node's
+  unhandled-rejection handling ends the process (the page says to catch); the Petstore serves its
+  OpenAPI document on one line, so operation ranges sit on line 0. `/runner/` mentions the observer
+  in its trace card and in one FAQ entry; `llms.txt` has an Observability bullet.
 - **Product page structure, 2026-11-11 (owner's requests).** `/runner/` has an `#authentication`
   section telling the fallback order (execute options, request interceptor, custom HTTP client)
   with sidebar sub-entries; `/validator/` has "From Your Code" (`#code`) beside "From the
@@ -60,7 +71,7 @@ Three products (the toolkit is pre-1.0; APIs may change before the stable releas
   Installation; `/cli/` lists its command groups as sidebar sub-entries. Sidebar sub-entries use the
   reference layout's markup (`<div class="pl-3 space-y-2 mt-2">`, links `text-gray-500 text-xs`).
   The validator reference intro points at the CLI. FAQs were extended with practical questions
-  (Runner 14, CLI 11, Validator 9 entries), every answer run against the npm copies first; the
+  (Runner 15, CLI 11, Validator 9 entries; the Runner's 15th, on logging a run, added 2026-11-19), every answer run against the npm copies first; the
   owner asks for these as "how do I" questions (server, server variables, CI, exit codes).
 
 **All five packages are on npm** (parser 2026-09-08; resolver 2026-09-18; validator 2026-10-04; cli 2026-10-10; runner by 2026-10-25). For any future package, verify with
