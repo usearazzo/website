@@ -384,7 +384,7 @@ const runner = await ArazzoRunner.load(uri, {
               <span class="text-primary-light text-xl leading-none transition-transform group-aria-expanded:rotate-45" aria-hidden="true">+</span>
             </button>
           </dt>
-          <dd id="faq-answer-15" class="faq-answer mt-3"><p class="text-gray-700">Pass an <code class="bg-gray-100 px-1 rounded">observer</code> to <code class="bg-gray-100 px-1 rounded">ArazzoRunner.load</code>. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through <code class="bg-gray-100 px-1 rounded">new Redactor().event(event)</code> before you log it. <code class="bg-gray-100 px-1 rounded">captureBodies: true</code> adds request and response bodies. See <a href="{{ '/docs/runner/#observability' | relative_url }}" class="text-primary-light underline hover:no-underline">Observing a run</a> in the API reference.</p></dd>
+          <dd id="faq-answer-15" class="faq-answer mt-3"><p class="text-gray-700">Pass an <code class="bg-gray-100 px-1 rounded">observer</code> to <code class="bg-gray-100 px-1 rounded">ArazzoRunner.load</code>. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through <code class="bg-gray-100 px-1 rounded">new Redactor().event(event)</code> before you log it. <code class="bg-gray-100 px-1 rounded">captureBodies: true</code> adds request and response bodies. For a logger, <code class="bg-gray-100 px-1 rounded">loggingObserver</code> from <code class="bg-gray-100 px-1 rounded">@usearazzo/runner/observability/logging</code> writes every event as a masked record with a level, through pino, winston, or the console. See <a href="{{ '/docs/runner/#observability' | relative_url }}" class="text-primary-light underline hover:no-underline">Observing a run</a> in the API reference.</p></dd>
         </div>
         <div class="py-4">
           <dt>
@@ -518,7 +518,7 @@ const runner = await ArazzoRunner.load(uri, {
           "name": "How do I log or watch what the Runner does during a run?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Pass an observer to ArazzoRunner.load. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through new Redactor().event(event) before you log it. captureBodies: true adds request and response bodies. See Observing a run in the API reference."
+            "text": "Pass an observer to ArazzoRunner.load. It is called with an event for every workflow, step, attempt, criterion, and selected action, and for every document load and request, as the run happens. Requests carry what was sent, credentials included, so pass each event through new Redactor().event(event) before you log it. captureBodies: true adds request and response bodies. For a logger, loggingObserver from @usearazzo/runner/observability/logging writes every event as a masked record with a level, through pino, winston, or the console. See Observing a run in the API reference."
           }
         },
         {

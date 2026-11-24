@@ -76,6 +76,10 @@ toc:
         title: Redactor
       - id: locations
         title: Document locations
+      - id: adapters
+        title: Adapters
+      - id: instrument
+        title: Process-wide hooks
   - id: step-executor
     title: StepExecutor
     children:
@@ -718,7 +722,7 @@ result.steps[0].successCriteria;
 // ]
 ```
 
-A whole body read by a criterion (`$response.body`, `$request.body`) is recorded as the placeholder `[body]`, so a record never holds a body. A value read from inside one, such as `$response.body#/token`, is recorded as it is, and so is an input such as `$inputs.password`. The `criterion-evaluated` event carries the same record, and [`Redactor`](#redactor) masks such values by the name the expression reads.
+A whole body read by a criterion (`$response.body`, `$request.body`) is recorded as the placeholder `[body]`, so a record never holds a body. A value read from inside one, such as `$response.body#/token`, is recorded as it is, and so is an input such as `$inputs.password`. The `criterion:evaluated` event carries the same record, and [`Redactor`](#redactor) masks such values by the name the expression reads.
 
 Every criterion in a list is evaluated, not only up to the first unmet one, so a single run shows every reason a step failed. The regex and JSONPath messages include the engine's explanation; XPath messages name the condition only, because a query can put values from the response into its own error.
 
@@ -909,7 +913,7 @@ A client that ignores the signal costs one request in flight; the run still stop
 
 ## Observing a run {#observability}
 
-Pass an `observer` and the runner tells you what it is doing while it does it: every workflow, step, attempt, criterion, and selected action, and under them every document it loads and every request it sends. Use it for progress output, logs, traces, or to see why a workflow fails.
+Pass an `observer` and the runner tells you what it is doing while it does it: every workflow, step, attempt, criterion, and selected action, and under them every document it loads and every request it sends. Use it for progress output, logs, traces, or to see why a workflow fails. [Adapters](#adapters) turn the events into log records, a stream, or OpenTelemetry traces.
 
 ```js
 const runner = await ArazzoRunner.load(
@@ -920,30 +924,30 @@ await runner.execute('authenticateAndOrderPet', { inputs, executeOptions });
 ```
 
 ```text
-document-load-start https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
-document-load-settled https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
-workflow-start authenticateAndOrderPet
-workflow-normalize-start authenticateAndOrderPet
-workflow-normalize-settled authenticateAndOrderPet
-step-start loginUser
-step-attempt loginUser
-document-load-start https://petstore3.swagger.io/api/v3/openapi.json
-document-load-settled https://petstore3.swagger.io/api/v3/openapi.json
-openapi-operation-normalize-start
-openapi-operation-normalize-settled
-openapi-operation-assembled
-openapi-operation-request-start
-openapi-operation-request-settled
-criterion-evaluated loginUser
-action-selected loginUser
-step-settled loginUser
-step-start findAvailablePets
+document:load:start https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
+document:load:settled https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
+workflow:start authenticateAndOrderPet
+workflow:normalize:start authenticateAndOrderPet
+workflow:normalize:settled authenticateAndOrderPet
+step:start loginUser
+step:attempt loginUser
+document:load:start https://petstore3.swagger.io/api/v3/openapi.json
+document:load:settled https://petstore3.swagger.io/api/v3/openapi.json
+openapi:operation:normalize:start
+openapi:operation:normalize:settled
+openapi:operation:assembled
+openapi:operation:request:start
+openapi:operation:request:settled
+criterion:evaluated loginUser
+action:selected loginUser
+step:settled loginUser
+step:start findAvailablePets
 ...
-step-settled verifyOrderConfirmation
-workflow-settled authenticateAndOrderPet
+step:settled verifyOrderConfirmation
+workflow:settled authenticateAndOrderPet
 ```
 
-The OpenAPI document is loaded when the first step needs it, so its load sits inside `loginUser`. The later steps repeat the pattern from `step-start` on, with one `criterion-evaluated` per criterion.
+The OpenAPI document is loaded when the first step needs it, so its load sits inside `loginUser`. The later steps repeat the pattern from `step:start` on, with one `criterion:evaluated` per criterion.
 
 ### The observer {#observer}
 
@@ -952,10 +956,10 @@ The observer is a function that receives each event. `ArazzoRunner` hands the on
 - **It is called synchronously and never awaited**, so it cannot slow a run down or reorder it.
 - **An observer that throws aborts the run**: `execute` rejects with its error.
 - **A returned promise is ignored**, rejection included. An `async` observer must catch its own errors, or Node reports an unhandled rejection, which by default ends the process.
-- **Each event is a frozen copy** of its data, so changing it cannot reach the run. The one shared object is the `action` of `action-selected`, which is the document's own element: read it, never change it.
-- **Without an observer, no event is built**, so an unobserved run does no extra work.
+- **Each event is a frozen copy** of its data, so changing it cannot reach the run. The one shared object is the `action` of `action:selected`, which is the document's own element: read it, never change it.
+- **Without an observer, no event is built**, so an unobserved run does no extra work. Observers registered for the whole process with [`instrument`](#instrument) count too.
 
-Events carry no level or severity. The `document-*`, `workflow-normalize-*`, and `openapi-operation-*` events describe the machinery under a run, the detail a debug log would show; deciding what to log is up to you.
+Events carry no level or severity. The `document:*`, `workflow:normalize:*`, and `openapi:operation:*` events describe the machinery under a run, the detail a debug log would show; deciding what to log is up to you.
 
 ### Events {#events}
 
@@ -969,31 +973,31 @@ Step events add `stepId`.
 
 | Event | Fired when | Fields |
 |---|---|---|
-| `workflow-start` | A workflow invocation begins. | `via` (`root`, `step`, `dependsOn`, `retry`, `goto`), `location` |
-| `workflow-normalize-start`, `-settled` | The workflow is normalized before its first run in this `execute` call. | `location` |
-| `dependency-start` | A `dependsOn` prerequisite is about to be satisfied. | `dependency` (`reference`, `workflowId`, `documentURI`), `location` |
-| `dependency-settled` | The prerequisite was satisfied, or failed. | `dependency`, `memoized`, `settledStatus` |
-| `step-start` | A step begins. | `location` |
-| `step-attempt` | One attempt at the step begins. | `attempt` |
-| `criterion-evaluated` | One criterion was evaluated, in list order, success criteria first. | `attempt`, `kind` (`success`, `action`), `criterion`, `location` |
-| `action-selected` | The attempt resolved to an action, or to none. | `attempt`, `transition`, `action` and `location` when an action was selected |
-| `retry-wait` | The run waits out a `retryAfter` (positive delays only). | `attempt`, `delayMs` |
-| `retry-reference-start`, `-settled` | A `retry` action's `stepId` or `workflowId` reference runs. | `attempt`, `kind`, `id`, `location` (start), `successful` (settled) |
-| `step-settled` | The step's retries are done and its terminal action is selected. | `successful`, `attempts` |
-| `workflow-settled` | The workflow produced its result. | `status`, `settledStatus`, `outputs` |
-| `document-load-start`, `-settled` | The registry loads a document it has not cached. | `uri` |
-| `openapi-operation-normalize-start`, `-settled` | An operation is dereferenced and inherits its path-level fields. | `operation`, `step`, `runId`, `location` |
-| `openapi-operation-assembled` | The operation is assembled into the document the request is built from. | the same |
-| `openapi-operation-request-start` | The request is about to be sent. | the same, plus `request` |
-| `openapi-operation-request-settled` | The response was received and its body read. | the same, plus `response` |
+| `workflow:start` | A workflow invocation begins. | `via` (`root`, `step`, `dependsOn`, `retry`, `goto`), `location` |
+| `workflow:normalize:start`, `:settled` | The workflow is normalized before its first run in this `execute` call. | `location` |
+| `dependency:start` | A `dependsOn` prerequisite is about to be satisfied. | `dependency` (`reference`, `workflowId`, `documentURI`), `location` |
+| `dependency:settled` | The prerequisite was satisfied, or failed. | `dependency`, `memoized`, `settledStatus` |
+| `step:start` | A step begins. | `location` |
+| `step:attempt` | One attempt at the step begins. | `attempt` |
+| `criterion:evaluated` | One criterion was evaluated, in list order, success criteria first. | `attempt`, `kind` (`success`, `action`), `criterion`, `location` |
+| `action:selected` | The attempt resolved to an action, or to none. | `attempt`, `transition`, `action` and `location` when an action was selected |
+| `retry:wait` | The run waits out a `retryAfter` (positive delays only). | `attempt`, `delayMs` |
+| `retry:reference:start`, `:settled` | A `retry` action's `stepId` or `workflowId` reference runs. | `attempt`, `kind`, `id`, `location` (start), `successful` (settled) |
+| `step:settled` | The step's retries are done and its terminal action is selected, or it threw. | `successful`, `attempts`, `error` when it threw |
+| `workflow:settled` | The workflow produced its result, or threw. | `status`, `settledStatus`, `outputs`, `error` when it threw |
+| `document:load:start`, `:settled` | The registry loads a document it has not cached. | `uri` |
+| `openapi:operation:normalize:start`, `:settled` | An operation is dereferenced and inherits its path-level fields. | `operation`, `step`, `runId`, `location` |
+| `openapi:operation:assembled` | The operation is assembled into the document the request is built from. | the same |
+| `openapi:operation:request:start` | The request is about to be sent. | the same, plus `request` |
+| `openapi:operation:request:settled` | The response was received and its body read. | the same, plus `response` |
 
 `criterion` is the same [`CriterionEvaluationRecord`](#result) the trace holds. `transition` says what the run does next, as plain data: `retry`, or the step's terminal `next`, `goto`, `transfer`, `end`, or `break`. Document events carry no `runId`: the registry is shared, and one load can serve several runs. Cache hits emit nothing, and neither does a workflow normalized earlier in the same `execute` call.
 
-Here is the first `step-start` of the run above:
+Here is the first `step:start` of the run above:
 
 ```js
 {
-  type: 'step-start',
+  type: 'step:start',
   runId: 'run-J4Y9aqpdAob5',
   workflowId: 'authenticateAndOrderPet',
   path: [ 'authenticateAndOrderPet' ],
@@ -1006,17 +1010,17 @@ Here is the first `step-start` of the run above:
 }
 ```
 
-Start and settled events nest the way the run does: a sub-workflow's events sit between its step's `step-attempt` and `step-settled`. A workflow's or a step's start and settled timestamps are the clock readings its `durationMs` comes from, so they differ by exactly that. Folding a run's workflow events gives back its [trace](#result).
+Start and settled events nest the way the run does: a sub-workflow's events sit between its step's `step:attempt` and `step:settled`. A workflow's or a step's start and settled timestamps are the clock readings its `durationMs` comes from, so they differ by exactly that. Folding a run's workflow events gives back its [trace](#result).
 
-A run that throws (an authoring error, a cancellation, a throwing observer) leaves the workflows and steps it unwinds through unsettled. The rejection of `execute` is the signal. A document load that fails emits no `document-load-settled`, and a request that fails in the transport emits no `openapi-operation-request-settled`.
+Every workflow and step that started settles, a run that throws included (an authoring error, a cancellation, a failed request, a throwing observer). The ones it unwinds through settle innermost first, each with the thrown `error`, the one `execute` rejects with: a step as not `successful`, with the `attempts` that ran, and a workflow as `failed`, with no `outputs`. A document load that fails emits no `document:load:settled`, and a request that fails in the transport emits no `openapi:operation:request:settled`; the step that sent it settles with the error.
 
 ### Requests and bodies {#request-events}
 
-`openapi-operation-request-start` carries the request as it is handed to the HTTP client, after every request interceptor ran. `openapi-operation-request-settled` carries the response's `status`, `headers`, and `size` in bytes. Both name the `operation` (where it was looked up), the `step` it runs for, and the `runId`, in the shape a [request interceptor](#request-context) receives:
+`openapi:operation:request:start` carries the request as it is handed to the HTTP client, after every request interceptor ran. `openapi:operation:request:settled` carries the response's `status`, `headers`, and `size` in bytes. Both name the `operation` (where it was looked up) and the `step` it runs for, in the shape a [request interceptor](#request-context) receives them, and the `runId`:
 
 ```js
 {
-  type: 'openapi-operation-request-start',
+  type: 'openapi:operation:request:start',
   operation: {
     documentURI: 'https://petstore3.swagger.io/api/v3/openapi.json',
     jsonPointer: '/paths/~1user~1login/get',
@@ -1050,7 +1054,7 @@ const runner = await ArazzoRunner.load(uri, { captureBodies: true, observer });
 ```
 
 ```js
-// the openapi-operation-request-settled event of findAvailablePets
+// the openapi:operation:request:settled event of findAvailablePets
 response: {
   status: 200,
   headers: { 'content-length': '1148', 'content-type': 'application/json', ... },
@@ -1104,6 +1108,8 @@ It masks by name, whatever the event:
 - in every absolute URL, the userinfo and the matching query and fragment parameters;
 - a JSON or URL-encoded form body field by field, and any other body, or any object that is not plain data, whole.
 
+The `error` of a settled event is passed as it is: it is the error `execute` rejects with, and its message can quote what the run saw.
+
 The masked value is `REDACTED` (`Redactor.CENSOR`). Patterns match the whole name, ignoring case, and `*` matches any run of characters, so `*token*` matches `access_token` and `X-Auth-Token`. The defaults are `Redactor.defaultFields`:
 
 ```text
@@ -1122,7 +1128,7 @@ A credential under a name no pattern matches is carried as it is, so add the nam
 
 ### Document locations {#locations}
 
-Events about a document element say where it is written, in `location`: `workflow-start`, `workflow-normalize-*`, `dependency-start`, `step-start`, `criterion-evaluated`, `action-selected` (when an action was selected), `retry-reference-start`, and every `openapi-operation-*` event. Each step record and criterion record of the [result](#result) carries one too.
+Events about a document element say where it is written, in `location`: `workflow:start`, `workflow:normalize:*`, `dependency:start`, `step:start`, `criterion:evaluated`, `action:selected` (when an action was selected), `retry:reference:start`, and every `openapi:operation:*` event. Each step record and criterion record of the [result](#result) carries one too.
 
 A location has the `uri` of the document and the element's `jsonPointer` in it. It names where the element is **written**, which is not always the document you loaded:
 
@@ -1137,7 +1143,7 @@ const runner = await ArazzoRunner.load(uri, { sourceMap: true, observer });
 ```
 
 ```js
-// location of the first step-start
+// location of the first step:start
 {
   uri: 'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
   jsonPointer: '/workflows/0/steps/0',
@@ -1148,6 +1154,219 @@ const runner = await ArazzoRunner.load(uri, { sourceMap: true, observer });
 A range has the shape of an LSP `Range`, the one the [validator's](/docs/validator/) diagnostics use: lines and characters count from 0, and characters are UTF-16 code units. `line: 52, character: 8` is line 53, column 9 in an editor, where `stepId: loginUser` begins. The Petstore serves its OpenAPI document on one line, so its operations' ranges all sit on line 0.
 
 Source maps are off by default: parsing with them is slower and keeps more in memory. They change nothing else, so a document that fails to parse without them fails with them too. A `registry` passed alongside parses as its own providers say.
+
+### Adapters {#adapters}
+
+Three adapters ship with the runner, each its own import, so code you do not use is never loaded. The logging and stream adapters are observers you pass to the runner and mask every event with a `Redactor` first; the OpenTelemetry one hooks every runner in the process. `combineObservers` hands each event to several observers, in order:
+
+```js
+import { ArazzoRunner, combineObservers } from '@usearazzo/runner';
+
+const runner = await ArazzoRunner.load(uri, { observer: combineObservers(log, events.observer) });
+```
+
+#### Logging {#logging}
+
+```ts
+import { loggingObserver } from '@usearazzo/runner/observability/logging';
+
+loggingObserver(log: (record: { level, message, fields }) => void, options?: { redactor?, levels? })
+```
+
+`loggingObserver` writes every event as a record through `log`, so any logger fits: `log` hands it over the way yours expects. With pino:
+
+```js
+import pino from 'pino';
+import { ArazzoRunner } from '@usearazzo/runner';
+import { loggingObserver } from '@usearazzo/runner/observability/logging';
+
+// the error of a step or workflow that threw, serialized as pino does `err`
+const logger = pino({ serializers: { error: pino.stdSerializers.err } });
+const runner = await ArazzoRunner.load(uri, {
+  observer: loggingObserver(({ level, message, fields }) => logger[level](fields, message)),
+});
+```
+
+`logger.log(level, message, fields)` binds winston, and `console[level](message, fields)` the console. Logging `level` and `message` of the run above:
+
+```text
+debug loading document https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
+debug loaded document https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml
+info  workflow authenticateAndOrderPet started
+debug workflow authenticateAndOrderPet normalizing
+debug workflow authenticateAndOrderPet normalized
+info  step loginUser started
+debug step loginUser attempt 1
+debug loading document https://petstore3.swagger.io/api/v3/openapi.json
+debug loaded document https://petstore3.swagger.io/api/v3/openapi.json
+debug operation loginUser normalizing
+debug operation loginUser normalized
+debug operation loginUser assembled
+debug GET http://localhost:8080/api/v3/user/login?username=theUser&password=REDACTED
+debug operation loginUser responded 200 (43 bytes)
+debug step loginUser criterion $statusCode == 200 met
+debug step loginUser matched no action (next)
+info  step loginUser succeeded after 1 attempt
+info  step findAvailablePets started
+...
+info  step verifyOrderConfirmation succeeded after 1 attempt
+info  workflow authenticateAndOrderPet completed
+```
+
+Events carry no level, so the adapter gives them one by outcome: `info` for workflows and steps starting and settling, `warn` for a failed step, `error` for a failed workflow or a step or workflow that threw, and `debug` for the rest. A workflow that transferred is `info`: its target reports its own outcome. `levels` replaces the level of an event type: `{ 'criterion:evaluated': 'info' }`.
+
+`fields` is the masked event. A selected action is given by its `name` and `type`, not as the document's element. The `error` of a step or workflow that threw is the native `Error`: loggers serialize errors only under their own keys (pino's `err`, winston's top level), so give yours one for `error`, as the pino example does. Without a `redactor`, `new Redactor()` masks with the default patterns; there is no way to log unmasked events through the adapter.
+
+#### Stream {#stream}
+
+```ts
+import { eventStream } from '@usearazzo/runner/observability/stream';
+
+eventStream(options?: { redactor? }): { observer, stream, close(), error(reason) }
+```
+
+`eventStream` turns a run's events into a stream: pass its `observer` to the runner, read the events with `for await` or pipe `stream`, a `ReadableStream`, and end it when the run settles:
+
+```js
+const events = eventStream();
+const runner = await ArazzoRunner.load(uri, { observer: events.observer });
+runner.execute('authenticateAndOrderPet', { inputs, executeOptions }).then(events.close, events.error);
+
+for await (const event of events) render(event);
+```
+
+- **It never holds the run back.** Events wait in an unbounded queue until the consumer reads them.
+- **You end it.** `close` ends the stream once the queued events are read; `error(reason)` makes reading reject with `reason`, after the queued events. Events after either are dropped. The runner cannot end it itself: one stream can watch several runs, and an `execute` that fails before its workflow starts emits no workflow event.
+- **A consumer that stops early** (a `break` out of `for await`, a cancelled stream) stops the queuing; the run goes on unobserved.
+- **It has one consumer.** Read `stream` or iterate the object, not both. For two consumers, give each its own `eventStream()` behind `combineObservers`: a `tee()`'d branch loses its unread events when the stream fails.
+
+Events are masked like the logging adapter's.
+
+#### OpenTelemetry {#opentelemetry}
+
+```ts
+import { ArazzoRunnerInstrumentation } from '@usearazzo/runner/observability/opentelemetry';
+
+new ArazzoRunnerInstrumentation(config?: { enabled?: boolean })
+```
+
+`ArazzoRunnerInstrumentation` is an OpenTelemetry instrumentation: list it with the SDK's others and every runner in the process is traced, with nothing to pass to the runner. It needs `@opentelemetry/api` 1.9 or later, an optional peer dependency of the runner.
+
+```js
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { ArazzoRunnerInstrumentation } from '@usearazzo/runner/observability/opentelemetry';
+
+new NodeSDK({
+  instrumentations: [getNodeAutoInstrumentations(), new ArazzoRunnerInstrumentation()],
+}).start();
+```
+
+The run above, traced with the auto-instrumentations' undici instrumentation, which instruments the `fetch` the runner sends with:
+
+```text
+workflow authenticateAndOrderPet  INTERNAL
+  step loginUser  INTERNAL
+    GET  CLIENT
+  step findAvailablePets  INTERNAL
+    GET  CLIENT
+  step placeOrder  INTERNAL
+    POST  CLIENT
+  step retrieveOrderedPetDetails  INTERNAL
+    GET  CLIENT
+  step verifyOrderConfirmation  INTERNAL
+    GET  CLIENT
+```
+
+- **Each workflow invocation and each step is a span.** A step's is under its workflow's, a sub-workflow's and a retry reference's under the step that calls them, a `dependsOn` workflow's or a transfer target's under the workflow that runs them. A run's root workflow starts under the active span, so wrapping `execute` in a span of your own nests the run under it.
+- **Requests are the HTTP instrumentation's.** A step runs in its span's context, so the `CLIENT` spans of undici (Node's `fetch`) or `@opentelemetry/instrumentation-fetch` (the browser) nest under the step, and that instrumentation propagates the trace into the API, which can join it with spans of its own.
+- **A step's decisions are events of its span**, each named by the event it comes from: `step:attempt`, `openapi:operation:assembled`, `criterion:evaluated`, `action:selected`, `retry:wait`, `retry:reference:start`, `retry:reference:settled`.
+- **Spans carry identifiers and outcomes, not the run's data**: no inputs, outputs, criterion values, or requests. A step or workflow that throws records the error, whose message can quote what the run saw.
+- **A failed workflow is an error**, and so is a step that threw or whose failure ends its workflow (no action matched). A failure an `onFailure` action handles (`goto`, `end`, a retry that succeeds) is not: the step's `arazzo.step.successful` is `false`. A workflow that transferred is not marked; its target reports its own outcome.
+
+The span of `loginUser`:
+
+```js
+{
+  name: 'step loginUser',
+  kind: 'INTERNAL',
+  attributes: {
+    'arazzo.run.id': 'run-csc9EsXijh9j',
+    'arazzo.workflow.id': 'authenticateAndOrderPet',
+    'arazzo.step.id': 'loginUser',
+    'arazzo.document.uri': 'https://usearazzo.com/assets/reference/runner/petstore-order.arazzo.yaml',
+    'arazzo.document.json_pointer': '/workflows/0/steps/0',
+    'arazzo.step.attempts': 1,
+    'arazzo.step.successful': true
+  },
+  events: [
+    { name: 'step:attempt', attributes: { 'arazzo.step.id': 'loginUser', 'arazzo.step.attempt': 1 } },
+    {
+      name: 'openapi:operation:assembled',
+      attributes: {
+        'arazzo.step.id': 'loginUser',
+        'arazzo.operation.document_uri': 'https://petstore3.swagger.io/api/v3/openapi.json',
+        'arazzo.operation.json_pointer': '/paths/~1user~1login/get',
+        'arazzo.operation.id': 'loginUser'
+      }
+    },
+    {
+      name: 'criterion:evaluated',
+      attributes: {
+        'arazzo.step.id': 'loginUser',
+        'arazzo.step.attempt': 1,
+        'arazzo.criterion.kind': 'success',
+        'arazzo.criterion.condition': '$statusCode == 200',
+        'arazzo.criterion.met': true
+      }
+    },
+    {
+      name: 'action:selected',
+      attributes: { 'arazzo.step.id': 'loginUser', 'arazzo.step.attempt': 1, 'arazzo.action.transition': 'next' }
+    }
+  ]
+}
+```
+
+In the browser, with the fetch instrumentation for the request spans:
+
+```js
+import { BatchSpanProcessor, WebTracerProvider } from '@opentelemetry/sdk-trace-web';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { ZoneContextManager } from '@opentelemetry/context-zone';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
+import { ArazzoRunnerInstrumentation } from '@usearazzo/runner/observability/opentelemetry';
+
+const provider = new WebTracerProvider({
+  spanProcessors: [new BatchSpanProcessor(new OTLPTraceExporter())],
+});
+provider.register({ contextManager: new ZoneContextManager() });
+registerInstrumentations({
+  instrumentations: [
+    // the cross-origin APIs that get a traceparent
+    new FetchInstrumentation({ propagateTraceHeaderCorsUrls: [/api\.example\.com/] }),
+    new ArazzoRunnerInstrumentation(),
+  ],
+});
+```
+
+The workflow and step spans keep their tree with any context manager. Request spans nest under the step only where the context survives an `await`: zone.js loses it across a native one, so transpile `async`/`await`, as OpenTelemetry's web instrumentation asks.
+
+`enable()` and `disable()` switch tracing on and off; `setConfig` stores the config without switching, as every OpenTelemetry instrumentation does.
+
+### Process-wide hooks {#instrument}
+
+```ts
+instrument(hooks: { observer?, wrap? }): () => void
+```
+
+`instrument` applies hooks to every runner in the process, on top of the observer each was given, until the function it returns removes them. It is the seam the OpenTelemetry instrumentation is built on, there for tooling of your own.
+
+- **`observer`** receives every event of every building block, after the block's own observer, under the same rules: synchronously, never awaited, and a throw aborts what emitted it. An event still reaches it when the block's own observer throws on it; the run then rejects with the block's observer's error.
+- **`wrap(operation, run)`** runs around each workflow invocation and each step, so what `run` does, its events and requests included, happens inside it: in the active context of a span it opened, for one. `operation` names it (`kind`, `runId`, `workflowId`, `path`, `stepId` for a step, `via` for a workflow, `location`). A wrap must call `run`. What it settles with does not change the run: the run's own result or error stands, and a wrap that settles without ever calling `run` makes `execute` reject with `ExecutionError` `instrumentation-wrap`.
+
+Hooks apply in the order they were added, the first wrap outermost. A run in progress picks hooks up at its next event, attempt, or operation, and drops removed ones the same way: a removed hook misses the settled events of what it saw start. The registry lives on `globalThis`, so the runner's ES module and CommonJS builds, or two copies of it, share their hooks.
 
 ## StepExecutor {#step-executor}
 
@@ -1258,7 +1477,7 @@ Runs one OpenAPI operation and returns its response. It knows nothing about Araz
 |---|---|
 | `httpClient` | Sends the request. See [The HTTP client](#http-client). |
 | `requestInterceptor` | Changes every request before it is sent. See [Authentication](#authentication). |
-| `observer`, `now` | Receives the `openapi-operation-*` events, stamped by `now`. See [Observing a run](#observability). |
+| `observer`, `now` | Receives the `openapi:operation:*` events, stamped by `now`. See [Observing a run](#observability). |
 | `captureBodies` | Puts the bodies on the request events. Off by default. See [Requests and bodies](#request-events). |
 | `responseNormalizer`, `operationExtractor`, `operationNormalizer`, `documentAssembler` | Replace one stage of the pipeline. Rarely needed. |
 
@@ -1563,6 +1782,7 @@ try {
 | `step-budget` | `StepBudget` | The run made more than `maxSteps` step attempts. |
 | `aborted` | `Aborted` | The run was cancelled. |
 | `invalid-workflow-reference` | `InvalidWorkflowReference` | A `$`-prefixed workflow reference is not `$sourceDescriptions.<name>.<workflowId>`. |
+| `instrumentation-wrap` | `InstrumentationWrap` | A process-wide [instrumentation wrap](#instrument) settled without running its workflow or step. |
 | `invalid-operation-reference` | `InvalidOperationReference` | A `$`-prefixed `operationId` is not `$sourceDescriptions.<name>.<operationId>`, or an `operationPath` has no source URL or an invalid JSON Pointer. |
 | `source-description-not-found` | `SourceDescriptionNotFound` | The named source description does not exist, whether a workflow reference, an operation reference, or a key of `executeOptions` names it. |
 | `source-description-not-arazzo` | `SourceDescriptionNotArazzo` | A workflow reference points into a document that is not Arazzo. |
