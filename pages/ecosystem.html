@@ -44,7 +44,7 @@ stylesheets:
         <p class="text-xl text-gray-600 max-w-3xl">Every <strong>external Arazzo resource</strong>, in one place: the specification, tools, articles, videos, and examples in the wild.</p>
         <p class="text-gray-600 max-w-3xl mt-3">Arazzo is the <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">OpenAPI Initiative's specification</a> for describing multi-step API workflows, and a real ecosystem is forming around it. This page keeps track: hand-curated, reviewed regularly, and open to submissions from any vendor.</p>
         <p class="text-sm text-gray-500 mt-4">
-          Last reviewed: 2 October 2026
+          Last reviewed: 26 November 2026
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
           <a href="https://github.com/usearazzo/website/issues/new?template=submit-a-resource.yml" target="_blank" rel="noopener noreferrer" class="text-primary-light underline hover:no-underline">Submit a resource</a>
           <span class="mx-1 text-gray-400" aria-hidden="true">&middot;</span>
@@ -60,7 +60,7 @@ stylesheets:
   <section id="spec" class="bg-white">
     <div class="max-w-6xl px-6 py-12">
       <h2 class="text-2xl font-bold text-primary-dark mb-2">Spec</h2>
-      <p class="text-gray-600 mb-4">The Arazzo Specification itself: published versions, JSON Schemas, the official examples, and where its development happens. The latest version is 1.1.0; most tooling still targets 1.0.1.</p>
+      <p class="text-gray-600 mb-4">The Arazzo Specification itself: published versions, the official documentation, JSON Schemas, the official examples, and where its development happens. The latest version is 1.1.0; most tooling still targets 1.0.1.</p>
 
       <div class="ecosystem-group">
         <h3>Specification versions</h3>
@@ -84,6 +84,17 @@ stylesheets:
             <a href="https://spec.openapis.org/arazzo/latest.html" target="_blank" rel="noopener noreferrer">Arazzo Specification, latest</a>
             <small>OpenAPI Initiative</small>
             <span class="note">A permalink that always resolves to the newest published version.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ecosystem-group">
+        <h3>Official documentation</h3>
+        <ul class="ecosystem-list">
+          <li>
+            <a href="https://learn.openapis.org/arazzo/" target="_blank" rel="noopener noreferrer">The Arazzo Specification Explained</a>
+            <small>OpenAPI Initiative &middot; Nov 2026</small>
+            <span class="note">The official introduction to Arazzo 1.1.0, one page per topic: sources, workflows, steps, runtime expressions, success criteria, actions, composing, components, and asynchronous steps.</span>
           </li>
         </ul>
       </div>
@@ -151,6 +162,16 @@ stylesheets:
       <div class="ecosystem-group">
         <h3>Author &amp; visualise</h3>
         <ul class="ecosystem-list">
+          <li>
+            <a href="https://github.com/rapi-doc/RapiDoc" target="_blank" rel="noopener noreferrer">RapiFlow</a>
+            <small>RapiDoc</small>
+            <span class="note">The <code>&lt;rapi-flow&gt;</code> web component draws the workflows of an Arazzo document next to the API reference and runs them in the browser, against the API or a mock.</span>
+          </li>
+          <li>
+            <a href="https://github.com/SebastienDegodez/github-copilot-arazzo" target="_blank" rel="noopener noreferrer">Arazzo canvas for GitHub Copilot</a>
+            <small>Sebastien Degodez</small>
+            <span class="note">A plugin for the GitHub Copilot app: drag OpenAPI operations onto a canvas as steps, wire data between them, validate as you edit, and let Copilot edit the same workflow.</span>
+          </li>
           <li>
             <a href="https://github.com/randallcmark/arazzo-builder" target="_blank" rel="noopener noreferrer">Arazzo Builder</a>
             <small>Mark Randall</small>
@@ -228,6 +249,16 @@ stylesheets:
         <h3>Lint &amp; validate</h3>
         <ul class="ecosystem-list">
           <li>
+            <a href="https://github.com/daveshanley/vacuum" target="_blank" rel="noopener noreferrer">vacuum</a>
+            <small>Dave Shanley, pb33f</small>
+            <span class="note">A fast linter and toolkit for OpenAPI, AsyncAPI, Arazzo, and JSON Schema documents, including Arazzo workflow linting.</span>
+          </li>
+          <li>
+            <a href="https://openlint.org" target="_blank" rel="noopener noreferrer">OpenLint</a>
+            <small>OpenLint</small>
+            <span class="note">A Spectral-style linter with ready-made rulesets for OpenAPI, AsyncAPI, and Arazzo; the Arazzo one is <code>openlint:arazzo</code>.</span>
+          </li>
+          <li>
             <a href="https://github.com/Redocly/redocly-cli" target="_blank" rel="noopener noreferrer">Redocly CLI</a>
             <small>Redocly</small>
             <span class="note">Lints, bundles, and documents OpenAPI, AsyncAPI, and Arazzo.</span>
@@ -274,7 +305,7 @@ stylesheets:
             <span class="note">SDK and CLI that parses, validates, inspects, and runs Arazzo workflows, with custom extension points.</span>
           </li>
           <li>
-            <a href="https://github.com/Mohammed-Alama/php-arazzo" target="_blank" rel="noopener noreferrer">php-arazzo</a>
+            <a href="https://github.com/PHP-Arazzo/php-arazzo" target="_blank" rel="noopener noreferrer">php-arazzo</a>
             <small>Mohammed Alama</small>
             <span class="note">Native Arazzo workflow engine for PHP and Laravel: parse, validate, and execute OpenAPI call sequences.</span>
           </li>
@@ -426,6 +457,11 @@ stylesheets:
         <h3>Libraries &amp; SDKs</h3>
         <ul class="ecosystem-list">
           <li>
+            <a href="https://github.com/mackoj/swift-arazzo" target="_blank" rel="noopener noreferrer">swift-arazzo</a>
+            <small>mackoj</small>
+            <span class="note">Swift library for Arazzo 1.0 and 1.1: Codable models, runtime expressions, and criteria evaluation, with a dependency-free core that runs on Linux.</span>
+          </li>
+          <li>
             <a href="https://github.com/pactflow/arazzo-rs" target="_blank" rel="noopener noreferrer">arazzo-rs</a>
             <small>Pactflow</small>
             <span class="note">Rust crates with models for the objects described in the Arazzo specification.</span>
@@ -504,6 +540,11 @@ stylesheets:
           <a href="https://apichangelog.substack.com/p/solving-the-agent-api-bottleneck" target="_blank" rel="noopener noreferrer">Solving the Agent API Bottleneck</a>
           <small>Bruno Pedro &middot; Nov 2026</small>
           <span class="note">Argues APIs need machine-native documentation beside the human portal, with deterministic Arazzo workflows so agents stop guessing the order of operations, and includes a Q&amp;A with Frank Kilcommins on Arazzo.</span>
+        </li>
+        <li>
+          <a href="https://gravitee.io/blog/workflow-tools-one-governed-tool-for-ai-agents" target="_blank" rel="noopener noreferrer">Workflow Tools: One Governed Tool for AI Agents</a>
+          <small>Prachi Jamdade, Gravitee &middot; Nov 2026</small>
+          <span class="note">Gravitee chains API calls into one tool an agent calls once, and stores the chain as an Arazzo document.</span>
         </li>
         <li>
           <a href="https://apichangelog.substack.com/p/three-open-source-engines-for-running-arazzo-workflows" target="_blank" rel="noopener noreferrer">Three Open-Source Engines for Running Arazzo Workflows</a>
@@ -636,9 +677,29 @@ stylesheets:
           <span class="note">Why individually valid APIs still fail as real workflows, and what OpenAPI alone cannot catch.</span>
         </li>
         <li>
+          <a href="https://www.api-portal.io/en/resources/articles/what-is-arazzo" target="_blank" rel="noopener noreferrer">What Is Arazzo? The OpenAPI Specification for API Workflows</a>
+          <small>api-portal.io &middot; Jun 2026</small>
+          <span class="note">What the Arazzo specification covers, how it fits the OpenAPI family, and what 1.1.0 adds.</span>
+        </li>
+        <li>
           <a href="https://redocly.com/blog/arazzo-specification-1-1-release" target="_blank" rel="noopener noreferrer">Arazzo 1.1 Release</a>
           <small>Dmytro Ananskyi, Redocly &middot; May 2026</small>
           <span class="note">What 1.1 adds: AsyncAPI support, workflow composition, selectors, identity-based references, and clearer runtime behavior.</span>
+        </li>
+        <li>
+          <a href="https://www.openapis.org/blog/2026/05/19/announcing-arazzo-specification-1-1" target="_blank" rel="noopener noreferrer">Announcing Arazzo Specification 1.1</a>
+          <small>Frank Kilcommins, OpenAPI Initiative &middot; May 2026</small>
+          <span class="note">The official release post for Arazzo 1.1: AsyncAPI source descriptions, workflows that call other workflows, the Selector Object, <code>$self</code>, and the roadmap beyond 1.1.</span>
+        </li>
+        <li>
+          <a href="https://zuplo.com/blog/arazzo-goes-cross-protocol" target="_blank" rel="noopener noreferrer">Arazzo Goes Cross-Protocol</a>
+          <small>Martyn Davies, Zuplo &middot; May 2026</small>
+          <span class="note">What Arazzo 1.1 ships: AsyncAPI as a source description, workflows that call other workflows, and the Selector Object.</span>
+        </li>
+        <li>
+          <a href="https://nordicapis.com/why-ai-agents-need-deterministic-api-workflows/" target="_blank" rel="noopener noreferrer">Why AI Agents Need Deterministic API Workflows</a>
+          <small>Art Anthony, Nordic APIs &middot; Apr 2026</small>
+          <span class="note">A write-up of Frank Kilcommins&#39;s Platform Summit 2025 talk: why exposing endpoints as MCP tools is not enough, and how Arazzo workflows make agent API use predictable.</span>
         </li>
         <li>
           <a href="https://zuplo.com/blog/openapi-arazzo-overlay-specifications-guide" target="_blank" rel="noopener noreferrer">OpenAPI Arazzo &amp; Overlay: Workflows and Spec Management</a>
@@ -679,6 +740,11 @@ stylesheets:
           <a href="https://medium.com/@peterbi_91340/mastering-api-workflows-in-go-a-deep-dive-into-arazzo-40f1e37e1307" target="_blank" rel="noopener noreferrer">Mastering API Workflows in Go: A Deep Dive into Arazzo</a>
           <small>Peter Bi &middot; Dec 2025</small>
           <span class="note">Walks through parsing, validating, and generating Arazzo documents from Go.</span>
+        </li>
+        <li>
+          <a href="https://bump.sh/blog/make-your-apis-ai-ready/" target="_blank" rel="noopener noreferrer">OpenAPI won&#39;t make your APIs AI-ready. But Arazzo can.</a>
+          <small>Sébastien Charrier, Bump.sh &middot; Nov 2025</small>
+          <span class="note">Argues that MCP alone falls short because using an API means chaining calls, and that Arazzo is the standard for writing those chains down.</span>
         </li>
         <li>
           <a href="https://nordicapis.com/how-arazzo-could-help-mcp-servers-orchestrate-apis-for-ai-consumers/" target="_blank" rel="noopener noreferrer">How Arazzo Could Help MCP Servers Orchestrate APIs for AI Consumers</a>
@@ -805,6 +871,30 @@ stylesheets:
       <p class="text-gray-600 mb-4">Conference talks, podcasts, and screencasts about Arazzo.</p>
       <ul class="ecosystem-list">
         <li>
+          <a href="https://www.youtube.com/watch?v=9D9AgvbcIvk" target="_blank" rel="noopener noreferrer">Arazzo UI: Now with Built in Validation</a>
+          <small>Jentic &middot; Nov 2026</small>
+          <span class="note">A walkthrough of the latest Arazzo UI releases: built-in validation and a richer step view.</span>
+          <a class="ecosystem-video" href="https://www.youtube.com/watch?v=9D9AgvbcIvk" target="_blank" rel="noopener noreferrer" data-video="9D9AgvbcIvk" aria-label="Play video: Arazzo UI: Now with Built in Validation"><img src="https://i.ytimg.com/vi/9D9AgvbcIvk/hqdefault.jpg" alt="Arazzo UI: Now with Built in Validation" width="480" height="360" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=fF6Cpy0pA8I" target="_blank" rel="noopener noreferrer">Stop AI Agents from Chaining API Calls Wrong: Workflow Tools Demo</a>
+          <small>Gravitee &middot; Nov 2026</small>
+          <span class="note">Builds a Gravitee Workflow Tool from three API calls and reviews the Arazzo definition it generates.</span>
+          <a class="ecosystem-video" href="https://www.youtube.com/watch?v=fF6Cpy0pA8I" target="_blank" rel="noopener noreferrer" data-video="fF6Cpy0pA8I" aria-label="Play video: Stop AI Agents from Chaining API Calls Wrong: Workflow Tools Demo"><img src="https://i.ytimg.com/vi/fF6Cpy0pA8I/hqdefault.jpg" alt="Stop AI Agents from Chaining API Calls Wrong: Workflow Tools Demo" width="480" height="360" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=r1JVGRDTmlQ" target="_blank" rel="noopener noreferrer">Arazzo Now Supports AsyncAPI</a>
+          <small>AsyncAPI &middot; Oct 2026</small>
+          <span class="note">Frank Kilcommins walks through what changed in Arazzo 1.1 so one workflow can span HTTP calls and asynchronous messages.</span>
+          <a class="ecosystem-video" href="https://www.youtube.com/watch?v=r1JVGRDTmlQ" target="_blank" rel="noopener noreferrer" data-video="r1JVGRDTmlQ" aria-label="Play video: Arazzo Now Supports AsyncAPI"><img src="https://i.ytimg.com/vi/r1JVGRDTmlQ/hqdefault.jpg" alt="Arazzo Now Supports AsyncAPI" width="480" height="360" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=TyV9pah0i1A" target="_blank" rel="noopener noreferrer">Making AI Agents Reliable API Consumers</a>
+          <small>Frank Kilcommins, AsyncAPI &middot; Oct 2026</small>
+          <span class="note">Why agents should discover and run written-down workflows instead of inventing business processes, and what Arazzo is for.</span>
+          <a class="ecosystem-video" href="https://www.youtube.com/watch?v=TyV9pah0i1A" target="_blank" rel="noopener noreferrer" data-video="TyV9pah0i1A" aria-label="Play video: Making AI Agents Reliable API Consumers"><img src="https://i.ytimg.com/vi/TyV9pah0i1A/hqdefault.jpg" alt="Making AI Agents Reliable API Consumers" width="480" height="360" loading="lazy"></a>
+        </li>
+        <li>
           <a href="https://www.youtube.com/watch?v=KuuKTUfMiV0" target="_blank" rel="noopener noreferrer">Making AI Agents Reliable Event-Driven API Consumers with Arazzo</a>
           <small>AsyncAPI &middot; Sep 2026</small>
           <span class="note">AsyncAPI live stream on Arazzo 1.1's AsyncAPI source descriptions: workflows where an agent publishes to a queue, waits on a webhook, and correlates the async response.</span>
@@ -893,6 +983,12 @@ stylesheets:
           <small>Naresh, Apidays India (ConfEngine) &middot; Oct 2025</small>
           <span class="note">Apidays India talk on driving both mocks and tests across REST and event-driven steps from one Arazzo document.</span>
           <a class="ecosystem-video" href="https://www.youtube.com/watch?v=baYcsznD_Mk" target="_blank" rel="noopener noreferrer" data-video="baYcsznD_Mk" aria-label="Play video: From REST to Events: API Workflow Testing &amp; Mocking with a Single Arazzo Spec"><img src="https://i.ytimg.com/vi/baYcsznD_Mk/hqdefault.jpg" alt="From REST to Events: API Workflow Testing &amp; Mocking with a Single Arazzo Spec" width="480" height="360" loading="lazy"></a>
+        </li>
+        <li>
+          <a href="https://www.youtube.com/watch?v=72bxAu566Ek" target="_blank" rel="noopener noreferrer">Enforcing API Standards for K8s CRDs at Scale using OpenAPI, Arazzo &amp; Overlay</a>
+          <small>Mitul, Apidays India (ConfEngine) &middot; Oct 2025</small>
+          <span class="note">Uses OpenAPI, Arazzo, and Overlay to bring order to many Kubernetes operators and their custom resources.</span>
+          <a class="ecosystem-video" href="https://www.youtube.com/watch?v=72bxAu566Ek" target="_blank" rel="noopener noreferrer" data-video="72bxAu566Ek" aria-label="Play video: Enforcing API Standards for K8s CRDs at Scale using OpenAPI, Arazzo &amp; Overlay"><img src="https://i.ytimg.com/vi/72bxAu566Ek/hqdefault.jpg" alt="Enforcing API Standards for K8s CRDs at Scale using OpenAPI, Arazzo &amp; Overlay" width="480" height="360" loading="lazy"></a>
         </li>
         <li>
           <a href="https://www.youtube.com/watch?v=RxybYvm-ano" target="_blank" rel="noopener noreferrer">Is the Arazzo Engine the Missing Piece in Agentic Workflows?</a>
@@ -994,6 +1090,11 @@ stylesheets:
       <p class="text-gray-600 mb-4">Real Arazzo documents published in the wild. The specification's own examples live under Spec.</p>
       <ul class="ecosystem-list">
         <li>
+          <a href="https://github.com/strefethen/arazzo-spec-library" target="_blank" rel="noopener noreferrer">Arazzo spec library</a>
+          <small>Steve Trefethen</small>
+          <span class="note">A curated corpus of runnable Arazzo workflows for real-world APIs, with offline verification, written for arazzo-cli.</span>
+        </li>
+        <li>
           <a href="https://arazzo.apis.io" target="_blank" rel="noopener noreferrer">Arazzo Workflows on APIs.io</a>
           <small>APIs.io</small>
           <span class="note">A searchable directory of thousands of example Arazzo workflow documents, both provider-specific and cross-provider.</span>
@@ -1024,8 +1125,8 @@ stylesheets:
           <span class="note">Three-act demo that moves from raw MCP tools to guided skills to deterministic Arazzo workflows.</span>
         </li>
         <li>
-          <a href="https://github.com/dekunlab/open-payments-arazzo" target="_blank" rel="noopener noreferrer">Open Payments Arazzo workflows</a>
-          <small>Dekun Lab</small>
+          <a href="https://github.com/laxlab/open-payments-arazzo" target="_blank" rel="noopener noreferrer">Open Payments Arazzo workflows</a>
+          <small>Lax lab</small>
           <span class="note">Arazzo 1.0.1 documents for the Open Payments API flows, from the Interledger Foundation SDK grant programme.</span>
         </li>
         <li>
@@ -1057,6 +1158,11 @@ stylesheets:
       <h2 class="text-2xl font-bold text-primary-dark mb-2">Other</h2>
       <p class="text-gray-600 mb-4">Books, courses, newsletters, slide decks, infographics, and anything else that fits no other section.</p>
       <ul class="ecosystem-list">
+        <li>
+          <a href="https://arazzo-conformance.apievangelist.com" target="_blank" rel="noopener noreferrer">Arazzo Conformance</a>
+          <small>Kin Lane, The API Evangelist</small>
+          <span class="note">A report on how the open-source Arazzo tools judge valid and invalid documents: each case breaks exactly one rule, and every tool runs against every case.</span>
+        </li>
         <li>
           <a href="https://speakerdeck.com/benjagm/from-developer-experience-to-agentic-experience-the-next-evolution-of-apis" target="_blank" rel="noopener noreferrer">From Developer Experience to Agentic Experience: The Next Evolution of APIs (slides)</a>
           <small>Benjamin Granados &middot; Oct 2026</small>
