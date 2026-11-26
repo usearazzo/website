@@ -94,7 +94,7 @@ The package ships ESM and CommonJS builds with TypeScript declarations, and requ
 | `defaultBundleArazzoOptions`, `defaultBundleOpenAPIOptions` | constant | The same for the bundle functions. |
 | `defaultResolveArazzoOptions`, `defaultResolveOpenAPIOptions` | constant | The same for the resolve functions. |
 | `DereferenceError`, `BundleError`, `ResolveError` | class | Thrown when the matching operation fails. |
-| `DereferenceArazzoOptions`, `DereferenceOpenAPIOptions`, `BundleArazzoOptions`, `BundleOpenAPIOptions`, `ResolveArazzoOptions`, `ResolveOpenAPIOptions` | type | `PartialDeep<ApiDOMReferenceOptions>`, all six. |
+| `DereferenceArazzoOptions`, `DereferenceOpenAPIOptions`, `BundleArazzoOptions`, `BundleOpenAPIOptions`, `ResolveArazzoOptions`, `ResolveOpenAPIOptions` | type | `PartialOptions<ApiDOMReferenceOptions>`, all six. `PartialOptions` comes from [`@usearazzo/parser`](/docs/parser/#exports). |
 | `ReferenceSet` | type | What the resolve functions return. |
 
 There are no bundle functions for parsed elements: bundling always starts from a path or URL.

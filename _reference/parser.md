@@ -83,7 +83,8 @@ The package ships ESM and CommonJS builds with TypeScript declarations, and requ
 | `defaultParseRuntimeExpressionOptions`, `defaultParseCriterionConditionOptions` | constant | Empty on purpose. The grammar packages supply their own defaults. |
 | `ParseError` | class | Thrown by the two document parsers when parsing fails. |
 | `ArazzoRuntimeExpressionParseError`, `ArazzoCriterionParseError` | class | Re-exported from the grammar packages. Thrown only on an internal parser error, never for invalid syntax. |
-| `ParseArazzoOptions`, `ParseOpenAPIOptions` | type | `PartialDeep<ApiDOMReferenceOptions>`. |
+| `ParseArazzoOptions`, `ParseOpenAPIOptions` | type | `PartialOptions<ApiDOMReferenceOptions>`. |
+| `PartialOptions` | type | An options bag merged over defaults, optional two levels deep: every field, and every field of a field that groups options (such as `resolve`). Arrays are kept whole, as the merge replaces them. |
 | `ParseRuntimeExpressionOptions`, `ParseCriterionConditionOptions` | type | The grammar packages' parse options. |
 | `ParseRuntimeExpressionResult`, `ParseCriterionConditionResult` | type | `{ result, tree, stats, trace }` bound to each grammar's AST type. |
 | `RuntimeExpressionASTNode`, `CriterionConditionAST` | type | The AST node types the two grammar parsers produce. |

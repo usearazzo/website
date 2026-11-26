@@ -129,8 +129,8 @@ The package ships ESM and CommonJS builds with TypeScript declarations, and requ
 ```ts
 validateURI(
   uri: string,
-  context?: PartialDeep<LanguageServiceContext>,
-  resolveOptions?: PartialDeep<ApiDOMReferenceResolveOptions>,
+  context?: PartialOptions<LanguageServiceContext>,
+  resolveOptions?: Partial<ApiDOMReferenceResolveOptions>,
 ): Promise<Diagnostic[]>
 ```
 
@@ -208,7 +208,7 @@ Everything wrong with a document that was fetched is a diagnostic, never an exce
 ```ts
 validate(
   textDocument: TextDocument,
-  context?: PartialDeep<LanguageServiceContext>,
+  context?: PartialOptions<LanguageServiceContext>,
 ): Promise<Diagnostic[]>
 ```
 
@@ -304,7 +304,7 @@ The numeric codes have names in `ApilintCodes`, exported by `@speclynx/api-langu
 
 ## Options {#options}
 
-The second argument of both functions is a deep-partial `LanguageServiceContext`. It is merged over [`defaultLanguageServiceContext`](#defaults).
+The second argument of both functions is a `PartialOptions<LanguageServiceContext>` (see [`PartialOptions`](/docs/parser/#exports) in the parser reference): every field optional, and every field of a field that groups settings, such as `validationContext`. It is merged over [`defaultLanguageServiceContext`](#defaults).
 
 ### What runs {#validation-context}
 
