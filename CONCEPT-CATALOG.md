@@ -68,7 +68,13 @@ neighbouring questions.
    API. Not started.
 4. "What Is an Arazzo API Workflow?" (the API workflow written down, as
    OpenAPI is the API written down; the owner's working title, website#33).
-   Not started.
+   Not started. Source to draw on and link to (owner, 2026-11-26): the
+   OpenAPI Initiative now publishes "The Arazzo Specification Explained" at
+   https://learn.openapis.org/arazzo/, with pages on structure, sources,
+   workflows, steps, parameters, success criteria, actions, selecting
+   data, composing, components, runtime expressions, and async. It is the
+   natural "read the rule book next" link for this rung, and its page list
+   is a check on what our guide should cover.
 When a rung lands, point the previous guide's closing section and Next
 steps at it.
 
