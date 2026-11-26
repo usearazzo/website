@@ -90,6 +90,7 @@ exclude:
   - CONTRIBUTING.md
   - AUDIENCE-NOTES.md
   - CONCEPT-CATALOG.md
+  - ECOSYSTEM-REJECTED.md
   - README.md
   - LICENSE
   - NOTICE

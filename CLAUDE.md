@@ -244,6 +244,12 @@ pages/
                                  # curl-verified before listing; never invent one. Entry
                                  # snippet and acceptance bar in CONTRIBUTING.md. UseArazzo's
                                  # own content is never listed; linked in nav and footer.
+                                 # Read ECOSYSTEM-REJECTED.md (repo root, excluded from
+                                 # the build) before a sweep, and add a row with the reason
+                                 # for everything left out: session transcripts are deleted
+                                 # after a while, so this file is the only record. Read every
+                                 # article in full before listing it; a sample with invalid
+                                 # Arazzo (bad runtime expressions) is a reason to reject.
   cli.html                       # CLI product page, published (validate); Execution In development, Discovery Idea
   runner.html                    # Runner product page, published; run sample, Coming Next callout, inline SVG
                                  # architecture (the same SVG is in _reference/runner.md; keep the two in step)
