@@ -551,6 +551,56 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   UseArazzo CLI once `usearazzo validate` handles OpenAPI documents.** The page says nothing about
   that plan. When rung 3
   ("What Is an API Workflow?") lands, point this guide's `#limits` section and Next steps at it.
+- **The "What Is AsyncAPI?" guide** (`_guides/what-is-asyncapi.md`, drafted by AI 2026-11-21; prose is
+  the owner's) is a side rung beside rung 2, `order: 4` (owner's choices that day: Streetlights sample
+  with a real capture, side rung, Arazzo only at the end, version 3 sample with version 2 explained).
+  The sample is the AsyncAPI project's own `examples/streetlights-mqtt-asyncapi.yml` (3.1.0), fetched
+  from `asyncapi/spec` master on 2026-11-21 and saved byte-identical as
+  `assets/guides/what-is-asyncapi/streetlights-mqtt.asyncapi.yaml`; the counts on the page (4 channels,
+  4 operations, 3 messages, 4 schemas) come from it. Both message captures (the valid one and
+  `{"lumens": "bright"}`) were real runs through `test.mosquitto.org`, re-captured 2026-11-24 with
+  `-q 1` on `mosquitto_sub` (it plays the described application, whose receive operation carries the
+  `qos: 1` binding; a first capture on 2026-11-21 had it on `mosquitto_pub`, the wrong side), with
+  `mosquitto_pub` / `mosquitto_sub` 2.1.4 from the `eclipse-mosquitto:2` Docker image (no Mosquitto
+  clients on the machine); the page shows the bare commands. The version 2 excerpt is the same example
+  at the `v2.6.0` tag. Dates come from the spec repository's tags and releases (1.0.0 2017-09-20,
+  2.0.0 2019-09-11, 3.0.0 2023-12-05, 3.1.0 2026-01-31) and the Linux Foundation post (2021-03-30);
+  "have always been confusing" is quoted from the 3.0.0 release notes. The project was started in
+  2016 (first commits 2016-11-18); 2017 is version 1.0. A three-agent review on 2026-11-24 (facts,
+  style, reader) reshaped the page: a "why write it down" paragraph, the versions section retitled
+  "AsyncAPI 2 or 3: which one are you reading?", and the workflow hand-over told from a tester's side
+  (send `turnOn`, wait for a measurement, check `lumens`), because "the street is dark, so turn it
+  on" is the application's own logic and made the gap look invented. The FAQ has eleven entries to
+  match the OpenAPI guide (owner). The body names neither Arazzo
+  nor UseArazzo; the last FAQ answer and Next steps say only that Arazzo 1.1 can point at an AsyncAPI
+  document. **Never claim UseArazzo handles AsyncAPI** until the compatibility table says so. The FAQ
+  answer on validating names AsyncAPI Studio and the AsyncAPI CLI's `validate` command without any
+  output: the CLI could not be run in the session (permission denied), so quote no output until it is.
+  Its hero and the OpenAPI guide's are siblings, and each carries the format's name as text on the
+  sheet (owner, 2026-11-21, chosen over embedding the formats' logos). The validating FAQ stays on
+  AsyncAPI's own tools because the SpecLynx CLI validates AsyncAPI 2.x only and the sample is 3.1.0;
+  revisit when that changes. Run on 2026-11-26 with `@speclynx/cli` 1.5.4: the AsyncAPI project's
+  own `v2.6.0` Streetlights example gets three errors on its OAuth flows that the 2.6 specification
+  does not back (`tokenUrl` demanded on `implicit`, `authorizationUrl` on `password` and
+  `clientCredentials`), and any 3.x document, even a broken one, prints `No problems found` with
+  exit code 0. Filed as speclynx/api-languageservice#124 and #125. Do not name the SpecLynx CLI
+  on this page until both are fixed.
+  The page tells readers how to get the clients (owner, 2026-11-26: "I don't have that on my
+  computer"): `apt` and Homebrew lines (package names checked, installs not run) and a collapsed
+  Docker option, the form the captures were really made with (also re-run with the 2.0.18 clients,
+  the version apt ships; Ctrl+C stops the container without `-it`). The collapsible is
+  `<details markdown="1">`, styled by `.post-content details` in `main.css`, the first on the site.
+  The same day: "Where X stops" became "The limits of X" in both guides (it read as the format
+  ending), and the event-driven section gained a webhook paragraph (AsyncAPI covers HTTP through
+  its bindings; the spec itself never says "webhook").
+  A review in the Clarity skill's review mode (website#36, addyosmani/clarity v0.2.1, read from a
+  scratch clone, installed afterwards) was applied the same day: the webhook format fact stated once, the
+  "read along" line moved above the install lines, unsupported "most" claims softened, the converter
+  named (`asyncapi/converter-js`, converts 2.x to 3.0.0), both guides' leads ending "the limits of
+  the format" ("its limits" had no clear owner).
+  The owner is one of the AsyncAPI specification's maintainers (3.1.0 release notes); the page does
+  not say so. The OpenAPI guide links to it from `#limits`, Next steps, and the REST FAQ answer; guide
+  1 links from its event-driven bullet.
 - **The resolving guide** (`_guides/arazzo-document-resolving.md`, drafted by AI 2026-09-22 at the
   owner's request; prose is theirs) is the parsing guide's sibling and, on the owner's instruction,
   names `@usearazzo/resolver` exactly once, as the first Next steps bullet (the parser guide's
@@ -779,6 +829,11 @@ This is real, currently-shipping (or currently-not-shipping) software. When upda
 - **The owner's voice is written down in the `owner-voice` skill** (`.claude/skills/owner-voice/`).
   Load it before drafting any post, guide, or tutorial prose. It is distilled from his vladimirgorej.com
   posts from 2022 and earlier (owner, 2026-10-10).
+- **The `clarity` skill is the last review pass over drafted prose** (`.claude/skills/clarity/`,
+  added 2026-11-26 through website#36; a copy of addyosmani/clarity v0.2.1, MIT). Use its review
+  mode after `owner-voice` has shaped the draft. Its local section lists the house rules that
+  outrank it (short sentences, the owner's bridges, question headings, bold-label lists); keep that
+  section when updating the copy.
 - **`description` front matter is at most 160 characters** (2026-10-02; Bing Webmaster Tools flags
   longer ones as an SEO error, and Google truncates them). It becomes the meta description and the
   JSON-LD `description`. On guides, tutorials, and reference pages the layout also shows it as the

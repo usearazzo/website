@@ -2,15 +2,16 @@
 title: "What Is OpenAPI?"
 description: "OpenAPI is a format for writing an HTTP API down in a file that people and programs can read. See what is in one, with a real operation taken apart."
 summary: "What OpenAPI is and what an OpenAPI description holds, shown with one real operation."
-lead: "OpenAPI is a format for writing an HTTP API down in a file that both people and programs can read. This guide explains what is in such a file, takes one real operation apart, and shows where OpenAPI stops."
+lead: "OpenAPI is a format for writing an HTTP API down in a file that both people and programs can read. This guide explains what is in such a file, takes one real operation apart, and shows the limits of the format."
 order: 3
 date: 2026-11-19
+last_modified_at: 2026-11-26
 image:
   path: /assets/images/guides/what-is-openapi.png
   webp: /assets/images/guides/what-is-openapi.webp
   width: 1200
   height: 630
-  alt: "A sheet of paper with three rows of labelled lines stands between a rounded square with a command prompt on the left and a solid square with three stacked bars on the right, joined to both by a line"
+  alt: "A sheet of paper headed OpenAPI, with three rows of labelled lines, stands between a rounded square with a command prompt on the left and a solid square with three stacked bars on the right, joined to both by a line"
   caption: "The contract between two programs, written down."
 toc:
   - id: what-is-openapi
@@ -28,7 +29,7 @@ toc:
   - id: versions
     title: Which version of OpenAPI should you use?
   - id: limits
-    title: Where OpenAPI stops
+    title: The limits of OpenAPI
   - id: next-steps
     title: Next steps
 faq:
@@ -49,7 +50,7 @@ faq:
       An OpenAPI description can be written in either YAML or JSON. Both hold the same content, and a tool can turn one into the other. People who write a description by hand mostly choose YAML, because it has less punctuation. Programs often produce JSON.
   - question: "Is OpenAPI only for REST APIs?"
     answer: |
-      No. OpenAPI describes any API that speaks HTTP, and a REST API is the most common kind. It fits any API made of HTTP methods, URLs, and status codes, however strictly that API follows REST. It does not describe GraphQL or gRPC APIs, which have description formats of their own. Event-driven APIs, where messages travel through a broker, have a separate format too, called AsyncAPI. OpenAPI covers only the simple case, a webhook.
+      No. OpenAPI describes any API that speaks HTTP, and a REST API is the most common kind. It fits any API made of HTTP methods, URLs, and status codes, however strictly that API follows REST. It does not describe GraphQL or gRPC APIs, which have description formats of their own. Event-driven APIs, where messages travel through a broker, have a separate format too, called [AsyncAPI](/docs/guides/what-is-asyncapi/). OpenAPI covers only the simple case, a webhook.
   - question: "Who maintains OpenAPI?"
     answer: |
       OpenAPI is maintained by the OpenAPI Initiative, an open source project under the Linux Foundation. It was formed in November 2015. The specification is developed in the open on [GitHub](https://github.com/OAI/OpenAPI-Specification), and anyone can read it and use it for free.
@@ -322,13 +323,13 @@ So which one do you choose?
 - **For an existing description**, there is no need to hurry. A 3.0 description is still a good description. The Petstore's is one.
 - **For a 2.0 description**, moving to version 3 is worth planning. The top of the file is laid out differently, so the move is a conversion, and there are tools that do it.
 
-## Where OpenAPI stops {#limits}
+## The limits of OpenAPI {#limits}
 
 A description is the contract written down. It's important to realize what writing it down does not do.
 
 **It does not make the server keep to it.** Look at the `security` lines of our operation again. They say the call needs an API key or a login. In the [What Is an API?]({{ '/docs/guides/what-is-an-api/' | relative_url }}) guide we sent neither, and the Petstore answered anyway. The description says one thing and the server does another. Nothing in the file can prevent that. Only testing the server against the description can find it.
 
-**It does not describe every API.** OpenAPI is for HTTP APIs. GraphQL and gRPC have their own formats. Event-driven APIs, where messages travel through a broker, have one too, called AsyncAPI. OpenAPI covers only the simple case, a webhook.
+**It does not describe every API.** OpenAPI is for HTTP APIs. GraphQL and gRPC have their own formats. Event-driven APIs, where messages travel through a broker, have one too, called AsyncAPI. The [What Is AsyncAPI?]({{ '/docs/guides/what-is-asyncapi/' | relative_url }}) guide takes one such message apart. OpenAPI covers only the simple case, a webhook.
 
 **It does not say in what order to make the calls.** This one needs a closer look.
 
@@ -349,6 +350,7 @@ So there it is. OpenAPI is the contract of an API, written down so that people a
 - Read the whole description. The Petstore's file as it was captured for this guide is here as [YAML]({{ '/assets/guides/what-is-openapi/petstore.openapi.yaml' | relative_url }}) and as [JSON]({{ '/assets/guides/what-is-openapi/petstore.openapi.json' | relative_url }}). Find `findPetsByStatus` in it and take it apart the same way.
 - See it at work. The [Swagger Petstore](https://petstore3.swagger.io/) page is that same file turned into documentation, with a "Try it out" button on every operation.
 - Read the rule book. The [OpenAPI Specification](https://spec.openapis.org/oas/latest.html) is long, but it's written to be read.
+- Not every API waits to be asked. [What Is AsyncAPI?]({{ '/docs/guides/what-is-asyncapi/' | relative_url }}) covers the format for APIs that send messages.
 - New to APIs? [What Is an API?]({{ '/docs/guides/what-is-an-api/' | relative_url }}) explains the request, the response, and the contract this guide builds on.
 - [API Workflows Are Still Improvised]({{ '/blog/api-workflows-are-still-improvised/' | relative_url }}) picks up where this guide stops: what happens when the order of the calls is written down nowhere.
 - Ready to describe a sequence of calls as a document, check it, and run it? [Getting Started with UseArazzo]({{ '/docs/guides/getting-started/' | relative_url }}) does that with the two operations named above: `findPetsByStatus`, then `getPetById`.

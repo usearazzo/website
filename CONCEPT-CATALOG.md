@@ -72,6 +72,15 @@ neighbouring questions.
 When a rung lands, point the previous guide's closing section and Next
 steps at it.
 
+**Side rung (owner, 2026-11-21):** "What Is AsyncAPI?"
+(`_guides/what-is-asyncapi.md`, DRAFTED 2026-11-21, `order: 4`). It stands
+beside rung 2, not on the main line: OpenAPI is the API you ask, AsyncAPI
+the API that tells you. One real Streetlights message sent through the
+public test broker and found piece by piece in the AsyncAPI project's own
+example document; an "AsyncAPI and OpenAPI" table; version 2 against 3;
+ends on "it describes operations one at a time", like rung 2. When rung 3
+lands, point its `#limits` section and Next steps at it too.
+
 **Backlog / candidate topics:**
 - **A definitional guide, "What is an API workflow?"** (`_guides/`, not a
   post: evergreen, per the guide rule redefined 2026-09-22): worked through

@@ -5,7 +5,7 @@ summary: "What an API is, and what a REST API is, shown with one real call."
 lead: "An API is how one piece of software asks another for something. This guide explains what that means, what makes an API a REST API, and takes one real call apart, piece by piece."
 order: 2
 date: 2026-11-13
-last_modified_at: 2026-11-19
+last_modified_at: 2026-11-21
 image:
   path: /assets/images/guides/what-is-an-api.png
   webp: /assets/images/guides/what-is-an-api.webp
@@ -143,7 +143,7 @@ Your code asked the JavaScript engine to read a piece of JSON, a plain-text form
 - **GraphQL** sends one query that names exactly the fields wanted.
 - **gRPC** calls remote functions in a compact binary format. It is often used between services inside a company.
 - **SOAP** wraps every message in XML. It is older and still in use in many enterprise systems.
-- **Event-driven APIs** turn the direction around. You don't ask. The other side tells you when something happens. A webhook works this way: you give the other side an address of yours, and it calls you.
+- **Event-driven APIs** turn the direction around. You don't ask. The other side tells you when something happens. A webhook works this way: you give the other side an address of yours, and it calls you. [What Is AsyncAPI?]({{ '/docs/guides/what-is-asyncapi/' | relative_url }}) explains how such an API is written down.
 
 APIs are also sorted by who may call them: private, partner, and public. The FAQ at the end has that list.
 
