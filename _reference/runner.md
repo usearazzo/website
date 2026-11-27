@@ -1743,7 +1743,7 @@ Every error the runner throws extends `ArazzoRunnerError`:
 | Error | Thrown when | Extra fields |
 |---|---|---|
 | `ExecutionError` | The document cannot be run as written, a budget ran out, or the run was cancelled. | `reason`, `workflowId`, `stepId`, `path` |
-| `ClientError` | A request could not be built (a required parameter is missing, a media type matches nothing, a path parameter has no place in the path) or sent. The underlying error is on `cause`. | `operationId`, `operationPath`, `uri` |
+| `ClientError` | A request could not be built (a required parameter is missing, a media type matches nothing, a path parameter has no place in the path) or sent, or its response could not be read in full (the connection dropped while the body was arriving). The underlying error is on `cause`. For a request that could not be sent and a response that could not be read, `uri` is the OpenAPI document that `operationPath` points into. | `operationId`, `operationPath`, `uri` |
 | `ResolverError` | A parameter, body, or output could not be resolved. | `reason`, `workflowId`, `stepId`, `target` |
 | `CriterionError` | A criterion is malformed as written: a missing `condition`, an unknown `type`, an unsupported expression `version`, a `context` that is missing or not an expression. A condition that cannot be evaluated is not an error; the criterion is unmet. | `reason`, `condition`, `type` |
 | `RuntimeExpressionError` | An expression cannot be evaluated where it is used. | `reason`, `expression` |
