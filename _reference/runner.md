@@ -1787,7 +1787,7 @@ try {
 | `missing-operation` | `MissingOperation` | An operation step has neither an `operationId` nor an `operationPath`. |
 | `workflow-step` | `WorkflowStep` | `StepExecutor` was given a step that calls a workflow. `WorkflowExecutor` runs those itself. |
 | `unknown-action-type` | `UnknownActionType` | An action's `type` is not `end`, `goto`, or `retry`. |
-| `malformed-steps`, `malformed-dependsOn` | `MalformedSteps`, `MalformedDependsOn` | A workflow's `steps` or `dependsOn` is present but malformed. |
+| `malformed-steps`, `malformed-dependsOn` | `MalformedSteps`, `MalformedDependsOn` | A workflow's `steps` is absent, empty, or malformed, or its `dependsOn` is present but malformed. A workflow without steps does not run as a no-op. |
 | `workflow-cycle`, `dependsOn-cycle` | `WorkflowCycle`, `DependsOnCycle` | A workflow is entered again while it is still running. |
 | `workflow-depth` | `WorkflowDepth` | Workflows nest deeper than `maxWorkflowDepth`. |
 | `step-budget` | `StepBudget` | The run made more than `maxSteps` step attempts. |
@@ -1857,7 +1857,7 @@ The last five are thrown as `CriterionEvaluationError` and make the criterion un
 | `unavailable-expression` | `UnavailableExpression` | The expression reads `$statusCode`, `$url`, `$method`, `$request`, or `$response` in a step that calls a workflow, which made no HTTP call. |
 | `unsupported-node` | `UnsupportedNode` | The parsed expression contains a node the runner does not evaluate. |
 
-A workflow's `steps`, `dependsOn`, and `outputs`, and every step's `successCriteria`, are checked before anything runs, so those mistakes never send a request. Other mistakes inside one step are found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
+A workflow's `steps`, `dependsOn`, and `outputs`, and every step's `successCriteria`, are checked before any of that workflow's prerequisites or steps run, so those mistakes in the workflow you run never send a request. A workflow reached through a `goto` or a retry reference is checked the same way when the run enters it, after the requests sent on the way there. Other mistakes inside one step are found when the run reaches it, after earlier steps have run. That is deliberate: a broken step that a run never reaches should not fail the run.
 
 ## Supported versions {#versions}
 
