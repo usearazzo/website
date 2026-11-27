@@ -677,7 +677,7 @@ Each `StepRunRecord` in `steps` carries:
 |---|---|
 | `stepId` | The step. |
 | `location` | Where the step is written. See [Document locations](#locations). |
-| `successful` | Whether its `successCriteria` passed, on the last attempt. |
+| `successful` | Whether the step succeeded on the last attempt. See [Steps without `successCriteria`](#steps-without-success-criteria). |
 | `action` | The `onSuccess` or `onFailure` action that was selected, or `undefined` when none matched. |
 | `attempts` | How many times the step ran: `1`, or more after retries. |
 | `durationMs` | Time across every attempt and the waits between them. |
@@ -727,6 +727,17 @@ A whole body read by a criterion (`$response.body`, `$request.body`) is recorded
 Every criterion in a list is evaluated, not only up to the first unmet one, so a single run shows every reason a step failed. The regex and JSONPath messages include the engine's explanation; XPath messages name the condition only, because a query can put values from the response into its own error.
 
 A step that fails its criteria is not an error. It makes a `failed` result, which you read like any other. Only a broken document, a failed transport, or a cancelled run throws (see [Errors](#errors)).
+
+#### Steps without `successCriteria` {#steps-without-success-criteria}
+
+A step succeeds when every one of its `successCriteria` is met. A step that calls a workflow also needs that workflow's run not to settle as `failed`.
+
+A step without `successCriteria` asserts nothing:
+
+- **A step that calls an operation** is successful on any received response, whatever its status code. A `404` or a `500` takes the step's `onSuccess` path.
+- **A step that calls a workflow** is successful unless that workflow's run settled as `failed`.
+
+Its `successCriteria` records are then empty, which is how you tell a step that asserted nothing from one whose criteria passed. To fail a step on an error response, write the criterion, for example `$statusCode == 200`.
 
 ## Control flow {#control-flow}
 
@@ -1413,7 +1424,7 @@ const state = new WorkflowExecutionState({ inputs: { preferredPetStatus: 'availa
 
 const outcome = await stepExecutor.execute(step, state, { server: 'http://localhost:8080/api/v3' });
 
-outcome.successful; // true when every successCriterion passed
+outcome.successful; // true when every successCriterion passed, or when the step has none
 outcome.outputs; // the step's outputs, by name
 outcome.action; // the selected onSuccess / onFailure action, or undefined
 outcome.successCriteria; // one CriterionEvaluationRecord per successCriterion
