@@ -423,6 +423,18 @@ Both use Jekyll front matter (`layout: none`) so Liquid variables resolve.
   "we" (owner dislikes it), no future plans. Origin lines come only from the August post and the About page.
   "251 commits across the UseArazzo organization (not counting bots)" was counted 2026-10-25 over the five
   org repos (not the spec fork). Hero is the fifth slab sibling (dark top tile, three checked steps).
+- The state of the ecosystem post, `_posts/2026-11-27-state-of-the-arazzo-ecosystem.md`, DRAFTED by AI
+  on 2026-11-27 at the owner's request, reviewed with the clarity skill, published the same day. A
+  sequel to the 2026-08-22 ecosystem post: it checks that post's two gaps (Arazzo 1.1 support,
+  provider-published examples) against the page three months on. Every number was counted on
+  2026-11-27: the page per section (198 listed, 55 on 22 August at commit `d832721`), the 45 live
+  GitHub tool repositories through the GitHub API (age, language, owner type, last push), and 1.1
+  support from a README read of those repositories only (tools hosted elsewhere were not checked).
+  The agents count (18 of 66 articles, 13 of 35 videos) is a keyword match on the page's own titles
+  and notes. A link check of every URL for the post found four dead entries, removed that day and
+  recorded in `ECOSYSTEM-REJECTED.md`, leaving 194. The post does not say the toolkit is unlisted:
+  website#38 proposes listing UseArazzo's own toolkit on the page (AI assistants reading the page
+  omit it). Hero is a sibling of the August plants with one dashed empty plot, no Fork mark.
 - `pages/blog.html` shows an empty-state card when `site.posts` is empty — keep that branch working when adding the first post (it's an `{% if latest %}...{% else %}...{% endif %}` guard).
 
 ## Docs and guides
