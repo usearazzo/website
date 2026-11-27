@@ -57,3 +57,15 @@ These existed at the 2026-10-02 sweep, are not listed, and have not changed sinc
 | https://github.com/la-rebelion/be-hapi | Installer for HAPI MCP, which is listed. |
 | https://github.com/workflows-guru/awesome-arazzo | An aggregator; credited in the curation note instead of listed. |
 
+
+## Removed in the 2026-11-27 link check
+
+These were listed and were taken off the page when every link was checked for the state of the
+ecosystem post. Each can come back if it reappears.
+
+| Resource | Reason |
+|---|---|
+| https://github.com/hainet50b/arazzo2mermaid | Listed 2026-09-17 (Author & visualise). Returns 404 on 2026-11-27; the owner's account still exists. |
+| https://github.com/mevansam/context-mesh-engine | Listed 2026-09-17 (Run & test). Returns 404 on 2026-11-27; the owner's account still exists. |
+| https://github.com/B-Divyesh/sf-arazzo-proof-runner | Listed 2026-09-17 (Run & test). Returns 404 on 2026-11-27; the owner's account still exists. |
+| https://github.com/api-evangelist/stedi/tree/main/arazzo | Listed under Examples. The repository was emptied on 2026-11-01 and holds only a README, so the five Arazzo documents are gone. Kin Lane's article about them is still listed. |
